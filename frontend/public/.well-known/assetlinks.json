@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.qqbikes.app.twa",
+      "sha256_cert_fingerprints": [
+        "4F:8A:12:9C:3E:7B:66:9A:01:88:E2:B5:44:CD:77:E1:90:3A:88:BC:11:F4:6D:E8:29:9C:55:AF:33:10:88:BB"
+      ]
+    }
+  }
+]

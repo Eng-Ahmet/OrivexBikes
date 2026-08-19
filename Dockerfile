@@ -3,9 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
+# Install all dependencies (including devDependencies for TypeScript compilation)
 COPY package*.json tsconfig.json ./
-RUN npm ci
+RUN npm install
 
 # Copy application source code
 COPY backend ./backend
@@ -23,13 +23,12 @@ ENV NODE_ENV=production
 ENV PORT=5000
 
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Copy compiled backend and frontend assets from builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/backend ./backend
 COPY --from=builder /app/frontend ./frontend
 
 EXPOSE 5000
 
-CMD ["npx", "tsx", "backend/src/server.ts"]
+CMD ["node", "dist/backend/src/server.js"]
