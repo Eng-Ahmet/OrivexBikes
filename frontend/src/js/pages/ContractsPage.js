@@ -8,8 +8,8 @@ export async function renderContractsPage(container) {
   container.innerHTML = `
     <div class="page-header">
       <div>
-        <h2>Active Rental Contracts & Live Timers</h2>
-        <p class="page-desc">Real-time stopwatch timer for active rentals, returns, & deposit releases</p>
+        <h2>Active Rentals & Partner Debt Settlement (من مدين لمن)</h2>
+        <p class="page-desc">Live stopwatch timers, rental contracts, & neighbor partner payout ledger</p>
       </div>
       <div class="filter-bar">
         <select id="filterContractStatus" class="styled-select">
@@ -26,10 +26,11 @@ export async function renderContractsPage(container) {
           <tr>
             <th>Contract #</th>
             <th>Customer</th>
-            <th>Vehicle</th>
-            <th>Start Time</th>
-            <th>Elapsed Time (Stopwatch)</th>
+            <th>Vehicle / Equipment</th>
+            <th>Ownership / Partner</th>
+            <th>Elapsed Time</th>
             <th>Rental Fee</th>
+            <th>Neighbor Debt (من مدين لمن)</th>
             <th>Deposit</th>
             <th>Status</th>
             <th>Actions</th>
@@ -60,19 +61,31 @@ export async function renderContractsPage(container) {
     tableBody.innerHTML = '';
 
     if (!contracts || contracts.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No active or historical contracts found. Create a new contract to start tracking!</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 2rem;">No active or historical contracts found. Issue a new contract to start tracking!</td></tr>`;
       return;
     }
 
     contracts.forEach(c => {
       const tr = document.createElement('tr');
       const isCompleted = c.status === 'COMPLETED';
+      const isNeighbor = c.item_owner === 'NEIGHBOR';
+
+      let debtHtml = `<span style="color: var(--text-dim);">-</span>`;
+      if (isNeighbor && c.neighbor_payout) {
+        debtHtml = `<span style="color: var(--accent-amber); font-weight: 700;">€${c.neighbor_payout.toFixed(2)} (Owed to ${c.neighbor_name || 'Partner'})</span>`;
+      }
 
       tr.innerHTML = `
         <td><strong>${c.contract_number}</strong></td>
         <td>${c.customer_name}<br><small style="color: var(--text-dim);">${c.customer_passport}</small></td>
         <td>${c.vehicle_name}</td>
-        <td>${new Date(c.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
+        <td>
+          ${isNeighbor ? `
+            <span class="status-badge status-MAINTENANCE">🤝 NEIGHBOR (${c.neighbor_name || 'Partner'})</span>
+          ` : `
+            <span class="status-badge status-AVAILABLE">🏠 STORE OWNED</span>
+          `}
+        </td>
         <td>
           ${!isCompleted ? `
             <span class="elapsed-timer" data-start="${c.start_time}" style="font-family: monospace; font-weight: 700; color: var(--accent-cyan); background: rgba(6,182,212,0.15); padding: 4px 10px; border-radius: 6px;">
@@ -83,6 +96,7 @@ export async function renderContractsPage(container) {
           `}
         </td>
         <td>€${c.rental_fee.toFixed(2)} (${c.payment_method})</td>
+        <td>${debtHtml}</td>
         <td>€${c.deposit_collected.toFixed(2)}</td>
         <td><span class="status-badge status-${c.status === 'ACTIVE' ? 'RENTED' : 'AVAILABLE'}">${c.status}</span></td>
         <td>
@@ -91,7 +105,7 @@ export async function renderContractsPage(container) {
               🏁 Return Vehicle
             </button>
           ` : `
-            <span style="color: var(--accent-emerald); font-size: 0.8rem; font-weight: 600;">✓ Deposit Released</span>
+            <span style="color: var(--accent-emerald); font-size: 0.8rem; font-weight: 600;">✓ Released</span>
           `}
         </td>
       `;
@@ -106,7 +120,6 @@ export async function renderContractsPage(container) {
     });
   }
 
-  // Ticking stopwatch live updates every 1000ms
   timerInterval = setInterval(() => {
     container.querySelectorAll('.elapsed-timer').forEach(el => {
       const start = el.getAttribute('data-start');

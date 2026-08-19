@@ -49,6 +49,10 @@ export async function renderFleetPage(container) {
     }
 
     vehicles.forEach(v => {
+      const hourly = Number(v.rate_1h || v.hourly_rate || 5);
+      const daily = Number(v.rate_1d || v.daily_rate || 20);
+      const deposit = Number(v.deposit_amount || 30);
+
       const card = document.createElement('div');
       card.className = 'vehicle-card glass-panel';
       card.innerHTML = `
@@ -63,15 +67,15 @@ export async function renderFleetPage(container) {
         <div class="vehicle-specs">
           <div class="spec-item">
             <span class="spec-label">Hourly Rate</span>
-            <span class="spec-val">€${v.hourly_rate.toFixed(2)}/h</span>
+            <span class="spec-val">€${hourly.toFixed(2)}/h</span>
           </div>
           <div class="spec-item">
             <span class="spec-label">Daily Rate</span>
-            <span class="spec-val">€${v.daily_rate.toFixed(2)}/day</span>
+            <span class="spec-val">€${daily.toFixed(2)}/day</span>
           </div>
           <div class="spec-item">
             <span class="spec-label">Deposit</span>
-            <span class="spec-val">€${v.deposit_amount.toFixed(2)}</span>
+            <span class="spec-val">€${deposit.toFixed(2)}</span>
           </div>
         </div>
 
