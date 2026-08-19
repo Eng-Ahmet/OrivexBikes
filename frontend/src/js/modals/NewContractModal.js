@@ -32,7 +32,7 @@ export function renderNewContractModal(container) {
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-id-card me-1"></i> ${t('label_cust_passport')}</label>
-                  <input type="text" id="custPassport" class="form-control bg-dark text-light border-secondary" placeholder="e.g. X1234567A" required />
+                  <input type="text" id="custPassport" class="form-control bg-dark text-light border-secondary" placeholder="e.g. X1234567A / 12345678Z" required />
                 </div>
 
                 <!-- DYNAMIC PHONE LABEL & REQUIRED STATE -->
@@ -130,6 +130,20 @@ export function renderNewContractModal(container) {
     if (!str) return true;
     const hasArabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
     return !hasArabic.test(str);
+  }
+
+  // PHONE NUMBER FORMAT VALIDATION HELPER (e.g. +34 612 345 678)
+  function isValidPhone(phoneStr) {
+    if (!phoneStr) return false;
+    const phoneRegex = /^\+?[0-9\s\-\(\)]{7,18}$/;
+    return phoneRegex.test(phoneStr.trim());
+  }
+
+  // PASSPORT / DNI / ID FORMAT VALIDATION HELPER
+  function isValidIdentityDoc(docStr) {
+    if (!docStr) return false;
+    const docRegex = /^[a-zA-Z0-9\s\-]{4,20}$/;
+    return docRegex.test(docStr.trim());
   }
 
   function getBootstrapModalInstance() {
@@ -320,10 +334,23 @@ export function renderNewContractModal(container) {
 
       const nameVal = custNameInput.value.trim();
       const passportVal = custPassportInput.value.trim();
+      const phoneVal = custPhone.value.trim();
 
       // LATIN-ONLY CHARACTER VALIDATION CHECK
       if (!isLatinOnly(nameVal) || !isLatinOnly(passportVal)) {
         showToast('⚠️ Customer details must be written in Latin script (Spanish / English / Standard Western characters). Arabic script is disallowed in database records.', 'error');
+        return;
+      }
+
+      // PASSPORT / DNI FORMAT VALIDATION CHECK
+      if (!isValidIdentityDoc(passportVal)) {
+        showToast('⚠️ Please enter a valid Passport / DNI / ID (at least 5 alphanumeric characters).', 'error');
+        return;
+      }
+
+      // PHONE NUMBER VALIDATION CHECK (IF REQUIRED)
+      if (custPhone.required && !isValidPhone(phoneVal)) {
+        showToast('⚠️ Please enter a valid Customer Phone Number (e.g. +34 612 345 678).', 'error');
         return;
       }
 
@@ -334,7 +361,7 @@ export function renderNewContractModal(container) {
       const data = {
         customer_name: nameVal,
         customer_passport: passportVal,
-        customer_phone: custPhone.value || '-',
+        customer_phone: phoneVal || '-',
         vehicle_id: Number(vehicleSelect.value),
         start_time: new Date(startTimeInput.value).toISOString(),
         expected_end_time: new Date(returnTimeInput.value).toISOString(),

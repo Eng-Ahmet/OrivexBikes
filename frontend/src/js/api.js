@@ -42,6 +42,16 @@ export const api = {
     return res.json();
   },
 
+  async getSettings() {
+    const stores = await this.getStores();
+    const store = Array.isArray(stores) ? stores.find((s) => s.id === state.activeStoreId) : null;
+    return { initial_cash_float: store ? store.initial_cash_float : 150 };
+  },
+
+  async updateSettings(data) {
+    return this.updateStoreConfig(state.activeStoreId, data.initial_cash_float);
+  },
+
   async updateStoreConfig(storeId, initial_cash_float) {
     const res = await fetch(`${API_BASE}/stores/${storeId}/config`, {
       method: 'PUT',
@@ -60,9 +70,17 @@ export const api = {
     return res.json();
   },
 
+  async addHistoricalEntry(amount, reason) {
+    return this.recordHistoricalCash(state.activeStoreId, { amount, reason });
+  },
+
   async getHistoricalCashLogs(storeId) {
     const res = await fetch(`${API_BASE}/stores/${storeId}/historical-cash`, { headers: getHeaders() });
     return res.json();
+  },
+
+  async getHistoricalEntries() {
+    return this.getHistoricalCashLogs(state.activeStoreId);
   },
 
   async getVehicles(category = 'ALL', status = 'ALL', search = '') {
@@ -155,6 +173,10 @@ export const api = {
       body: JSON.stringify(data)
     });
     return res.json();
+  },
+
+  async createRepairTicket(data) {
+    return this.createRepairWorkOrder(data);
   },
 
   async updateRepairWorkOrderStatus(id, status) {

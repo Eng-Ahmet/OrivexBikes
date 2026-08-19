@@ -97,6 +97,7 @@ export interface Shift {
   opening_cash: number;
   closing_cash?: number;
   total_cash_rentals?: number;
+  total_workshop_income?: number;
   total_withdrawals?: number;
   expected_cash?: number;
   discrepancy?: number;
