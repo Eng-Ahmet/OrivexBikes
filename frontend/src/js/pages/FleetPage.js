@@ -2,24 +2,27 @@ import { api } from '../api.js';
 
 export async function renderFleetPage(container) {
   container.innerHTML = `
-    <div class="page-header">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
       <div>
-        <h2>Fleet Inventory & Availability</h2>
-        <p class="page-desc">Real-time status of bikes, e-scooters & cargo vehicles</p>
+        <h2 class="fw-bold mb-1">🚲 Fleet Inventory & Availability</h2>
+        <p class="text-secondary small mb-0">Real-time status of bikes, e-scooters, cargo vehicles, & partner items</p>
       </div>
-      <div class="filter-bar">
-        <input type="text" id="searchVehicle" class="styled-select" placeholder="🔍 Search name, QR code, frame..." style="min-width: 220px;" />
 
-        <select id="filterCategory" class="styled-select">
+      <div class="d-flex flex-wrap gap-2">
+        <input type="text" id="searchVehicle" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="🔍 Search name, QR..." style="width: 200px;" />
+        
+        <select id="filterCategory" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 160px;">
           <option value="ALL">All Categories</option>
-          <option value="E-Bike">E-Bikes</option>
-          <option value="E-Scooter">E-Scooters</option>
-          <option value="City Bike">City Bikes</option>
-          <option value="Mountain Bike">Mountain Bikes</option>
-          <option value="Cargo Bike">Cargo Bikes</option>
+          <option value="Scooters">E-Scooters</option>
+          <option value="E-Bikes (VISA)">E-Bikes (VISA)</option>
+          <option value="Bikes">Bicycles</option>
+          <option value="S cars/Quads">S Cars / Quads</option>
+          <option value="XL Cars">XL Cars & Jeep</option>
+          <option value="Buggy's">Buggy's</option>
+          <option value="Accessories / Shoes">Accessories / Shoes</option>
         </select>
 
-        <select id="filterStatus" class="styled-select">
+        <select id="filterStatus" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 150px;">
           <option value="ALL">All Statuses</option>
           <option value="AVAILABLE">Available</option>
           <option value="RENTED">Rented</option>
@@ -28,7 +31,8 @@ export async function renderFleetPage(container) {
       </div>
     </div>
 
-    <div id="vehicleGrid" class="vehicle-grid"></div>
+    <!-- Bootstrap 4-Column Grid Container -->
+    <div id="vehicleGrid" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-3"></div>
   `;
 
   const searchInput = container.querySelector('#searchVehicle');
@@ -44,7 +48,11 @@ export async function renderFleetPage(container) {
 
     vehicleGrid.innerHTML = '';
     if (!vehicles || vehicles.length === 0) {
-      vehicleGrid.innerHTML = `<div class="glass-panel" style="padding: 2rem; grid-column: 1/-1; text-align: center; color: var(--text-muted);">No vehicles found matching current filter or search.</div>`;
+      vehicleGrid.innerHTML = `
+        <div class="col-12 text-center py-5">
+          <div class="card-glass p-4 text-secondary">No vehicles found matching current search or filter criteria.</div>
+        </div>
+      `;
       return;
     }
 
@@ -52,52 +60,58 @@ export async function renderFleetPage(container) {
       const hourly = Number(v.rate_1h || v.hourly_rate || 5);
       const daily = Number(v.rate_1d || v.daily_rate || 20);
       const deposit = Number(v.deposit_amount || 30);
+      const isNeighbor = v.item_owner === 'NEIGHBOR';
 
-      const card = document.createElement('div');
-      card.className = 'vehicle-card glass-panel';
-      card.innerHTML = `
-        <div class="vehicle-header">
+      const col = document.createElement('div');
+      col.className = 'col';
+
+      let statusBadgeClass = 'badge-available';
+      if (v.status === 'RENTED') statusBadgeClass = 'badge-rented';
+      if (v.status === 'MAINTENANCE') statusBadgeClass = 'badge-maintenance';
+
+      col.innerHTML = `
+        <div class="card-glass h-100 p-3 d-flex flex-column justify-content-between">
           <div>
-            <div class="vehicle-name">${v.name}</div>
-            <div class="vehicle-category">${v.category} • ${v.qr_code}</div>
-          </div>
-          <span class="status-badge status-${v.status}">${v.status}</span>
-        </div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h5 class="fw-bold text-light mb-0 fs-6">${v.name}</h5>
+                <span class="text-secondary" style="font-size: 0.75rem;">${v.category} • ${v.qr_code}</span>
+              </div>
+              <span class="badge ${statusBadgeClass} rounded-pill">${v.status}</span>
+            </div>
 
-        <div class="vehicle-specs">
-          <div class="spec-item">
-            <span class="spec-label">Hourly Rate</span>
-            <span class="spec-val">€${hourly.toFixed(2)}/h</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Daily Rate</span>
-            <span class="spec-val">€${daily.toFixed(2)}/day</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Deposit</span>
-            <span class="spec-val">€${deposit.toFixed(2)}</span>
-          </div>
-        </div>
+            ${isNeighbor ? `
+              <div class="mb-2"><span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill" style="font-size: 0.7rem;">🤝 Neighbor (${v.neighbor_name || 'Partner'})</span></div>
+            ` : ''}
 
-        ${v.battery_level !== undefined ? `
-          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">
-            ⚡ Battery: <strong style="color: ${v.battery_level > 50 ? 'var(--accent-emerald)' : 'var(--accent-amber)'}">${v.battery_level}%</strong>
-          </div>
-        ` : ''}
+            <div class="bg-dark bg-opacity-50 p-2 rounded border border-secondary border-opacity-25 my-2" style="font-size: 0.8rem;">
+              <div class="d-flex justify-content-between text-secondary"><span>1 Hour Rate:</span><strong class="text-cyan">€${hourly.toFixed(2)}</strong></div>
+              <div class="d-flex justify-content-between text-secondary"><span>1 Day Rate:</span><strong class="text-light">€${daily.toFixed(2)}</strong></div>
+              <div class="d-flex justify-content-between text-secondary border-top border-secondary border-opacity-25 pt-1 mt-1"><span>Deposit:</span><strong class="text-warning">€${deposit.toFixed(2)}</strong></div>
+            </div>
 
-        <div style="margin-top: auto;">
-          ${v.status === 'AVAILABLE' ? `
-            <button class="btn btn-primary btn-sm btn-full rent-btn" data-id="${v.id}">
-              ✨ Rent This Vehicle
-            </button>
-          ` : `
-            <button class="btn btn-secondary btn-sm btn-full" disabled style="opacity: 0.6;">
-              Unavailable
-            </button>
-          `}
+            ${v.battery_level !== undefined ? `
+              <div class="small text-secondary mb-3" style="font-size: 0.75rem;">
+                ⚡ Battery: <strong class="${v.battery_level > 50 ? 'text-success' : 'text-warning'}">${v.battery_level}%</strong>
+              </div>
+            ` : ''}
+          </div>
+
+          <div>
+            ${v.status === 'AVAILABLE' ? `
+              <button class="btn btn-primary btn-sm w-100 fw-semibold rent-btn" data-id="${v.id}">
+                ✨ Rent This Vehicle
+              </button>
+            ` : `
+              <button class="btn btn-outline-secondary btn-sm w-100 disabled" disabled>
+                Unavailable
+              </button>
+            `}
+          </div>
         </div>
       `;
-      vehicleGrid.appendChild(card);
+
+      vehicleGrid.appendChild(col);
     });
 
     vehicleGrid.querySelectorAll('.rent-btn').forEach(btn => {

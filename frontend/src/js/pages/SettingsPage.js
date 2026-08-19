@@ -2,25 +2,24 @@ import { api } from '../api.js';
 
 export async function renderSettingsPage(container) {
   container.innerHTML = `
-    <div class="page-header">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
       <div>
-        <h2>Store & Staff Management</h2>
-        <p class="page-desc">Configure campsite store parameters & employee accounts</p>
+        <h2 class="fw-bold mb-1">⚙️ Store Settings & Staff Directory</h2>
+        <p class="text-secondary small mb-0">Manage 2-role permissions (ADMIN / EMPLOYEE) & campsite locations</p>
       </div>
     </div>
 
-    <div class="card glass-panel">
-      <h3>Users & Assigned Roles</h3>
-      <p class="section-desc">Simplified 2-Role System (\`ADMIN\` and \`EMPLOYEE\`) direct store binding.</p>
-      <div class="table-card">
-        <table class="data-table">
-          <thead>
+    <div class="card-glass p-3 shadow-sm">
+      <h4 class="fw-bold text-info fs-6 mb-3">👥 Active Staff Members & Access Roles</h4>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover table-bordered border-secondary align-middle mb-0" style="font-size: 0.85rem;">
+          <thead class="table-dark text-secondary">
             <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Assigned Store</th>
-              <th>Status</th>
+              <th scope="col">Staff User</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Assigned Store</th>
+              <th scope="col">Permission Role</th>
             </tr>
           </thead>
           <tbody id="usersTableBody"></tbody>
@@ -29,19 +28,30 @@ export async function renderSettingsPage(container) {
     </div>
   `;
 
+  const tableBody = container.querySelector('#usersTableBody');
   const users = await api.getUsers();
-  const tbody = container.querySelector('#usersTableBody');
-  tbody.innerHTML = '';
+
+  tableBody.innerHTML = '';
+  if (!users || users.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">No user accounts found.</td></tr>`;
+    return;
+  }
 
   users.forEach(u => {
     const tr = document.createElement('tr');
+    const isAdmin = u.user_type === 'ADMIN';
+
     tr.innerHTML = `
-      <td>${u.id}</td>
-      <td><strong>${u.username}</strong><br><small style="color: var(--text-dim);">${u.email}</small></td>
-      <td><span class="status-badge ${u.user_type === 'ADMIN' ? 'status-AVAILABLE' : 'status-RENTED'}">${u.user_type}</span></td>
-      <td>${u.store_name || 'Store #' + u.store_id}</td>
-      <td><span style="color: var(--accent-emerald);">Active</span></td>
+      <td class="fw-bold text-light">${u.first_name} ${u.last_name} (@${u.username})</td>
+      <td>${u.email}</td>
+      <td>${u.phone}</td>
+      <td>${u.store_name || 'Málaga Beach Campsite Store'}</td>
+      <td>
+        <span class="badge ${isAdmin ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-secondary-subtle text-secondary'} rounded-pill">
+          ${isAdmin ? '⚡ ADMIN MANAGER' : '👤 COUNTER STAFF'}
+        </span>
+      </td>
     `;
-    tbody.appendChild(tr);
+    tableBody.appendChild(tr);
   });
 }
