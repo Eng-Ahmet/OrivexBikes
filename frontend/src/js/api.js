@@ -1,4 +1,4 @@
-// API Client Wrapper for QQBikes REST Backend with Proxy & CORS support
+// API Client Wrapper for QQBikes REST Backend
 
 const API_BASE = '/api';
 
@@ -7,8 +7,8 @@ export const state = {
   activeRole: 'EMPLOYEE',
   token: null,
   currentUser: {
-    username: 'Sofia Employee',
-    user_type: 'EMPLOYEE',
+    username: 'ahmet',
+    user_type: 'ADMIN',
     store_id: 1
   }
 };
@@ -16,7 +16,7 @@ export const state = {
 const getHeaders = () => {
   const headers = {
     'Content-Type': 'application/json',
-    'x-dev-user-id': '2',
+    'x-dev-user-id': '1',
     'x-dev-username': state.currentUser.username,
     'x-dev-role': state.activeRole,
     'x-dev-store-id': String(state.activeStoreId)
@@ -54,24 +54,6 @@ export const api = {
     return Array.isArray(data) ? data : (data.vehicles || []);
   },
 
-  async addVehicle(data) {
-    const res = await fetch(`${API_BASE}/vehicles`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ ...data, store_id: state.activeStoreId })
-    });
-    return res.json();
-  },
-
-  async updateVehicleStatus(id, status) {
-    const res = await fetch(`${API_BASE}/vehicles/${id}/status`, {
-      method: 'PATCH',
-      headers: getHeaders(),
-      body: JSON.stringify({ status })
-    });
-    return res.json();
-  },
-
   async getRentals(status = 'ALL', search = '') {
     const params = new URLSearchParams({
       store_id: state.activeStoreId,
@@ -103,6 +85,12 @@ export const api = {
 
   async getCurrentShift() {
     const res = await fetch(`${API_BASE}/shifts/current`, { headers: getHeaders() });
+    return res.json();
+  },
+
+  async getSchedules() {
+    const params = new URLSearchParams({ store_id: state.activeStoreId });
+    const res = await fetch(`${API_BASE}/shifts/schedules?${params}`, { headers: getHeaders() });
     return res.json();
   },
 

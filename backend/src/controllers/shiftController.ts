@@ -8,6 +8,12 @@ export const getCurrentShift = (req: AuthRequest, res: Response) => {
   return res.json(currentShift || null);
 };
 
+export const getWeeklySchedules = (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+  const schedules = memoryData.schedules.filter(s => s.store_id === storeId);
+  return res.json(schedules);
+};
+
 export const openShift = (req: AuthRequest, res: Response) => {
   const { opening_cash } = req.body;
   const storeId = req.user?.store_id || 1;
@@ -19,9 +25,9 @@ export const openShift = (req: AuthRequest, res: Response) => {
     id: Date.now(),
     store_id: storeId,
     employee_id: req.user?.id || 1,
-    employee_name: req.user?.username || 'Sofia Employee',
+    employee_name: req.user?.username || 'Gustavo',
     start_time: new Date().toISOString(),
-    opening_cash: Number(opening_cash || 100),
+    opening_cash: Number(opening_cash || 150),
     status: 'OPEN'
   };
 

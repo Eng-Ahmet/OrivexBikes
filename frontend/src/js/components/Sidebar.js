@@ -14,6 +14,9 @@ export function renderSidebar(container) {
       <button class="nav-item ${state.activeTab === 'shiftsTab' ? 'active' : ''}" data-tab="shiftsTab">
         <span class="nav-icon">💵</span> Shift & Cash Drawer
       </button>
+      <button class="nav-item ${state.activeTab === 'schedulesTab' ? 'active' : ''}" data-tab="schedulesTab">
+        <span class="nav-icon">📅</span> Weekly Staff Roster
+      </button>
       ${isAdmin ? `
         <button class="nav-item ${state.activeTab === 'reportsTab' ? 'active' : ''}" data-tab="reportsTab">
           <span class="nav-icon">📊</span> Admin Analytics & Reports
@@ -31,7 +34,6 @@ export function renderSidebar(container) {
     </div>
   `;
 
-  // Bind Events
   container.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
       const tabId = btn.getAttribute('data-tab');
