@@ -23,6 +23,7 @@ export interface Store {
   address: string;
   phone: string;
   is_active: boolean;
+  initial_cash_float?: number;
 }
 
 export interface Vehicle {
@@ -50,6 +51,14 @@ export interface Vehicle {
   neighbor_name?: string;
 }
 
+export interface ContractExtension {
+  id: number;
+  extended_by: string;
+  additional_duration: string;
+  additional_fee: number;
+  created_at: string;
+}
+
 export interface RentalContract {
   id: number;
   contract_number: string;
@@ -63,6 +72,7 @@ export interface RentalContract {
   vehicle_name: string;
   start_time: string;
   end_time: string;
+  expected_end_time?: string;
   status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
   rental_fee: number;
   deposit_collected: number;
@@ -74,6 +84,7 @@ export interface RentalContract {
   neighbor_name?: string;
   store_commission?: number;
   neighbor_payout?: number;
+  extensions?: ContractExtension[];
 }
 
 export interface Shift {
@@ -104,6 +115,17 @@ export interface CashMovement {
   created_at: string;
 }
 
+export interface HistoricalCashLog {
+  id: number;
+  store_id: number;
+  amount: number;
+  date: string;
+  category: string;
+  description: string;
+  recorded_by: string;
+  created_at: string;
+}
+
 export interface WeeklySchedule {
   id: number;
   store_id: number;
@@ -130,13 +152,296 @@ export interface RepairService {
   category: 'Bicycle' | 'Labor';
 }
 
+export interface RepairWorkOrder {
+  id: number;
+  ticket_number: string;
+  store_id: number;
+  customer_name: string;
+  customer_phone: string;
+  device_model: string;
+  issue_description: string;
+  parts_used?: string;
+  parts_cost: number;
+  labor_cost: number;
+  total_price: number;
+  status: 'RECEIVED' | 'IN_PROGRESS' | 'READY' | 'DELIVERED_PAID';
+  created_at: string;
+}
+
+// Generate exact 53 Malaga physical inventory units based on handwritten sheet
+const generateMalagaInventory = (): Vehicle[] => {
+  const units: Vehicle[] = [];
+  let currentId = 101;
+
+  // 1. Patinetes Etwow (4 units)
+  for (let i = 1; i <= 4; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'Scooters',
+      qr_code: `QQ-ETW-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-ETW-${100 + i}`,
+      name: `Patinete Etwow #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 50,
+      rate_30m: 10,
+      rate_1h: 15,
+      rate_2h: 20,
+      rate_1d: 40,
+      rate_3d: 30,
+      rate_1w: 25,
+      rate_2w: 20,
+      battery_level: 90 + i,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 2. Patinetes Ninebot (4 units)
+  for (let i = 1; i <= 4; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'Scooters',
+      qr_code: `QQ-NIN-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-NIN-${200 + i}`,
+      name: `Patinete Ninebot #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 50,
+      rate_30m: 10,
+      rate_1h: 15,
+      rate_2h: 20,
+      rate_1d: 40,
+      rate_3d: 30,
+      rate_1w: 25,
+      rate_2w: 20,
+      battery_level: 85 + i,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 3. E-Bikes (VISA) (8 units)
+  for (let i = 1; i <= 8; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'E-Bikes (VISA)',
+      qr_code: `QQ-EB-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-EB-${300 + i}`,
+      name: `E-Bike City Cruiser #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 100,
+      rate_1h: 15,
+      rate_2h: 20,
+      rate_5h: 25,
+      rate_1d: 40,
+      rate_3d: 30,
+      rate_1w: 25,
+      rate_2w: 20,
+      battery_level: 90 + i,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 4. Quads (4 units)
+  for (let i = 1; i <= 4; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'S cars/Quads',
+      qr_code: `QQ-QD-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-QD-${400 + i}`,
+      name: `Quad S-Car #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 20,
+      rate_20m: 10,
+      rate_30m: 15,
+      rate_1h: 25,
+      rate_1d: 50,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 5. XL Cars (5 units)
+  for (let i = 1; i <= 5; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'XL Cars',
+      qr_code: `QQ-XL-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-XL-${500 + i}`,
+      name: `XL Car #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 20,
+      rate_20m: 15,
+      rate_30m: 20,
+      rate_1h: 30,
+      rate_1d: 60,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 6. Jeep (1 unit)
+  units.push({
+    id: currentId++,
+    store_id: 1,
+    category: 'XL Cars',
+    qr_code: 'QQ-JEP-01',
+    frame_number: 'FR-JEP-601',
+    name: 'Jeep Off-Road #1',
+    status: 'AVAILABLE',
+    deposit_amount: 20,
+    rate_20m: 15,
+    rate_30m: 20,
+    rate_1h: 30,
+    rate_1d: 60,
+    item_owner: 'STORE'
+  });
+
+  // 7. Buggys In. Azules (2 units)
+  for (let i = 1; i <= 2; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: "Buggy's",
+      qr_code: `QQ-BUG-AZ${i}`,
+      frame_number: `FR-BUG-70${i}`,
+      name: `Buggy Azul #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 20,
+      rate_30m: 5,
+      rate_1h: 25,
+      rate_1d: 50,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 8. Buggys D. Rojo y Naranja (2 units)
+  for (let i = 1; i <= 2; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: "Buggy's",
+      qr_code: `QQ-BUG-RJ${i}`,
+      frame_number: `FR-BUG-71${i}`,
+      name: `Buggy Rojo/Naranja #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 20,
+      rate_30m: 5,
+      rate_1h: 25,
+      rate_1d: 50,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 9. Bicis Niño (2 units)
+  for (let i = 1; i <= 2; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'Bikes',
+      qr_code: `QQ-BCN-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-BCN-80${i}`,
+      name: `Bici Niño #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 30,
+      rate_1h: 5,
+      rate_5h: 15,
+      rate_1d: 20,
+      rate_3d: 15,
+      rate_1w: 10,
+      rate_2w: 8,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 10. Quert Bicycles (10 units)
+  for (let i = 1; i <= 10; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'Bikes',
+      qr_code: `QQ-QRT-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-QRT-${900 + i}`,
+      name: `Bicicleta Quert #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 30,
+      rate_1h: 5,
+      rate_5h: 15,
+      rate_1d: 20,
+      rate_3d: 15,
+      rate_1w: 10,
+      rate_2w: 8,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 11. Altec Bicycles (8 units)
+  for (let i = 1; i <= 8; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'Bikes',
+      qr_code: `QQ-ALT-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-ALT-${950 + i}`,
+      name: `Bicicleta Altec #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 30,
+      rate_1h: 5,
+      rate_5h: 15,
+      rate_1d: 20,
+      rate_3d: 15,
+      rate_1w: 10,
+      rate_2w: 8,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 12. Mountain Bikes BH (3 units)
+  for (let i = 1; i <= 3; i++) {
+    units.push({
+      id: currentId++,
+      store_id: 1,
+      category: 'Bikes',
+      qr_code: `QQ-MTB-${String(i).padStart(2, '0')}`,
+      frame_number: `FR-MTB-${980 + i}`,
+      name: `Bicicleta MTB BH #${i}`,
+      status: 'AVAILABLE',
+      deposit_amount: 30,
+      rate_1h: 5,
+      rate_5h: 15,
+      rate_1d: 20,
+      rate_3d: 15,
+      rate_1w: 10,
+      rate_2w: 8,
+      item_owner: 'STORE'
+    });
+  }
+
+  // 13. Neighbor Equipment Partner Items
+  units.push({
+    id: 991,
+    store_id: 1,
+    category: 'Accessories / Shoes',
+    qr_code: 'QQ-NGH-SH01',
+    frame_number: 'NEIGHBOR-SHOE-01',
+    name: 'Specialized Cycling Shoes (Pepe Partner)',
+    status: 'AVAILABLE',
+    deposit_amount: 20,
+    rate_1h: 5,
+    rate_1d: 15,
+    item_owner: 'NEIGHBOR',
+    neighbor_name: 'Pepe Neighbor Shop'
+  });
+
+  return units;
+};
+
 export const memoryData = {
   stores: [
-    { id: 1, company_id: 1, name: 'Málaga Beach Campsite Store', code: 'AGP-01', city: 'Málaga', address: 'Paseo Marítimo 42, Málaga', phone: '+34 952 112 233', is_active: true },
-    { id: 2, company_id: 1, name: 'Torremolinos Central Hub', code: 'TOR-01', city: 'Torremolinos', address: 'Calle San Miguel 18, Torremolinos', phone: '+34 952 889 900', is_active: true }
+    { id: 1, company_id: 1, name: 'Málaga Beach Campsite Store', code: 'AGP-01', city: 'Málaga', address: 'Paseo Marítimo 42, Málaga', phone: '+34 952 112 233', is_active: true, initial_cash_float: 150.00 },
+    { id: 2, company_id: 1, name: 'Torremolinos Central Hub', code: 'TOR-01', city: 'Torremolinos', address: 'Calle San Miguel 18, Torremolinos', phone: '+34 952 889 900', is_active: true, initial_cash_float: 150.00 }
   ] as Store[],
 
-  // User Roles: Admins (Miguel, Quique), Employees (Ahmet, Fran, Gustavo, Abdallah)
   users: [
     { id: 1, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'ADMIN', username: 'miguel', email: 'miguel@qqbikes.com', first_name: 'Miguel', last_name: 'Manager', phone: '+34 600 111 000', is_active: true },
     { id: 2, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'ADMIN', username: 'quique', email: 'quique@qqbikes.com', first_name: 'Quique', last_name: 'Manager', phone: '+34 600 222 000', is_active: true },
@@ -164,30 +469,11 @@ export const memoryData = {
     { id: 15, store_id: 1, day_code: 'D', day_name: 'Domingo', employee_name: 'Ahmet', start_time: '16:00', end_time: '22:00', task_note: 'Sunday Closing Shift' }
   ] as WeeklySchedule[],
 
-  // Fleet Inventory with Store & Neighbor Owner Options
-  vehicles: [
-    // 4 Patinetes Etwow
-    { id: 101, store_id: 1, category: 'Scooters', qr_code: 'QQ-ETW-01', frame_number: 'FR-ETW-101', name: 'Patinete Etwow #1', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 95 },
-    { id: 102, store_id: 1, category: 'Scooters', qr_code: 'QQ-ETW-02', frame_number: 'FR-ETW-102', name: 'Patinete Etwow #2', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 90 },
-    { id: 103, store_id: 1, category: 'Scooters', qr_code: 'QQ-ETW-03', frame_number: 'FR-ETW-103', name: 'Patinete Etwow #3', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 88 },
-    { id: 104, store_id: 1, category: 'Scooters', qr_code: 'QQ-ETW-04', frame_number: 'FR-ETW-104', name: 'Patinete Etwow #4', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 100 },
-
-    // 4 Patinetes Ninebot
-    { id: 105, store_id: 1, category: 'Scooters', qr_code: 'QQ-NIN-01', frame_number: 'FR-NIN-201', name: 'Patinete Ninebot #1', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 92 },
-    { id: 106, store_id: 1, category: 'Scooters', qr_code: 'QQ-NIN-02', frame_number: 'FR-NIN-202', name: 'Patinete Ninebot #2', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 85 },
-    { id: 107, store_id: 1, category: 'Scooters', qr_code: 'QQ-NIN-03', frame_number: 'FR-NIN-203', name: 'Patinete Ninebot #3', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 78 },
-    { id: 108, store_id: 1, category: 'Scooters', qr_code: 'QQ-NIN-04', frame_number: 'FR-NIN-204', name: 'Patinete Ninebot #4', status: 'AVAILABLE', deposit_amount: 50, rate_30m: 10, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 96 },
-
-    // 8 E-Bikes (VISA)
-    { id: 109, store_id: 1, category: 'E-Bikes (VISA)', qr_code: 'QQ-EB-01', frame_number: 'FR-EB-301', name: 'E-Bike City Cruiser #1', status: 'AVAILABLE', deposit_amount: 100, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 98 },
-    { id: 110, store_id: 1, category: 'E-Bikes (VISA)', qr_code: 'QQ-EB-02', frame_number: 'FR-EB-302', name: 'E-Bike City Cruiser #2', status: 'AVAILABLE', deposit_amount: 100, rate_1h: 15, rate_2h: 20, rate_5h: 25, rate_1d: 40, item_owner: 'STORE', battery_level: 91 },
-
-    // Neighbor Third-Party Equipment Items (Specialized Shoes / Neighbor Bikes)
-    { id: 201, store_id: 1, category: 'Accessories / Shoes', qr_code: 'QQ-NGH-SH01', frame_number: 'NEIGHBOR-SHOE-01', name: 'Specialized Cycling Shoes (Pepe Partner)', status: 'AVAILABLE', deposit_amount: 20, rate_1h: 5, rate_1d: 15, item_owner: 'NEIGHBOR', neighbor_name: 'Pepe Neighbor Shop' },
-    { id: 202, store_id: 1, category: 'Bikes', qr_code: 'QQ-NGH-BK01', frame_number: 'NEIGHBOR-BK-02', name: 'Premium Trek Road Bike (Neighbor Juan)', status: 'AVAILABLE', deposit_amount: 50, rate_1h: 10, rate_1d: 30, item_owner: 'NEIGHBOR', neighbor_name: 'Juan Partner Bikes' }
-  ] as Vehicle[],
+  vehicles: generateMalagaInventory(),
 
   contracts: [] as RentalContract[],
+
+  historical_cash_logs: [] as HistoricalCashLog[],
 
   shifts: [
     {
@@ -202,21 +488,71 @@ export const memoryData = {
   ] as Shift[],
 
   repair_parts: [
-    { id: 1, name: 'Cubierta maciza agujereada 8.5"', pvp_part_only: 18.00, pvp_with_labor: 35.00, category: 'Scooter' },
-    { id: 2, name: 'Cubierta normal Xiaomi 8.5" + cámara incluida', pvp_part_only: 15.00, pvp_with_labor: 30.00, category: 'Scooter' },
-    { id: 3, name: 'Cámara 8.5" para Xiaomi Reforzada', pvp_part_only: 10.00, pvp_with_labor: 25.00, category: 'Scooter' },
-    { id: 4, name: 'Kit 10" para Xiaomi', pvp_part_only: 20.00, pvp_with_labor: 35.00, category: 'Scooter' }
+    { id: 1, name: 'Cubierta maciza agujereada 8,5"', pvp_part_only: 18.00, pvp_with_labor: 35.00, category: 'Scooter' },
+    { id: 2, name: 'Cubierta normal Xiaomi 8,5" (cámara no incluida)', pvp_part_only: 15.00, pvp_with_labor: 30.00, category: 'Scooter' },
+    { id: 3, name: 'Cubierta normal Xiaomi 8,5" (cámara incluida)', pvp_part_only: 20.00, pvp_with_labor: 35.00, category: 'Scooter' },
+    { id: 4, name: 'Cámara 8,5 Xiaomi Reforzada', pvp_part_only: 10.00, pvp_with_labor: 25.00, category: 'Scooter' },
+    { id: 5, name: 'Kit 10" para Xiaomi', pvp_part_only: 50.00, pvp_with_labor: 70.00, category: 'Scooter' },
+    { id: 6, name: 'Llanta reforzada para Xiaomi', pvp_part_only: 10.00, pvp_with_labor: 30.00, category: 'Scooter' },
+    { id: 7, name: 'Caballete para Xiaomi', pvp_part_only: 7.00, pvp_with_labor: 15.00, category: 'Scooter' },
+    { id: 8, name: 'Disco freno para Xiaomi 110mm', pvp_part_only: 10.00, pvp_with_labor: 25.00, category: 'Scooter' },
+    { id: 9, name: 'Disco freno para Xiaomi 120mm', pvp_part_only: 7.00, pvp_with_labor: 20.00, category: 'Scooter' },
+    { id: 10, name: 'Disco freno para Xiaomi 135mm', pvp_part_only: 20.00, pvp_with_labor: 35.00, category: 'Scooter' },
+    { id: 11, name: 'Maneta freno para Xiaomi', pvp_part_only: 15.00, pvp_with_labor: 25.00, category: 'Scooter' },
+    { id: 12, name: 'Guardabarros trasero Xiaomi m365 normal (no incluye luz)', pvp_part_only: 12.00, pvp_with_labor: 25.00, category: 'Scooter' },
+    { id: 13, name: 'Luz trasera para Xiaomi m365 (no incluye conector hasta batería)', pvp_part_only: 7.00, pvp_with_labor: 20.00, category: 'Scooter' },
+    { id: 14, name: 'Conector luz trasera hasta batería Xiaomi m365', pvp_part_only: 5.00, pvp_with_labor: 20.00, category: 'Scooter' },
+    { id: 15, name: 'Guardabarros trasero completo con luz trasera y conector Xiaomi m365', pvp_part_only: 22.00, pvp_with_labor: 50.00, category: 'Scooter' },
+    { id: 16, name: 'Aro cierre para Xiaomi m365', pvp_part_only: 5.00, pvp_with_labor: 25.00, category: 'Scooter' },
+    { id: 17, name: 'Pantalla original + tapa para Xiaomi m365', pvp_part_only: 45.00, pvp_with_labor: 65.00, category: 'Scooter' },
+    { id: 18, name: 'Pantalla original para Xiaomi m365 Pro (sin tapa)', pvp_part_only: 55.00, pvp_with_labor: 75.00, category: 'Scooter' },
+    { id: 19, name: 'Acelerador compatible para Xiaomi m365', pvp_part_only: 15.00, pvp_with_labor: 30.00, category: 'Scooter' },
+    { id: 20, name: 'Eje leva para Xiaomi m365', pvp_part_only: 5.00, pvp_with_labor: 20.00, category: 'Scooter' },
+    { id: 21, name: 'Tornillo pasador Negro o plateado para Xiaomi m365', pvp_part_only: 5.00, pvp_with_labor: 30.00, category: 'Scooter' },
+    { id: 22, name: 'Controladora original para Xiaomi m365', pvp_part_only: 100.00, pvp_with_labor: 125.00, category: 'Scooter' },
+    { id: 23, name: 'Controladora V3 compatible para Xiaomi m365', pvp_part_only: 70.00, pvp_with_labor: 95.00, category: 'Scooter' },
+    { id: 24, name: 'Placa BMS para Xiaomi m365', pvp_part_only: 70.00, pvp_with_labor: 95.00, category: 'Scooter' },
+    { id: 25, name: 'Juego pastillas de freno Xiaomi m365', pvp_part_only: 5.00, pvp_with_labor: 20.00, category: 'Scooter' },
+    { id: 26, name: 'Pinza Xtech para Xiaomi m365 (no incluye pastillas)', pvp_part_only: 40.00, pvp_with_labor: 55.00, category: 'Scooter' },
+    { id: 27, name: 'Cable de freno para Xiaomi m365 (incluye funda)', pvp_part_only: 5.00, pvp_with_labor: 20.00, category: 'Scooter' },
+    { id: 28, name: 'Cable Motor para Xiaomi m365', pvp_part_only: 15.00, pvp_with_labor: 50.00, category: 'Scooter' },
+    { id: 29, name: 'Motor para Xiaomi m365/Pro 350W (incluye neumático inflado)', pvp_part_only: 155.00, pvp_with_labor: 185.00, category: 'Scooter' }
   ] as RepairPart[],
 
   repair_services: [
     { id: 1, name: 'Pinchazo bicicleta normal', price: 10.00, category: 'Bicycle' },
-    { id: 2, name: 'Pinchazo e-bike', price: 15.00, category: 'Bicycle' }
-  ] as RepairService[]
+    { id: 2, name: 'Revisión básica', price: 10.00, category: 'Bicycle' },
+    { id: 3, name: 'Revisión completa', price: 15.00, category: 'Bicycle' },
+    { id: 4, name: 'Arreglo/ajuste express', price: 5.00, category: 'Bicycle' },
+    { id: 5, name: 'Pinchazo e-bike', price: 12.00, category: 'Bicycle' },
+    { id: 6, name: 'Revisión completa + limpieza', price: 25.00, category: 'Bicycle' },
+    { id: 7, name: 'Venta cámara 20", 24", 26", 27,5" o 700 (29")', price: 5.00, category: 'Bicycle' },
+    { id: 8, name: 'Cambio freno juego Zapatas', price: 10.00, category: 'Bicycle' },
+    { id: 9, name: 'Cambio pastillas (por cada par)', price: 25.00, category: 'Bicycle' }
+  ] as RepairService[],
+
+  repair_work_orders: [
+    {
+      id: 501,
+      ticket_number: 'REP-2026-001',
+      store_id: 1,
+      customer_name: 'Carlos Fernandez',
+      customer_phone: '+34 655 443 221',
+      device_model: 'Xiaomi m365 Pro (Customer Bike)',
+      issue_description: 'Rear tire puncture & brake pad wear adjustment',
+      parts_used: 'Cubierta maciza agujereada 8,5"',
+      parts_cost: 18.00,
+      labor_cost: 17.00,
+      total_price: 35.00,
+      status: 'IN_PROGRESS',
+      created_at: new Date().toISOString()
+    }
+  ] as RepairWorkOrder[]
 };
 
 export const initializeSchema = async () => {
   if (!isMySQLActive()) {
-    console.log(`⚡ Initialized QQBikes managers (Miguel, Quique), staff (Ahmet, Fran, Gustavo, Abdallah), and Neighbor Debt Settlement system.`);
+    console.log(`⚡ Initialized exact Málaga physical inventory (53 units across 12 categories), contract extensions, & overdue countdown alerts.`);
     return;
   }
 };

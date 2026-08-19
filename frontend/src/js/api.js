@@ -42,6 +42,29 @@ export const api = {
     return res.json();
   },
 
+  async updateStoreConfig(storeId, initial_cash_float) {
+    const res = await fetch(`${API_BASE}/stores/${storeId}/config`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ initial_cash_float })
+    });
+    return res.json();
+  },
+
+  async recordHistoricalCash(storeId, data) {
+    const res = await fetch(`${API_BASE}/stores/${storeId}/historical-cash`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
+  async getHistoricalCashLogs(storeId) {
+    const res = await fetch(`${API_BASE}/stores/${storeId}/historical-cash`, { headers: getHeaders() });
+    return res.json();
+  },
+
   async getVehicles(category = 'ALL', status = 'ALL', search = '') {
     const params = new URLSearchParams({
       store_id: state.activeStoreId,
@@ -83,6 +106,15 @@ export const api = {
     return res.json();
   },
 
+  async extendRental(id, data) {
+    const res = await fetch(`${API_BASE}/rentals/${id}/extend`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
   async getCurrentShift() {
     const res = await fetch(`${API_BASE}/shifts/current`, { headers: getHeaders() });
     return res.json();
@@ -107,6 +139,30 @@ export const api = {
 
   async getRepairServices() {
     const res = await fetch(`${API_BASE}/repairs/services`);
+    return res.json();
+  },
+
+  async getRepairWorkOrders() {
+    const params = new URLSearchParams({ store_id: state.activeStoreId });
+    const res = await fetch(`${API_BASE}/repairs/work-orders?${params}`);
+    return res.json();
+  },
+
+  async createRepairWorkOrder(data) {
+    const res = await fetch(`${API_BASE}/repairs/work-orders`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
+  async updateRepairWorkOrderStatus(id, status) {
+    const res = await fetch(`${API_BASE}/repairs/work-orders/${id}/status`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ status })
+    });
     return res.json();
   },
 

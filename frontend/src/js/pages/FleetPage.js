@@ -1,32 +1,37 @@
-import { api } from '../api.js';
+import { api, state } from '../api.js';
+import { t } from '../i18n.js';
 
 export async function renderFleetPage(container) {
   container.innerHTML = `
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
       <div>
-        <h2 class="fw-bold mb-1">🚲 Fleet Inventory & Availability</h2>
-        <p class="text-secondary small mb-0">Real-time status of bikes, e-scooters, cargo vehicles, & partner items</p>
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-bicycle text-info me-2"></i> ${t('fleet_title')}</h2>
+        <p class="text-secondary small mb-0">${t('fleet_subtitle')}</p>
       </div>
 
-      <div class="d-flex flex-wrap gap-2">
-        <input type="text" id="searchVehicle" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="🔍 Search name, QR..." style="width: 200px;" />
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <button id="btnViewTariffMatrix" class="btn btn-outline-info btn-sm fw-semibold">
+          <i class="fa-solid fa-tags me-1"></i> ${t('btn_view_tariff_matrix')}
+        </button>
+
+        <input type="text" id="searchVehicle" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="🔍 ${t('search_placeholder')}" style="width: 180px;" />
         
         <select id="filterCategory" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 160px;">
-          <option value="ALL">All Categories</option>
-          <option value="Scooters">E-Scooters</option>
+          <option value="ALL">${t('all_categories')}</option>
+          <option value="Scooters">E-Scooters (Etwow / Ninebot)</option>
           <option value="E-Bikes (VISA)">E-Bikes (VISA)</option>
-          <option value="Bikes">Bicycles</option>
-          <option value="S cars/Quads">S Cars / Quads</option>
+          <option value="Bikes">Bicycles (Quert / Altec / MTB / Bici Niño)</option>
+          <option value="S cars/Quads">Quads & S Cars</option>
           <option value="XL Cars">XL Cars & Jeep</option>
-          <option value="Buggy's">Buggy's</option>
-          <option value="Accessories / Shoes">Accessories / Shoes</option>
+          <option value="Buggy's">Buggy's (Azul / Rojo)</option>
+          <option value="Accessories / Shoes">Accessories / Partner Items</option>
         </select>
 
-        <select id="filterStatus" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 150px;">
-          <option value="ALL">All Statuses</option>
-          <option value="AVAILABLE">Available</option>
-          <option value="RENTED">Rented</option>
-          <option value="MAINTENANCE">Maintenance</option>
+        <select id="filterStatus" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 140px;">
+          <option value="ALL">${t('all_statuses')}</option>
+          <option value="AVAILABLE">${t('available')}</option>
+          <option value="RENTED">${t('rented')}</option>
+          <option value="MAINTENANCE">${t('maintenance')}</option>
         </select>
       </div>
     </div>
@@ -40,6 +45,11 @@ export async function renderFleetPage(container) {
   const filterStatus = container.querySelector('#filterStatus');
   const vehicleGrid = container.querySelector('#vehicleGrid');
 
+  container.querySelector('#btnViewTariffMatrix').addEventListener('click', () => {
+    state.activeTab = 'tariffsTab';
+    window.dispatchEvent(new CustomEvent('app:tabChanged', { detail: { tabId: 'tariffsTab' } }));
+  });
+
   async function loadVehicles() {
     const query = searchInput.value.trim();
     const cat = filterCategory.value;
@@ -50,7 +60,7 @@ export async function renderFleetPage(container) {
     if (!vehicles || vehicles.length === 0) {
       vehicleGrid.innerHTML = `
         <div class="col-12 text-center py-5">
-          <div class="card-glass p-4 text-secondary">No vehicles found matching current search or filter criteria.</div>
+          <div class="card-glass p-4 text-secondary">No physical vehicles found matching current search or filter criteria.</div>
         </div>
       `;
       return;
@@ -81,18 +91,21 @@ export async function renderFleetPage(container) {
             </div>
 
             ${isNeighbor ? `
-              <div class="mb-2"><span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill" style="font-size: 0.7rem;">🤝 Neighbor (${v.neighbor_name || 'Partner'})</span></div>
+              <div class="mb-2"><span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill" style="font-size: 0.7rem;"><i class="fa-solid fa-handshake me-1"></i> Neighbor (${v.neighbor_name || 'Partner'})</span></div>
             ` : ''}
 
+            <!-- Official Tariff Matrix Breakdown for Vehicle -->
             <div class="bg-dark bg-opacity-50 p-2 rounded border border-secondary border-opacity-25 my-2" style="font-size: 0.8rem;">
-              <div class="d-flex justify-content-between text-secondary"><span>1 Hour Rate:</span><strong class="text-cyan">€${hourly.toFixed(2)}</strong></div>
-              <div class="d-flex justify-content-between text-secondary"><span>1 Day Rate:</span><strong class="text-light">€${daily.toFixed(2)}</strong></div>
-              <div class="d-flex justify-content-between text-secondary border-top border-secondary border-opacity-25 pt-1 mt-1"><span>Deposit:</span><strong class="text-warning">€${deposit.toFixed(2)}</strong></div>
+              <div class="d-flex justify-content-between text-secondary"><span>${t('rate_1h')}</span><strong class="text-cyan">€${hourly.toFixed(2)}</strong></div>
+              ${v.rate_30m ? `<div class="d-flex justify-content-between text-secondary"><span>${t('rate_30m')}</span><strong class="text-light">€${v.rate_30m.toFixed(2)}</strong></div>` : ''}
+              ${v.rate_20m ? `<div class="d-flex justify-content-between text-secondary"><span>${t('rate_20m')}</span><strong class="text-light">€${v.rate_20m.toFixed(2)}</strong></div>` : ''}
+              <div class="d-flex justify-content-between text-secondary"><span>${t('rate_1d')}</span><strong class="text-light">€${daily.toFixed(2)}</strong></div>
+              <div class="d-flex justify-content-between text-secondary border-top border-secondary border-opacity-25 pt-1 mt-1"><span>${t('deposit')}</span><strong class="text-warning">€${deposit.toFixed(2)}</strong></div>
             </div>
 
             ${v.battery_level !== undefined ? `
               <div class="small text-secondary mb-3" style="font-size: 0.75rem;">
-                ⚡ Battery: <strong class="${v.battery_level > 50 ? 'text-success' : 'text-warning'}">${v.battery_level}%</strong>
+                <i class="fa-solid fa-bolt text-warning me-1"></i> ${t('battery')} <strong class="${v.battery_level > 50 ? 'text-success' : 'text-warning'}">${v.battery_level}%</strong>
               </div>
             ` : ''}
           </div>
@@ -100,11 +113,11 @@ export async function renderFleetPage(container) {
           <div>
             ${v.status === 'AVAILABLE' ? `
               <button class="btn btn-primary btn-sm w-100 fw-semibold rent-btn" data-id="${v.id}">
-                ✨ Rent This Vehicle
+                <i class="fa-solid fa-key me-1"></i> ${t('btn_rent_vehicle')}
               </button>
             ` : `
               <button class="btn btn-outline-secondary btn-sm w-100 disabled" disabled>
-                Unavailable
+                ${t('btn_currently_rented')}
               </button>
             `}
           </div>
