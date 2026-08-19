@@ -10,24 +10,25 @@ export async function renderShiftsPage(container) {
   const isShiftOpen = currentShift && currentShift.id;
 
   container.innerHTML = `
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <!-- Mobile-Responsive Header Bar -->
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-3">
       <div>
-        <h2 class="fw-bold mb-1"><i class="fa-solid fa-cash-register text-info me-2"></i> ${t('shifts_title')}</h2>
+        <h2 class="fw-bold mb-1 d-flex align-items-center"><i class="fa-solid fa-cash-register text-info me-2 fs-4"></i> ${t('shifts_title')}</h2>
         <p class="text-secondary small mb-0">${t('shifts_subtitle')}</p>
       </div>
 
       ${isAdmin ? `
-        <div class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill fs-6 fw-semibold">
+        <div class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill fw-semibold badge-admin-mobile">
           <i class="fa-solid fa-user-shield me-1"></i> Admin Audit Dashboard (Miguel & Quique)
         </div>
       ` : ''}
     </div>
 
     <!-- Active Shift Financial Status Card -->
-    <div class="card-glass p-4 mb-4 shadow-sm">
-      <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom border-secondary border-opacity-25 pb-3 mb-3 gap-2">
+    <div class="card-glass p-3 p-md-4 mb-4 shadow-sm">
+      <div class="d-flex flex-row align-items-center justify-content-between border-bottom border-secondary border-opacity-25 pb-3 mb-3 gap-2">
         <div>
-          <h5 class="fw-bold text-light mb-1"><i class="fa-solid fa-store text-info me-2"></i> Active Counter Shift Summary</h5>
+          <h5 class="fw-bold text-light mb-1 d-flex align-items-center"><i class="fa-solid fa-store text-info me-2"></i> Active Counter Shift Summary</h5>
           <span class="text-secondary small">${t('shift_active_operator')} <strong class="text-info">${(currentShift && currentShift.employee_name) || state.currentUser?.username}</strong></span>
         </div>
         <span class="badge ${isShiftOpen ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary'} rounded-pill px-3 py-2 d-inline-flex align-items-center">
@@ -35,49 +36,50 @@ export async function renderShiftsPage(container) {
         </span>
       </div>
 
-      <!-- Itemized Financial Breakdown Grid -->
-      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-5 g-3 mb-3">
+      <!-- Symmetrical Responsive Itemized Financial Breakdown Grid -->
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-5 g-2.5 g-md-3 mb-3">
         <div class="col">
-          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary">
-            <div class="text-secondary small mb-1">${t('starting_float')}</div>
-            <div class="fs-5 fw-bold text-light">€${((currentShift && currentShift.opening_cash) || 150).toFixed(2)}</div>
+          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary kpi-card-mobile">
+            <div class="text-secondary small mb-1 kpi-title">${t('starting_float')}</div>
+            <div class="fs-5 fw-bold text-light kpi-value">€${((currentShift && currentShift.opening_cash) || 150).toFixed(2)}</div>
           </div>
         </div>
 
         <div class="col">
-          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary">
-            <div class="text-secondary small mb-1"><i class="fa-solid fa-bicycle text-success me-1"></i> ${t('cash_rentals')}</div>
-            <div class="fs-5 fw-bold text-success">+€${((currentShift && currentShift.total_cash_rentals) || 0).toFixed(2)}</div>
+          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary kpi-card-mobile">
+            <div class="text-secondary small mb-1 kpi-title"><i class="fa-solid fa-bicycle text-success me-1"></i> ${t('cash_rentals')}</div>
+            <div class="fs-5 fw-bold text-success kpi-value">+€${((currentShift && currentShift.total_cash_rentals) || 0).toFixed(2)}</div>
           </div>
         </div>
 
         <div class="col">
-          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-warning">
-            <div class="text-warning small mb-1"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Workshop Repairs Income</div>
-            <div class="fs-5 fw-bold text-warning">+€${((currentShift && currentShift.total_workshop_income) || 0).toFixed(2)}</div>
+          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-warning kpi-card-mobile">
+            <div class="text-warning small mb-1 kpi-title"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Workshop Repairs</div>
+            <div class="fs-5 fw-bold text-warning kpi-value">+€${((currentShift && currentShift.total_workshop_income) || 0).toFixed(2)}</div>
           </div>
         </div>
 
         <div class="col">
-          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary">
-            <div class="text-secondary small mb-1"><i class="fa-solid fa-arrow-up-from-bracket text-danger me-1"></i> ${t('cash_withdrawals')}</div>
-            <div class="fs-5 fw-bold text-danger">-€${((currentShift && currentShift.total_withdrawals) || 0).toFixed(2)}</div>
+          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary kpi-card-mobile">
+            <div class="text-secondary small mb-1 kpi-title"><i class="fa-solid fa-arrow-up-from-bracket text-danger me-1"></i> ${t('cash_withdrawals')}</div>
+            <div class="fs-5 fw-bold text-danger kpi-value">-€${((currentShift && currentShift.total_withdrawals) || 0).toFixed(2)}</div>
           </div>
         </div>
 
         <div class="col">
-          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-info">
-            <div class="text-info small mb-1"><i class="fa-solid fa-vault me-1"></i> ${t('expected_drawer_cash')}</div>
-            <div class="fs-5 fw-bold text-info">€${((currentShift && currentShift.expected_cash) || 150).toFixed(2)}</div>
+          <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-info kpi-card-mobile">
+            <div class="text-info small mb-1 kpi-title"><i class="fa-solid fa-vault me-1"></i> ${t('expected_drawer_cash')}</div>
+            <div class="fs-5 fw-bold text-info kpi-value">€${((currentShift && currentShift.expected_cash) || 150).toFixed(2)}</div>
           </div>
         </div>
       </div>
 
-      <div class="d-flex flex-wrap gap-2 justify-content-end">
-        <button id="btnWithdrawal" class="btn btn-outline-warning btn-sm fw-semibold">
+      <!-- Action Buttons (Responsive Symmetrical Flex) -->
+      <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+        <button id="btnWithdrawal" class="btn btn-outline-warning btn-sm fw-semibold w-100 w-sm-auto py-2 px-3">
           <i class="fa-solid fa-money-bill-transfer me-1"></i> ${t('btn_record_payout')}
         </button>
-        <button id="btnCloseShift" class="btn btn-danger btn-sm fw-semibold">
+        <button id="btnCloseShift" class="btn btn-danger btn-sm fw-semibold w-100 w-sm-auto py-2 px-3">
           <i class="fa-solid fa-lock me-1"></i> ${t('btn_close_shift')}
         </button>
       </div>
@@ -85,7 +87,7 @@ export async function renderShiftsPage(container) {
 
     <!-- Admin Shift Closure & Discrepancy History Table -->
     <div class="card-glass p-3 shadow-sm">
-      <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-1">
         <h5 class="fw-bold text-light mb-0"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i> ${t('shift_history_title')}</h5>
         <span class="text-secondary small">Comprehensive Admin Shift Closure Ledger</span>
       </div>
@@ -164,35 +166,41 @@ export async function renderShiftsPage(container) {
   `;
 
   // Bind Payout Button
-  container.querySelector('#btnWithdrawal').addEventListener('click', () => {
-    const amountStr = prompt('Enter cash withdrawal / payout amount (€):', '20.00');
-    if (!amountStr) return;
-    const reasonStr = prompt('Enter reason for cash withdrawal (e.g. Spare Parts, Water, Fuel):', 'Parts Purchase');
-    if (!reasonStr) return;
+  const btnWithdrawal = container.querySelector('#btnWithdrawal');
+  if (btnWithdrawal) {
+    btnWithdrawal.addEventListener('click', () => {
+      const amountStr = prompt('Enter cash withdrawal / payout amount (€):', '20.00');
+      if (!amountStr) return;
+      const reasonStr = prompt('Enter reason for cash withdrawal (e.g. Spare Parts, Water, Fuel):', 'Parts Purchase');
+      if (!reasonStr) return;
 
-    api.recordCashWithdrawal(Number(amountStr), reasonStr).then(res => {
-      if (res.error) showToast(res.error, 'error');
-      else {
-        showToast('💸 Cash withdrawal recorded successfully!', 'success');
-        window.dispatchEvent(new CustomEvent('app:refresh'));
-      }
+      api.recordCashWithdrawal(Number(amountStr), reasonStr).then(res => {
+        if (res.error) showToast(res.error, 'error');
+        else {
+          showToast('💸 Cash withdrawal recorded successfully!', 'success');
+          window.dispatchEvent(new CustomEvent('app:refresh'));
+        }
+      });
     });
-  });
+  }
 
   // Bind Close Shift Button
-  container.querySelector('#btnCloseShift').addEventListener('click', () => {
-    const closingCashStr = prompt('Enter actual counted cash in drawer (€):', String(currentShift ? currentShift.expected_cash : 150));
-    if (!closingCashStr) return;
-    const notesStr = prompt('Enter shift audit notes / explanation for discrepancy:', 'End of day shift closure');
+  const btnCloseShift = container.querySelector('#btnCloseShift');
+  if (btnCloseShift) {
+    btnCloseShift.addEventListener('click', () => {
+      const closingCashStr = prompt('Enter actual counted cash in drawer (€):', String(currentShift ? currentShift.expected_cash : 150));
+      if (!closingCashStr) return;
+      const notesStr = prompt('Enter shift audit notes / explanation for discrepancy:', 'End of day shift closure');
 
-    api.closeShift(Number(closingCashStr), notesStr || 'Shift Closed').then(res => {
-      if (res.error) showToast(res.error, 'error');
-      else {
-        showToast('🔒 Shift closed and cash drawer audited successfully!', 'success');
-        window.dispatchEvent(new CustomEvent('app:refresh'));
-      }
+      api.closeShift(Number(closingCashStr), notesStr || 'Shift Closed').then(res => {
+        if (res.error) showToast(res.error, 'error');
+        else {
+          showToast('🔒 Shift closed and cash drawer audited successfully!', 'success');
+          window.dispatchEvent(new CustomEvent('app:refresh'));
+        }
+      });
     });
-  });
+  }
 
   // Bind Shift Details Inspector Modal
   const modalEl = container.querySelector('#shiftInspectorModal');

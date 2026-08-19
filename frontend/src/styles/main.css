@@ -1,11 +1,11 @@
-/* QQBikes Custom Styling & Design System */
+/* QQBikes Custom Styling & Responsive Design System */
 
 :root {
   --qq-primary: #00d2ff;
   --qq-secondary: #3a7bd5;
   --qq-dark-bg: #0f172a;
-  --qq-card-bg: rgba(30, 41, 59, 0.7);
-  --qq-border: rgba(255, 255, 255, 0.1);
+  --qq-card-bg: rgba(30, 41, 59, 0.75);
+  --qq-border: rgba(255, 255, 255, 0.12);
   --qq-radius: 12px;
 }
 
@@ -27,6 +27,7 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--qq-border);
   border-radius: var(--qq-radius);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .modal-content-glass {
@@ -156,5 +157,89 @@ h1, h2, h3, h4, h5, h6 {
   }
   100% {
     box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* ==========================================================================
+   MOBILE & RESPONSIVE DESIGN SYSTEM (Symmetric Mobile Layouts)
+   ========================================================================== */
+
+@media (max-width: 767.98px) {
+  body {
+    font-size: 0.875rem;
+  }
+
+  .container-fluid {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  /* Page Header Title Scaling */
+  h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.3;
+  }
+
+  h5 {
+    font-size: 1rem !important;
+  }
+
+  .card-glass {
+    padding: 1rem !important;
+    border-radius: 10px;
+  }
+
+  /* Header Navbar Mobile Layout */
+  .navbar {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .navbar-brand {
+    font-size: 1.15rem !important;
+  }
+
+  /* Mobile Itemized Card Alignment */
+  .kpi-card-mobile {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .kpi-card-mobile .kpi-title {
+    margin-bottom: 0 !important;
+    font-size: 0.8rem;
+  }
+
+  .kpi-card-mobile .kpi-value {
+    font-size: 1.1rem !important;
+  }
+
+  /* Touch Target & Button Symmetries on Mobile */
+  .btn-sm {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  .table-responsive {
+    border-radius: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Smooth Mobile Dropdown Position */
+  .dropdown-menu {
+    max-width: 90vw !important;
+    font-size: 0.85rem;
+  }
+
+  /* Responsive Audit Badge */
+  .badge-admin-mobile {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem !important;
+    padding: 0.5rem 0.75rem !important;
   }
 }
