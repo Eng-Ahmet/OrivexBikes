@@ -6,11 +6,17 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0b0f19",
   "theme_color": "#0b0f19",
   "orientation": "any",
   "lang": "es",
   "dir": "ltr",
+  "iarc_rating_id": "00000000-0000-0000-0000-000000000000",
   "categories": [
     "business",
     "productivity",
@@ -22,6 +28,51 @@
       "platform": "play",
       "id": "com.qqbikes.app.twa",
       "url": "https://play.google.com/store/apps/details?id=com.qqbikes.app.twa"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "note_taking": {
+    "new_note_url": "/#repairsTab"
+  },
+  "file_handlers": [
+    {
+      "action": "/",
+      "name": "QQBikes Rental Document",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "text/csv": [".csv"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+qqbikes",
+      "url": "/?contract=%s"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "QQBikes Shift Summary",
+      "short_name": "Shift",
+      "description": "Active counter shift summary widget",
+      "tag": "qqbikes-shift",
+      "template": "shift-template",
+      "ms_ac_template": "/assets/widget.json",
+      "data": "/assets/widget-data.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "/assets/icon-192.png",
+          "sizes": "192x192",
+          "label": "Shift Counter Widget"
+        }
+      ]
     }
   ],
   "icons": [
