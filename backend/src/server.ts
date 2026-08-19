@@ -34,15 +34,33 @@ app.use(requestLogger);
 app.use('/api/v1', apiRouter);
 app.use('/api', apiRouter);
 
-// Frontend Proxy & Static Serving
+// Frontend Static Serving & PWA Support
 const frontendPath = path.resolve(process.cwd(), 'frontend');
-app.use(express.static(frontendPath));
+const publicPath = path.join(frontendPath, 'public');
+
+// Serve public static assets (manifest.json, sw.js, assets, assetlinks.json) at root
+app.use(express.static(publicPath, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.json') || filePath.endsWith('.js') || filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+}));
+
+// Serve source files (/src/styles, /src/js)
+app.use('/src', express.static(path.join(frontendPath, 'src'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+}));
 
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) {
     return next();
   }
-  res.sendFile(path.join(frontendPath, 'public/index.html'));
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // Global Error Handler
