@@ -3,6 +3,8 @@ import { showToast } from '../components/Toast.js';
 import { t } from '../i18n.js';
 
 export function renderNewContractModal(container) {
+  if (!container) return;
+
   container.innerHTML = `
     <div id="contractModal" class="modal fade" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -78,12 +80,14 @@ export function renderNewContractModal(container) {
     </div>
   `;
 
-  const modalEl = container.querySelector('#contractModal');
-  const form = container.querySelector('#newContractForm');
-  const vehicleSelect = container.querySelector('#contractVehicleSelect');
-  const tariffSelect = container.querySelector('#tariffSelect');
-  const batteryFieldCol = container.querySelector('#batteryFieldCol');
-  const batteryInput = container.querySelector('#custBatteryLevel');
+  const modalEl = document.getElementById('contractModal') || container.querySelector('#contractModal');
+  if (!modalEl) return;
+
+  const form = modalEl.querySelector('#newContractForm');
+  const vehicleSelect = modalEl.querySelector('#contractVehicleSelect');
+  const tariffSelect = modalEl.querySelector('#tariffSelect');
+  const batteryFieldCol = modalEl.querySelector('#batteryFieldCol');
+  const batteryInput = modalEl.querySelector('#custBatteryLevel');
 
   let vehiclesList = [];
 
@@ -143,97 +147,123 @@ export function renderNewContractModal(container) {
   }
 
   function onVehicleChange() {
+    if (!vehicleSelect || !vehicleSelect.value) return;
     const vId = Number(vehicleSelect.value);
     const v = vehiclesList.find(item => item.id === vId);
     if (!v) return;
 
     // CONDITIONAL BATTERY FIELD: Only show for E-Bikes and E-Scooters!
     const isElectric = v.category.includes('E-Bike') || v.category.includes('Scooter');
-    if (isElectric) {
+    if (isElectric && batteryFieldCol) {
       batteryFieldCol.classList.remove('d-none');
-      batteryInput.value = v.battery_level || 100;
-      batteryInput.required = true;
-    } else {
+      if (batteryInput) {
+        batteryInput.value = v.battery_level || 100;
+        batteryInput.required = true;
+      }
+    } else if (batteryFieldCol) {
       batteryFieldCol.classList.add('d-none');
-      batteryInput.required = false;
+      if (batteryInput) batteryInput.required = false;
     }
 
     const options = getTariffOptionsForCategory(v.category);
-    tariffSelect.innerHTML = '';
-    options.forEach(opt => {
-      const o = document.createElement('option');
-      o.value = opt.code;
-      o.setAttribute('data-fee', opt.fee);
-      o.textContent = opt.label;
-      tariffSelect.appendChild(o);
-    });
+    if (tariffSelect) {
+      tariffSelect.innerHTML = '';
+      options.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt.code;
+        o.setAttribute('data-fee', opt.fee);
+        o.textContent = opt.label;
+        tariffSelect.appendChild(o);
+      });
+    }
 
     updateCalc();
   }
 
   function updateCalc() {
+    if (!vehicleSelect || !vehicleSelect.value) return;
     const vId = Number(vehicleSelect.value);
     const v = vehiclesList.find(item => item.id === vId);
     if (!v) return;
 
-    const selectedOpt = tariffSelect.options[tariffSelect.selectedIndex];
-    const fee = selectedOpt ? Number(selectedOpt.getAttribute('data-fee')) : 15;
+    let fee = 15;
+    if (tariffSelect && tariffSelect.options && tariffSelect.selectedIndex >= 0) {
+      const selectedOpt = tariffSelect.options[tariffSelect.selectedIndex];
+      if (selectedOpt && selectedOpt.hasAttribute('data-fee')) {
+        fee = Number(selectedOpt.getAttribute('data-fee'));
+      }
+    }
+
     const dep = v.deposit_amount || 30;
 
-    container.querySelector('#calcVehicleName').textContent = `${v.name} (${v.qr_code})`;
-    container.querySelector('#calcCategoryBadge').textContent = v.category;
-    container.querySelector('#calcRentalFee').textContent = `€${fee.toFixed(2)}`;
-    container.querySelector('#calcDeposit').textContent = `€${dep.toFixed(2)}`;
+    const elName = modalEl.querySelector('#calcVehicleName');
+    const elBadge = modalEl.querySelector('#calcCategoryBadge');
+    const elFee = modalEl.querySelector('#calcRentalFee');
+    const elDep = modalEl.querySelector('#calcDeposit');
+    const elNeighborRow = modalEl.querySelector('#neighborDebtRow');
+    const elNeighborDebt = modalEl.querySelector('#calcNeighborDebt');
+    const elTotal = modalEl.querySelector('#calcTotal');
 
-    const neighborRow = container.querySelector('#neighborDebtRow');
+    if (elName) elName.textContent = `${v.name} (${v.qr_code})`;
+    if (elBadge) elBadge.textContent = v.category;
+    if (elFee) elFee.textContent = `€${fee.toFixed(2)}`;
+    if (elDep) elDep.textContent = `€${dep.toFixed(2)}`;
+
     if (v.item_owner === 'NEIGHBOR') {
       const payout = fee * 0.8;
-      neighborRow.classList.remove('d-none');
-      container.querySelector('#calcNeighborDebt').textContent = `€${payout.toFixed(2)} (Owed to ${v.neighbor_name || 'Partner'})`;
+      if (elNeighborRow) elNeighborRow.classList.remove('d-none');
+      if (elNeighborDebt) elNeighborDebt.textContent = `€${payout.toFixed(2)} (Owed to ${v.neighbor_name || 'Partner'})`;
     } else {
-      neighborRow.classList.add('d-none');
+      if (elNeighborRow) elNeighborRow.classList.add('d-none');
     }
 
-    container.querySelector('#calcTotal').textContent = `€${(fee + dep).toFixed(2)}`;
+    if (elTotal) elTotal.textContent = `€${(fee + dep).toFixed(2)}`;
   }
 
-  vehicleSelect.addEventListener('change', onVehicleChange);
-  tariffSelect.addEventListener('change', updateCalc);
+  if (vehicleSelect) vehicleSelect.addEventListener('change', onVehicleChange);
+  if (tariffSelect) tariffSelect.addEventListener('change', updateCalc);
 
   const hideModal = () => {
-    modalEl.style.display = 'none';
-    modalEl.classList.remove('show');
+    if (modalEl) {
+      modalEl.style.display = 'none';
+      modalEl.classList.remove('show');
+    }
   };
 
-  container.querySelector('#closeContractModalBtn').addEventListener('click', hideModal);
-  container.querySelector('#cancelContractModalBtn').addEventListener('click', hideModal);
+  const closeBtn = modalEl.querySelector('#closeContractModalBtn');
+  const cancelBtn = modalEl.querySelector('#cancelContractModalBtn');
+  if (closeBtn) closeBtn.addEventListener('click', hideModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const data = {
-      customer_name: container.querySelector('#custName').value,
-      customer_passport: container.querySelector('#custPassport').value,
-      customer_phone: container.querySelector('#custPhone').value,
-      vehicle_id: Number(vehicleSelect.value),
-      duration_hours: tariffSelect.value.includes('d') ? 24 : tariffSelect.value.includes('w') ? 168 : 2,
-      payment_method: container.querySelector('#paymentMethod').value
-    };
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        customer_name: modalEl.querySelector('#custName').value,
+        customer_passport: modalEl.querySelector('#custPassport').value,
+        customer_phone: modalEl.querySelector('#custPhone').value,
+        vehicle_id: Number(vehicleSelect.value),
+        duration_hours: tariffSelect.value.includes('d') ? 24 : tariffSelect.value.includes('w') ? 168 : 2,
+        payment_method: modalEl.querySelector('#paymentMethod').value
+      };
 
-    const res = await api.createRental(data);
-    if (res.error) {
-      showToast(res.error, 'error');
-    } else {
-      hideModal();
-      form.reset();
-      showToast(`✅ Contract ${res.contract_number} issued!`, 'success');
-      window.dispatchEvent(new CustomEvent('app:refresh'));
-    }
-  });
+      const res = await api.createRental(data);
+      if (res.error) {
+        showToast(res.error, 'error');
+      } else {
+        hideModal();
+        form.reset();
+        showToast(`✅ Contract ${res.contract_number} issued!`, 'success');
+        window.dispatchEvent(new CustomEvent('app:refresh'));
+      }
+    });
+  }
 
   window.addEventListener('app:openNewContractModal', async (e) => {
     const preselectedCategory = e.detail?.category;
     vehiclesList = await api.getVehicles('ALL', 'AVAILABLE');
 
+    if (!vehicleSelect) return;
     vehicleSelect.innerHTML = '';
     if (!vehiclesList || vehiclesList.length === 0) {
       showToast('No vehicles currently available for rental.', 'warning');
@@ -255,7 +285,9 @@ export function renderNewContractModal(container) {
     });
 
     onVehicleChange();
-    modalEl.style.display = 'block';
-    modalEl.classList.add('show');
+    if (modalEl) {
+      modalEl.style.display = 'block';
+      modalEl.classList.add('show');
+    }
   });
 }

@@ -7,7 +7,7 @@ export function renderHeader(container) {
   const isQuique = state.currentUser?.username === 'quique';
 
   container.innerHTML = `
-    <div class="container-fluid d-flex align-items-center justify-content-between">
+    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2 py-1">
       <div class="d-flex align-items-center gap-2">
         <!-- Mobile Drawer Toggle Button -->
         <button class="btn btn-outline-secondary btn-sm d-md-none me-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebarDrawer">
@@ -21,7 +21,12 @@ export function renderHeader(container) {
         </a>
       </div>
 
-      <div class="d-flex align-items-center gap-2 gap-md-3">
+      <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3">
+        <!-- PROMINENT NEW CONTRACT BUTTON IN HEADER (TOP RIGHT) -->
+        <button class="btn btn-info fw-bold btn-sm shadow-sm px-3 py-2 btn-header-new-contract">
+          <i class="fa-solid fa-plus-circle me-1"></i> ${t('new_contract_btn')}
+        </button>
+
         <!-- Store Location Select -->
         <div class="d-flex align-items-center gap-1">
           <i class="fa-solid fa-shop text-secondary d-none d-lg-inline" title="${t('location')}"></i>
@@ -64,6 +69,10 @@ export function renderHeader(container) {
       </div>
     </div>
   `;
+
+  container.querySelector('.btn-header-new-contract').addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('app:openNewContractModal'));
+  });
 
   document.getElementById('storeSelect').addEventListener('change', async (e) => {
     state.activeStoreId = Number(e.target.value);
