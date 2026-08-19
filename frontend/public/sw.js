@@ -1,140 +1,153 @@
-// QQBikes Service Worker v1.0.0 (PWABuilder Compliant & Offline Support)
+/* ====== QQBikes SERVICE WORKER WITH PWA OFFLINE CACHING, PUSH NOTIFICATIONS, BACKGROUND SYNC & PERIODIC SYNC ====== */
 
-const CACHE_NAME = 'qqbikes-cache-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/assets/icon-192.png',
-  '/assets/icon-512.png',
-  '/assets/screenshot-desktop.png',
-  '/assets/screenshot-mobile.png'
+const CACHE_NAME = 'qqbikes-pwa-v1.0.0';
+
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './.well-known/assetlinks.json',
+  './src/styles/main.css',
+  './src/js/api.js',
+  './src/js/app.js',
+  './src/js/i18n.js',
+  './src/js/router.js',
+  './src/js/components/Header.js',
+  './src/js/components/Sidebar.js',
+  './src/js/components/Toast.js',
+  './src/js/pages/FleetPage.js',
+  './src/js/pages/ContractsPage.js',
+  './src/js/pages/ShiftsPage.js',
+  './src/js/pages/SchedulesPage.js',
+  './src/js/pages/RepairsPage.js',
+  './src/js/pages/TariffsPage.js',
+  './src/js/pages/AnalyticsPage.js',
+  './src/js/pages/SettingsPage.js',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/screenshot-mobile.png',
+  './assets/screenshot-desktop.png',
+  './assets/widget.json',
+  './assets/widget-data.json'
 ];
 
-// 1. Install Event: Cache Core Static Assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Pre-caching static core assets');
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
+  self.skipWaiting();
 });
 
-// 2. Activate Event: Clean Old Caches & Take Control
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
       );
-    }).then(() => self.clients.claim())
-  );
-});
-
-// 3. Fetch Event: Stale-While-Revalidate for Static Assets, Network-First for API
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  // Skip caching non-GET requests or browser extensions
-  if (event.request.method !== 'GET' || !url.protocol.startsWith('http')) {
-    return;
-  }
-
-  // API Requests: Network First with Graceful Fallback
-  if (url.pathname.startsWith('/api')) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          return response;
-        })
-        .catch(() => {
-          return caches.match(event.request).then((cached) => {
-            if (cached) return cached;
-            return new Response(
-              JSON.stringify({
-                success: false,
-                offline: true,
-                error: { code: 'OFFLINE', message: 'You are currently offline. Local cache active.' }
-              }),
-              { headers: { 'Content-Type': 'application/json' } }
-            );
-          });
-        })
-    );
-    return;
-  }
-
-  // Static Assets & Web App Shell: Cache First, Network Fallback
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch in background to update cache (Stale-While-Revalidate)
-        fetch(event.request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
-            }
-          })
-          .catch(() => {/* Offline fallback */});
-        return cachedResponse;
-      }
-
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
-        }
-
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-        return networkResponse;
-      }).catch(() => {
-        // Offline fallback to app shell
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
     })
   );
+  self.clients.claim();
 });
 
-// 4. Background Sync for Offline Operations
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-contracts') {
-    console.log('[Service Worker] Syncing offline contract data');
+// Network-First Strategy with Dynamic Cache Fallback for instant fresh updates on refresh
+self.addEventListener('fetch', (event) => {
+  const requestUrl = new URL(event.request.url);
+
+  if (requestUrl.origin === location.origin) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
   }
 });
 
-// 5. Periodic Background Sync
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'sync-inventory') {
-    console.log('[Service Worker] Periodic background sync for store inventory');
-  }
-});
-
-// 6. Push Notifications Listener
+/* ====== 1. PUSH NOTIFICATIONS HANDLER ====== */
 self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : { title: 'QQBikes Alert', body: 'Store Management Notification' };
+  let data = { title: 'QQBikes Management', body: '🚲 Store Alert & Rental Notification' };
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
   const options = {
     body: data.body,
-    icon: '/assets/icon-192.png',
-    badge: '/assets/icon-192.png',
-    vibrate: [100, 50, 100],
-    data: { dateOfArrival: Date.now(), primaryKey: '1' }
+    icon: './assets/icon-192.png',
+    badge: './assets/icon-192.png',
+    vibrate: [200, 100, 200],
+    data: { url: data.url || './index.html' }
   };
-  event.waitUntil(self.registration.showNotification(data.title, options));
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : './index.html';
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) return client.focus();
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (let client of clientList) {
+        if (client.url.includes('index.html') && 'focus' in client) {
+          return client.focus();
+        }
       }
-      if (clients.openWindow) return clients.openWindow('/');
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
     })
   );
+});
+
+/* ====== 2. PERIODIC BACKGROUND SYNC HANDLER ====== */
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'sync-inventory' || event.tag === 'hourly-reminder') {
+    event.waitUntil(
+      self.registration.showNotification('QQBikes Alert 🚲', {
+        body: 'Syncing counter shift drawer and vehicle inventory',
+        icon: './assets/icon-192.png',
+        badge: './assets/icon-192.png',
+        vibrate: [150, 80, 150]
+      })
+    );
+  }
+});
+
+/* ====== 3. BACKGROUND SYNC HANDLER ====== */
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-contracts' || event.tag === 'sync-notes') {
+    console.log('[Service Worker] Background Syncing contracts and data...');
+  }
+});
+
+/* ====== 4. CLIENT MESSAGING API ====== */
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'TRIGGER_NOTIFICATION') {
+    self.registration.showNotification(event.data.title || 'QQBikes System', {
+      body: event.data.body || 'Rental Notification',
+      icon: './assets/icon-192.png',
+      badge: './assets/icon-192.png',
+      vibrate: [200, 100, 200]
+    });
+  }
 });

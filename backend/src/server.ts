@@ -38,6 +38,13 @@ app.use('/api', apiRouter);
 const frontendPath = path.resolve(process.cwd(), 'frontend');
 const publicPath = path.join(frontendPath, 'public');
 
+// Explicit Digital Asset Links handler for Android TWA Verification
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+  res.sendFile(path.join(publicPath, '.well-known/assetlinks.json'));
+});
+
 // Serve public static assets (manifest.json, sw.js, assets, assetlinks.json) at root
 app.use(express.static(publicPath, {
   setHeaders: (res, filePath) => {

@@ -2,29 +2,15 @@
   "name": "QQBikes Rental & Store Management System",
   "short_name": "QQBikes",
   "description": "Professional bike & scooter rental management system, contracts, shift cash drawer audits, and repair workshop POS for Málaga stores.",
-  "id": "https://qqbikes.orivex.eu/",
-  "start_url": "https://qqbikes.orivex.eu/",
-  "scope": "https://qqbikes.orivex.eu/",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
     "tabbed",
     "standalone",
     "minimal-ui"
-  ],
-  "tab_strip": {
-    "home_tab": {
-      "name": "QQBikes Portal",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
-    },
-    "new_tab_button": {
-      "url": "/#rentalsTab"
-    }
-  },
-  "scope_extensions": [
-    { "origin": "https://qqbikes.orivex.eu" },
-    { "origin": "https://orivex.eu" },
-    { "origin": "*.orivex.eu" }
   ],
   "background_color": "#0b0f19",
   "theme_color": "#0b0f19",
@@ -46,86 +32,78 @@
     }
   ],
   "launch_handler": {
-    "client_mode": "focus-existing"
+    "client_mode": [
+      "focus-existing",
+      "auto"
+    ]
   },
   "edge_side_panel": {
     "preferred_width": 400
   },
   "note_taking": {
-    "new_note_url": "/#repairsTab"
+    "new_note": "./index.html#repairsTab"
   },
   "file_handlers": [
     {
-      "action": "/",
-      "name": "QQBikes Rental Document",
+      "action": "./index.html",
       "accept": {
-        "application/pdf": [".pdf"],
-        "text/csv": [".csv"],
-        "application/json": [".json"]
-      }
+        "text/plain": [".txt"],
+        "application/json": [".json"],
+        "application/pdf": [".pdf"]
+      },
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
     }
   ],
   "protocol_handlers": [
     {
       "protocol": "web+qqbikes",
-      "url": "/?contract=%s"
+      "url": "./index.html?contract=%s"
     }
   ],
+  "scope_extensions": [
+    {
+      "origin": "*.orivex.eu"
+    },
+    {
+      "origin": "https://qqbikes.orivex.eu"
+    }
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
   "widgets": [
     {
       "name": "QQBikes Shift Summary",
       "short_name": "Shift",
       "description": "Active counter shift summary widget",
       "tag": "qqbikes-shift",
-      "template": "shift-template",
-      "ms_ac_template": "/assets/widget.json",
-      "data": "/assets/widget-data.json",
-      "type": "application/json",
-      "screenshots": [
-        {
-          "src": "/assets/icon-192.png",
-          "sizes": "192x192",
-          "label": "Shift Counter Widget"
-        }
-      ]
-    }
-  ],
-  "icons": [
-    {
-      "src": "/assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/assets/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "template": "widget-template",
+      "ms_ac_template": "assets/widget.json"
     }
   ],
   "screenshots": [
     {
-      "src": "/assets/screenshot-mobile.png",
+      "src": "assets/screenshot-mobile.png",
       "sizes": "640x1136",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "QQBikes Mobile Rental Dashboard"
     },
     {
-      "src": "/assets/screenshot-desktop.png",
+      "src": "assets/screenshot-desktop.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
@@ -137,31 +115,66 @@
       "name": "Nuevo Contrato",
       "short_name": "Contrato",
       "description": "Crear nuevo contrato de alquiler",
-      "url": "/#rentalsTab",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "url": "./index.html#rentalsTab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Turnos de Caja",
       "short_name": "Turnos",
       "description": "Gestión y cierre de turno de caja",
-      "url": "/#shiftsTab",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "url": "./index.html#shiftsTab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Taller de Reparación",
       "short_name": "Taller",
       "description": "Ordenes de trabajo y reparación",
-      "url": "/#repairsTab",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "url": "./index.html#repairsTab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
-  "share_target": {
-    "action": "/",
-    "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  }
+  ]
 }
