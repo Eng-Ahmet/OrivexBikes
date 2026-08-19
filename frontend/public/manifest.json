@@ -2,14 +2,29 @@
   "name": "QQBikes Rental & Store Management System",
   "short_name": "QQBikes",
   "description": "Professional bike & scooter rental management system, contracts, shift cash drawer audits, and repair workshop POS for Málaga stores.",
-  "id": "/",
-  "start_url": "/",
-  "scope": "/",
+  "id": "https://qqbikes.orivex.eu/",
+  "start_url": "https://qqbikes.orivex.eu/",
+  "scope": "https://qqbikes.orivex.eu/",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
+    "tabbed",
     "standalone",
     "minimal-ui"
+  ],
+  "tab_strip": {
+    "home_tab": {
+      "name": "QQBikes Portal",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    "new_tab_button": {
+      "url": "/#rentalsTab"
+    }
+  },
+  "scope_extensions": [
+    { "origin": "https://qqbikes.orivex.eu" },
+    { "origin": "https://orivex.eu" },
+    { "origin": "*.orivex.eu" }
   ],
   "background_color": "#0b0f19",
   "theme_color": "#0b0f19",
