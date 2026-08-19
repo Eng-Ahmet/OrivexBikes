@@ -55,6 +55,8 @@ export const createVehicle = (req: AuthRequest, res: Response) => {
     frame_number: `FR-${Math.floor(10000 + Math.random() * 90000)}`,
     name: name || 'New QQ Vehicle',
     status: 'AVAILABLE',
+    rate_1h: Number(hourly_rate || 5),
+    rate_1d: Number(daily_rate || 20),
     hourly_rate: Number(hourly_rate || 5),
     daily_rate: Number(daily_rate || 20),
     deposit_amount: Number(deposit_amount || 30),

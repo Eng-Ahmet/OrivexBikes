@@ -4,6 +4,7 @@ import { renderSidebar } from './components/Sidebar.js';
 import { renderNewContractModal } from './modals/NewContractModal.js';
 import { renderReturnVehicleModal } from './modals/ReturnVehicleModal.js';
 import { mountCurrentPage } from './router.js';
+import { showToast } from './components/Toast.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const headerContainer = document.getElementById('headerContainer');
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (state.activeRole === 'EMPLOYEE' && (state.activeTab === 'reportsTab' || state.activeTab === 'settingsTab')) {
       state.activeTab = 'fleetTab';
     }
+    showToast(`Switched user role to ${state.activeRole}`, 'info');
     await renderAll();
   });
 

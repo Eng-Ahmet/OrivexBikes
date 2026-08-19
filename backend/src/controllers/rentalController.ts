@@ -73,7 +73,7 @@ export const createRental = (req: AuthRequest, res: Response) => {
     start_time: now.toISOString(),
     end_time: endTime.toISOString(),
     status: 'ACTIVE',
-    rental_fee: Number(rental_fee || vehicle.hourly_rate * (duration_hours || 2)),
+    rental_fee: Number(rental_fee || (vehicle.rate_1h || vehicle.hourly_rate || 5) * (duration_hours || 2)),
     deposit_collected: Number(deposit_collected || vehicle.deposit_amount),
     deposit_refunded: 0,
     extra_charges: 0,

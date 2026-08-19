@@ -88,9 +88,25 @@ export const api = {
     return res.json();
   },
 
+  async getShiftHistory() {
+    const params = new URLSearchParams({ store_id: state.activeStoreId });
+    const res = await fetch(`${API_BASE}/shifts/history?${params}`, { headers: getHeaders() });
+    return res.json();
+  },
+
   async getSchedules() {
     const params = new URLSearchParams({ store_id: state.activeStoreId });
     const res = await fetch(`${API_BASE}/shifts/schedules?${params}`, { headers: getHeaders() });
+    return res.json();
+  },
+
+  async getRepairParts() {
+    const res = await fetch(`${API_BASE}/repairs/parts`);
+    return res.json();
+  },
+
+  async getRepairServices() {
+    const res = await fetch(`${API_BASE}/repairs/services`);
     return res.json();
   },
 
@@ -99,6 +115,15 @@ export const api = {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ opening_cash })
+    });
+    return res.json();
+  },
+
+  async recordCashWithdrawal(amount, reason) {
+    const res = await fetch(`${API_BASE}/shifts/withdrawal`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ amount, reason })
     });
     return res.json();
   },
