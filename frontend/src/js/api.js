@@ -1,6 +1,6 @@
-// API Client Wrapper for QQBikes REST Backend
+// API Client Wrapper for QQBikes REST Backend (v1 Namespace)
 
-const API_BASE = '/api';
+const API_BASE = '/api/v1';
 
 export const state = {
   activeStoreId: 1,
@@ -13,9 +13,10 @@ export const state = {
   }
 };
 
-const getHeaders = () => {
+const getHeaders = (withIdempotency = false) => {
   const headers = {
     'Content-Type': 'application/json',
+    'X-Request-ID': `req-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     'x-dev-user-id': '1',
     'x-dev-username': state.currentUser.username,
     'x-dev-role': state.activeRole,
@@ -23,6 +24,9 @@ const getHeaders = () => {
   };
   if (state.token) {
     headers['Authorization'] = `Bearer ${state.token}`;
+  }
+  if (withIdempotency) {
+    headers['Idempotency-Key'] = `idem-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
   }
   return headers;
 };
@@ -43,44 +47,17 @@ export const api = {
   },
 
   async getSettings() {
-    const stores = await this.getStores();
-    const store = Array.isArray(stores) ? stores.find((s) => s.id === state.activeStoreId) : null;
-    return { initial_cash_float: store ? store.initial_cash_float : 150 };
+    const res = await fetch(`${API_BASE}/settings`, { headers: getHeaders() });
+    return res.json();
   },
 
-  async updateSettings(data) {
-    return this.updateStoreConfig(state.activeStoreId, data.initial_cash_float);
-  },
-
-  async updateStoreConfig(storeId, initial_cash_float) {
-    const res = await fetch(`${API_BASE}/stores/${storeId}/config`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify({ initial_cash_float })
+  async updateSetting(key, value) {
+    const res = await fetch(`${API_BASE}/settings/${key}`, {
+      method: 'PATCH',
+      headers: getHeaders(true),
+      body: JSON.stringify({ value })
     });
     return res.json();
-  },
-
-  async recordHistoricalCash(storeId, data) {
-    const res = await fetch(`${API_BASE}/stores/${storeId}/historical-cash`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(data)
-    });
-    return res.json();
-  },
-
-  async addHistoricalEntry(amount, reason) {
-    return this.recordHistoricalCash(state.activeStoreId, { amount, reason });
-  },
-
-  async getHistoricalCashLogs(storeId) {
-    const res = await fetch(`${API_BASE}/stores/${storeId}/historical-cash`, { headers: getHeaders() });
-    return res.json();
-  },
-
-  async getHistoricalEntries() {
-    return this.getHistoricalCashLogs(state.activeStoreId);
   },
 
   async getVehicles(category = 'ALL', status = 'ALL', search = '') {
@@ -109,7 +86,7 @@ export const api = {
   async createRental(data) {
     const res = await fetch(`${API_BASE}/rentals`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: getHeaders(true),
       body: JSON.stringify(data)
     });
     return res.json();
@@ -118,7 +95,7 @@ export const api = {
   async returnVehicle(id, data) {
     const res = await fetch(`${API_BASE}/rentals/${id}/return`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: getHeaders(true),
       body: JSON.stringify(data)
     });
     return res.json();
@@ -127,7 +104,7 @@ export const api = {
   async extendRental(id, data) {
     const res = await fetch(`${API_BASE}/rentals/${id}/extend`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: getHeaders(true),
       body: JSON.stringify(data)
     });
     return res.json();
@@ -150,6 +127,33 @@ export const api = {
     return res.json();
   },
 
+  async openShift(opening_cash) {
+    const res = await fetch(`${API_BASE}/shifts/open`, {
+      method: 'POST',
+      headers: getHeaders(true),
+      body: JSON.stringify({ opening_cash })
+    });
+    return res.json();
+  },
+
+  async recordCashWithdrawal(amount, reason) {
+    const res = await fetch(`${API_BASE}/shifts/withdrawal`, {
+      method: 'POST',
+      headers: getHeaders(true),
+      body: JSON.stringify({ amount, reason })
+    });
+    return res.json();
+  },
+
+  async closeShift(closing_cash, notes) {
+    const res = await fetch(`${API_BASE}/shifts/close`, {
+      method: 'POST',
+      headers: getHeaders(true),
+      body: JSON.stringify({ closing_cash, notes })
+    });
+    return res.json();
+  },
+
   async getRepairParts() {
     const res = await fetch(`${API_BASE}/repairs/parts`);
     return res.json();
@@ -169,48 +173,32 @@ export const api = {
   async createRepairWorkOrder(data) {
     const res = await fetch(`${API_BASE}/repairs/work-orders`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: getHeaders(true),
       body: JSON.stringify(data)
     });
     return res.json();
   },
 
-  async createRepairTicket(data) {
-    return this.createRepairWorkOrder(data);
-  },
-
-  async updateRepairWorkOrderStatus(id, status) {
+  async updateRepairWorkOrderStatus(id, status, payment_method = 'CASH') {
     const res = await fetch(`${API_BASE}/repairs/work-orders/${id}/status`, {
       method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify({ status })
+      headers: getHeaders(true),
+      body: JSON.stringify({ status, payment_method })
     });
     return res.json();
   },
 
-  async openShift(opening_cash) {
-    const res = await fetch(`${API_BASE}/shifts/open`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ opening_cash })
-    });
+  async getSettlements() {
+    const params = new URLSearchParams({ store_id: state.activeStoreId });
+    const res = await fetch(`${API_BASE}/settlements?${params}`, { headers: getHeaders() });
     return res.json();
   },
 
-  async recordCashWithdrawal(amount, reason) {
-    const res = await fetch(`${API_BASE}/shifts/withdrawal`, {
+  async paySettlement(id, payment_method = 'CASH') {
+    const res = await fetch(`${API_BASE}/settlements/${id}/pay`, {
       method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ amount, reason })
-    });
-    return res.json();
-  },
-
-  async closeShift(closing_cash, notes) {
-    const res = await fetch(`${API_BASE}/shifts/close`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ closing_cash, notes })
+      headers: getHeaders(true),
+      body: JSON.stringify({ payment_method })
     });
     return res.json();
   },

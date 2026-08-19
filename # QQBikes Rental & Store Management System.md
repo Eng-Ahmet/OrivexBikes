@@ -58,6 +58,25 @@ The system is based on these core concepts:
 
 ---
 
+## 2.1 Timezone and Date Standardization Policy
+
+To guarantee multi-store data consistency across different geographic regions and prevent Daylight Saving Time (DST) edge cases:
+
+1. **Database Layer**: All `DATETIME` and `TIMESTAMP` columns in MySQL store dates strictly in **UTC**.
+2. **Backend Engine**: Internal calculations, token expiration times, shift durations, and audit logs are evaluated exclusively in **UTC**.
+3. **Frontend Presentation**: User interface displays dates and times formatted in the physical store's local timezone (defined by `stores.timezone`, e.g., `Europe/Madrid`).
+4. **DST Handlers**: The API explicitly accepts client ISO-8601 strings (`2026-08-19T14:30:00Z`) and converts stored UTC values using `stores.timezone` before rendering POS receipts or shift summary views.
+
+---
+
+## 2.2 Global Audit Foreign Keys Standard
+
+1. **Entity Identification**: Primary keys use `BIGINT AUTO_INCREMENT` or `UUID`.
+2. **Audit Column References**: All user reference columns (`created_by`, `updated_by`, `changed_by`, `approved_by`, `cancelled_by`, `paid_by`, `received_by_user_id`) MUST use `BIGINT` foreign keys referencing `users(id)`.
+3. **No Text Usernames in Audit Data**: Free-text username strings (`"Fran"`, `"Ahmet"`) are forbidden in audit columns to prevent data corruption when user profiles are renamed. User details are resolved dynamically via `FOREIGN KEY (created_by) REFERENCES users(id)`.
+
+---
+
 # 3. Recommended Technology Stack
 
 ## Backend
@@ -496,9 +515,15 @@ REVIEW_REQUIRED
 
 Important:
 
-The employee who opens the shift must be recorded.
-
-A manager must be able to review a shift.
+1. **Single Open Shift Constraint**: To prevent register cash drawer discrepancies, MySQL MUST enforce at most one `OPEN` shift per physical store, while permitting unlimited historical `CLOSED` shifts. This is achieved via a Stored Generated Column:
+   ```sql
+   open_shift_store_id BIGINT GENERATED ALWAYS AS (
+     CASE WHEN status = 'OPEN' THEN store_id ELSE NULL END
+   ) STORED,
+   UNIQUE KEY uq_one_open_shift (open_shift_store_id)
+   ```
+2. The employee who opens the shift must be recorded (`employee_id` FK -> `users.id`).
+3. A manager must be able to review and close shifts with registered cash differences.
 
 ---
 
@@ -701,21 +726,38 @@ updated_at
 Examples:
 
 ```text
-1 HOUR = 15 â‚¬
-2 HOURS = 20 â‚¬
-5 HOURS = 25 â‚¬
-1 DAY = 40 â‚¬
-1 WEEK = 25 â‚¬/DAY
-2 WEEKS = 20 â‚¬/DAY
+1 HOUR = 15 €
+2 HOURS = 20 €
+5 HOURS = 25 €
+1 DAY = 40 €
+1 WEEK = 25 €/DAY
+2 WEEKS = 20 €/DAY
 ```
 
-The actual prices shown in the supplied photos should be imported as initial configuration after verification.
+## 17.3 pricing_rules (Data-Driven Pricing Engine Table)
 
-The database should never assume that today's paper price is permanently correct.
+To ensure rental rates are dynamic and configurable per store without code changes:
+
+```text
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+company_id           BIGINT NOT NULL (FK -> companies.id)
+store_id             BIGINT NOT NULL (FK -> stores.id)
+category_id          BIGINT NOT NULL (FK -> vehicle_categories.id)
+duration_type        ENUM ('MIN_20', 'MIN_30', 'HOUR_1', 'HOUR_2', 'HOUR_5', 'DAY_1', 'DAY_3', 'WEEK_1', 'WEEK_2')
+min_units            INT DEFAULT 1
+max_units            INT DEFAULT 1
+price                DECIMAL(12,2) NOT NULL
+season               VARCHAR(50) DEFAULT 'STANDARD'
+active_from          DATE DEFAULT NULL
+active_to            DATE DEFAULT NULL
+is_active            BOOLEAN DEFAULT TRUE
+created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+```
 
 ---
 
-# 18. Flexible Pricing / Manual Override
+# 18. Flexible Pricing / Manual Override & Historical Snapshot Invariant
 
 This is critical.
 
@@ -724,9 +766,9 @@ The employee must be able to use the standard price and then manually adjust it 
 Example:
 
 ```text
-Standard price: 50 â‚¬
-Group price: 100 â‚¬
-Manual agreed price: 90 â‚¬
+Standard price: 50 €
+Group price: 100 €
+Manual agreed price: 90 €
 ```
 
 The system should record:
@@ -736,10 +778,12 @@ original_price
 discount_amount
 final_price
 override_reason
-override_by_user_id
+override_by_user_id (FK -> users.id)
 ```
 
-Never modify the price catalog simply because one customer received a special price.
+## 18.1 Historical Price Snapshot Rule
+
+> **SSOT Rule**: `pricing_rules` defines catalog rates at contract creation time. Once a contract is activated, the agreed rates are permanently snapshotted into `rental_items.unit_price` and `financial_events`. Future edits to `pricing_rules` MUST NEVER alter historical contract balances or existing transaction logs.
 
 ---
 
@@ -750,21 +794,6 @@ The rental contract is the central business document.
 ## 19.1 rental_contracts
 
 ```text
-id
-store_id
-customer_id
-contract_number
-employee_id
-status
-started_at
-expected_return_at
-actual_return_at
-subtotal
-discount_total
-extra_charges_total
-deposit_required
-deposit_held
-deposit_retained
 refund_amount
 total_amount
 amount_paid
@@ -1117,6 +1146,18 @@ CASH
 CARD
 ```
 
+## 26.2 Card Guarantee Operational Modes
+
+The system defines 3 explicit modes for managing customer credit card guarantees:
+
+1. **`REFERENCE_ONLY` (Default V1)**: Manual desk capture of token, `card_last4`, and `card_expiry` for visual identity verification. No automatic bank hold is placed.
+2. **`EXTERNAL_AUTHORIZATION`**: Manual pre-authorization executed on a physical standalone terminal. The employee enters the terminal authorization code into `external_reference`.
+3. **`PRE_AUTHORIZATION` (Phase 2 Integration)**: Automated Stripe/gateway pre-auth flow that holds funds via API call and releases or captures upon vehicle return.
+
+## 26.3 Card vs Cash Ledger Backend Invariant
+
+> **Backend Invariant**: `payment_method = CARD` payments MUST NEVER create entries in `cash_movements`. `cash_movements` is strictly reserved for physical register cash drawer transactions (`CASH`).
+
 ---
 
 # 27. Payment Allocations
@@ -1329,184 +1370,142 @@ CANCELLED
 
 ---
 
-# 34. Repair Order Items
+## 34.1 repair_ticket_parts
 
-## 34.1 repair_order_items
-
-```text
-id
-repair_order_id
-item_type
-repair_part_id
-repair_labor_rate_id
-description
-quantity
-unit_price
-total_amount
-created_at
-```
-
-Types:
+Junction table mapping parts consumed per repair order:
 
 ```text
-PART
-LABOR
-OTHER
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+repair_order_id      BIGINT NOT NULL (FK -> repair_orders.id)
+part_id              BIGINT NOT NULL (FK -> repair_parts.id)
+quantity             INT NOT NULL
+unit_cost            DECIMAL(12,2) NOT NULL
+selling_price        DECIMAL(12,2) NOT NULL
+total                DECIMAL(12,2) NOT NULL
+created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ```
 
-This supports:
+### Repair Pricing Formulas & Negative Stock Prevention Rule
 
-```text
-Part: Brake pad = 10 â‚¬
-Labor: 30 minutes = 7.50 â‚¬
-Total = 17.50 â‚¬
-```
+1. **Calculated Parts Cost**: `parts_cost = SUM(repair_ticket_parts.total)`. Never entered manually as arbitrary text.
+2. **Total Repair Formula**: `total_amount = labor_cost + parts_cost - discount + extra_charges`.
+3. **Negative Stock Prevention SQL**: Stock deduction inside the repair completion ACID transaction MUST execute conditional update:
+   ```sql
+   UPDATE repair_parts
+   SET stock_quantity = stock_quantity - ?
+   WHERE id = ? AND stock_quantity >= ?;
+   ```
+   The backend verifies `affected_rows == 1`. If `affected_rows == 0`, transaction is aborted with `INSUFFICIENT_STOCK` error and rolled back.
 
 ---
 
-# 35. Inventory
+# 35. Neighbor Vehicle Partner Settlements
 
-If parts are sold/consumed, inventory should be tracked.
+## 35.1 neighbor_settlements
 
-## 35.1 inventory_items
-
-```text
-id
-store_id
-repair_part_id
-quantity_on_hand
-reserved_quantity
-minimum_quantity
-updated_at
-```
-
----
-
-## 35.2 inventory_movements
+Tracks revenue share for partner-owned equipment (`item_owner = 'NEIGHBOR'`) with explicit Accrual vs Cash Payout distinction (`OWED != PAID`):
 
 ```text
-id
-store_id
-repair_part_id
-movement_type
-quantity
-reference_type
-reference_id
-reason
-created_by_user_id
-created_at
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+vehicle_id           BIGINT NOT NULL (FK -> vehicles.id)
+contract_id          BIGINT NOT NULL (FK -> rental_contracts.id)
+neighbor_name        VARCHAR(255) NOT NULL
+gross_rental_amount  DECIMAL(12,2) NOT NULL
+store_commission     DECIMAL(12,2) NOT NULL
+neighbor_share       DECIMAL(12,2) NOT NULL
+amount_paid          DECIMAL(12,2) DEFAULT 0.00
+payment_method       ENUM ('CASH', 'CARD', 'BANK_TRANSFER') NULL
+status               ENUM ('PENDING', 'PAID', 'CANCELLED') DEFAULT 'PENDING'
+paid_at              TIMESTAMP NULL
+paid_by              BIGINT NULL (FK -> users.id)
+created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ```
 
-Types:
+### Payout Cash Rule
 
-```text
-PURCHASE
-REPAIR_USAGE
-SALE
-ADJUSTMENT_IN
-ADJUSTMENT_OUT
-TRANSFER_IN
-TRANSFER_OUT
-```
+- When rental completes, `neighbor_settlements` is created with `status = 'PENDING'`. **NO CASH MOVEMENT CREATED**.
+- When physical cash is paid to the neighbor, `status` becomes `'PAID'`, `paid_at` is set, and a `cash_movements` entry (`-neighbor_share`) is generated.
 
 ---
 
 # 36. Expenses
 
-The Excel image shows expenses such as Visa/card-related amounts, commissions, equipment, and other outgoings.
-
-These must become structured records.
-
 ## 36.1 expense_categories
 
 ```text
-id
-company_id
-name
-code
-description
-is_active
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+company_id           BIGINT NOT NULL (FK -> companies.id)
+name                 VARCHAR(100) NOT NULL
+code                 VARCHAR(50) NOT NULL
+description          TEXT NULL
+is_active            BOOLEAN DEFAULT TRUE
 ```
 
-Examples:
-
-```text
-BANK_FEES
-CARD_FEES
-RENT
-UTILITIES
-EQUIPMENT
-REPAIRS
-SUPPLIES
-SALARIES
-TRANSPORT
-OTHER
-```
+Examples: `BANK_FEES`, `CARD_FEES`, `RENT`, `UTILITIES`, `EQUIPMENT`, `REPAIRS`, `SUPPLIES`, `SALARIES`, `TRANSPORT`, `OTHER`.
 
 ---
 
 ## 36.2 expenses
 
 ```text
-id
-store_id
-expense_category_id
-employee_id
-supplier_name
-description
-amount
-tax_amount
-payment_method
-expense_date
-receipt_number
-receipt_file_url
-status
-created_by_user_id
-approved_by_user_id
-created_at
-updated_at
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+store_id             BIGINT NOT NULL (FK -> stores.id)
+expense_category_id  BIGINT NOT NULL (FK -> expense_categories.id)
+employee_id          BIGINT NOT NULL (FK -> users.id)
+supplier_name        VARCHAR(255) NOT NULL
+description          TEXT NULL
+amount               DECIMAL(12,2) NOT NULL
+tax_amount           DECIMAL(12,2) DEFAULT 0.00
+payment_method       ENUM ('CASH', 'CARD', 'BANK_TRANSFER') NOT NULL
+expense_date         DATE NOT NULL
+receipt_number       VARCHAR(100) NULL
+receipt_file_url     VARCHAR(500) NULL
+status               ENUM ('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'APPROVED'
+created_by_user_id   BIGINT NOT NULL (FK -> users.id)
+approved_by_user_id   BIGINT NULL (FK -> users.id)
+created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ```
 
 ---
 
-# 37. Revenue / Financial Ledger
+# 37. Unified Financial Ledger (`financial_events`)
 
-Do not rely on a single "income" field like the Excel sheet.
+Do not rely on separate unlinked financial tables.
 
-Instead, create immutable financial entries.
+Instead, create immutable, append-only financial entries linked via polymorphic parent references.
 
-## 37.1 financial_transactions
-
-```text
-id
-company_id
-store_id
-transaction_type
-reference_type
-reference_id
-amount
-currency
-payment_method
-transaction_date
-description
-created_by_user_id
-created_at
-```
-
-Types:
+## 37.1 financial_events
 
 ```text
-RENTAL_REVENUE
-REPAIR_REVENUE
-EXTRA_CHARGE_REVENUE
-DEPOSIT_RECEIVED
-DEPOSIT_REFUND
-DEPOSIT_RETAINED
-EXPENSE
-REFUND
-OTHER_INCOME
-OTHER_EXPENSE
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+company_id           BIGINT NOT NULL (FK -> companies.id)
+store_id             BIGINT NOT NULL (FK -> stores.id)
+source_type          ENUM ('CONTRACT', 'REPAIR') NOT NULL
+source_id            BIGINT NOT NULL
+type                 ENUM ('RENTAL_PAYMENT', 'REPAIR_PAYMENT', 'DEPOSIT_COLLECTED', 'DEPOSIT_APPLIED_TO_CHARGE', 'DEPOSIT_REFUNDED', 'DAMAGE_CHARGE', 'LATE_FEE', 'OTHER_CHARGE') NOT NULL
+amount               DECIMAL(12,2) NOT NULL
+direction            ENUM ('IN', 'OUT', 'NONE') NOT NULL
+payment_method       ENUM ('CASH', 'CARD', 'BANK_TRANSFER', 'DEPOSIT_TRANSFER') NOT NULL
+reference_id         VARCHAR(255) NULL
+created_by           BIGINT NOT NULL (FK -> users.id)
+request_id           VARCHAR(255) NOT NULL
+idempotency_key      VARCHAR(255) NULL
+created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ```
+
+### Financial Movement & Cash Ledger Trigger Matrix
+
+| Event Type | Direction | Cash Movement Created? | Description |
+| :--- | :--- | :--- | :--- |
+| `RENTAL_PAYMENT` | `IN` | **YES** (If `CASH`) | Rental revenue collected |
+| `REPAIR_PAYMENT` | `IN` | **YES** (If `CASH`) | Workshop repair revenue collected |
+| `DEPOSIT_COLLECTED` | `IN` | **YES** (If `CASH`) | Customer deposit received into register |
+| `DEPOSIT_APPLIED_TO_CHARGE` | `NONE` | **NO** | Accounting transfer from Deposit Liability to Damage Revenue |
+| `DEPOSIT_REFUNDED` | `OUT` | **YES** (If `CASH`) | Deposit cash refunded to customer |
+
+---
 
 Important:
 
@@ -1877,114 +1876,47 @@ Custom range
 
 ---
 
-# 47. Rental Reports
+# 47. Rental Reports (Read-Only Projections)
 
-Reports:
+> **SSOT Rule**: Reports MUST NEVER store static summary balances as a source of truth. Reports are strictly **READ-ONLY PROJECTIONS** calculated dynamically via SQL queries against underlying transactional ledgers (`financial_events`, `cash_movements`, `repair_ticket_parts`, `neighbor_settlements`).
 
-## Daily Rentals
+## 47.1 Daily Operations & Sales Projection
 
-```text
-Date
-Store
-Contract
-Customer
-Employee
-Vehicles
-Rental amount
-Deposit
-Payment
-Status
-```
-
-## Vehicle Utilization
+SQL aggregation dynamically joins `financial_events`, `cash_movements`, and `expenses` filtered by `store_id` and date bounds:
 
 ```text
-Vehicle
-Category
-Store
-Hours rented
-Days rented
-Utilization %
-Revenue
-```
-
-## Category Revenue
-
-```text
-Bike
-E-Bike
-Scooter
-XL Car
-S Car
-Quad
-Buggy
+Total Gross Revenue    = SUM(financial_events.amount WHERE direction = 'IN')
+Cash Rental Revenue    = SUM(cash_movements.amount WHERE type = 'RENTAL_PAYMENT')
+Card Rental Revenue    = SUM(financial_events.amount WHERE payment_method = 'CARD')
+Deposits Held          = SUM(DEPOSIT_COLLECTED) - SUM(DEPOSIT_REFUNDED) - SUM(DEPOSIT_APPLIED_TO_CHARGE)
+Workshop Gross Profit  = SUM(repair_orders.total_price) - SUM(repair_ticket_parts.unit_cost * quantity)
+Neighbor Settlements   = SUM(neighbor_settlements.neighbor_share WHERE status = 'PENDING')
 ```
 
 ---
 
-# 48. Payment Reports
+# 48. Payment Reports (Read-Only Projections)
 
-Filter by:
-
-```text
-Store
-Employee
-Date
-Payment method
-```
-
-Display:
+Filter dynamically by `store_id`, `employee_id`, date range, and `payment_method`:
 
 ```text
-Cash
-Card
-Total
-Refunds
-Net
+Total Cash Received    = SUM(cash_movements.amount WHERE amount > 0)
+Total Cash Refunded    = SUM(ABS(cash_movements.amount) WHERE amount < 0)
+Net Register Balance   = Total Cash Received - Total Cash Refunded
 ```
-
-This should replace the manual Excel income/expense calculations.
 
 ---
 
-# 49. Shift Report
+# 49. Shift Report (Detallar Turno)
 
-At shift closing:
-
-```text
-Opening cash
-Cash sales
-Cash expenses
-Cash refunds
-Expected cash
-Actual cash
-Difference
-Card sales
-Total sales
-```
-
-Example:
+Calculated dynamically on `POST /api/v1/shifts/:id/close`:
 
 ```text
-Opening:        100 â‚¬
-Cash sales:     450 â‚¬
-Cash expenses:   20 â‚¬
-Refunds:         30 â‚¬
-
-Expected:       500 â‚¬
-Actual:         500 â‚¬
-Difference:       0 â‚¬
+Expected Closing Cash = opening_cash + SUM(cash_movements.amount WHERE shift_id = ?)
+Cash Discrepancy      = closing_cash_actual - Expected Closing Cash
 ```
 
-If difference exists:
-
-```text
-Expected: 500 â‚¬
-Actual: 490 â‚¬
-Difference: -10 â‚¬
-```
-
-The system must require a note or manager review.
+If `Cash Discrepancy != 0.00`, shift status transitions to `REVIEW_REQUIRED` and requires a manager audit note.
 
 ---
 
@@ -2465,92 +2397,94 @@ Recommended API:
 
 ## Auth
 
-```text
-POST /auth/login
-POST /auth/refresh
-POST /auth/logout
-GET  /auth/me
+# 63. Complete RESTful API Contract & Versioning Policy
+
+All REST API endpoints are strictly versioned under the `/api/v1` namespace.
+
+## 63.1 Standardized API Error Response Schema
+
+All error responses across all endpoints MUST return HTTP 4xx or 5xx with a standardized JSON error body containing a domain `code`, user-facing `message`, optional `details`, and unique `request_id`:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VEHICLE_NOT_AVAILABLE",
+    "message": "Vehicle EB-204 is currently in MAINTENANCE and cannot be rented.",
+    "details": {
+      "vehicle_id": 104,
+      "current_status": "MAINTENANCE"
+    }
+  },
+  "request_id": "req-9a8b7c6d-5e4f"
+}
 ```
 
-## Stores
+Standard Error Codes:
+- `400 BAD_REQUEST` / `VALIDATION_ERROR`
+- `401 UNAUTHORIZED` / `INVALID_CREDENTIALS`
+- `403 FORBIDDEN` / `STORE_ACCESS_DENIED`
+- `404 NOT_FOUND` / `RESOURCE_NOT_FOUND`
+- `409 CONFLICT` / `SHIFT_ALREADY_OPEN` / `VEHICLE_LOCKED`
+- `422 UNPROCESSABLE_ENTITY` / `IDEMPOTENCY_PAYLOAD_MISMATCH` / `INSUFFICIENT_STOCK`
+- `500 INTERNAL_SERVER_ERROR`
 
-```text
-GET    /stores
-POST   /stores
-GET    /stores/:id
-PATCH  /stores/:id
-```
+---
 
-## Customers
+## 63.2 API Endpoint Catalog (`/api/v1`)
 
-```text
-GET    /customers
-POST   /customers
-GET    /customers/:id
-PATCH  /customers/:id
-GET    /customers/:id/rentals
-GET    /customers/:id/payments
-```
+### Authentication & Session
+- `POST   /api/v1/auth/login` (Returns JWT access token + refresh token)
+- `POST   /api/v1/auth/refresh`
+- `POST   /api/v1/auth/logout`
+- `GET    /api/v1/auth/me`
 
-## Vehicles
+### Store Management
+- `GET    /api/v1/stores`
+- `POST   /api/v1/stores`
+- `GET    /api/v1/stores/:id`
+- `PATCH  /api/v1/stores/:id`
 
-```text
-GET    /vehicles
-POST   /vehicles
-GET    /vehicles/:id
-PATCH  /vehicles/:id
-GET    /vehicles/:id/history
-POST   /vehicles/:id/transfer
-```
+### Fleet & Vehicles
+- `GET    /api/v1/vehicles`
+- `POST   /api/v1/vehicles`
+- `GET    /api/v1/vehicles/:id`
+- `PATCH  /api/v1/vehicles/:id`
+- `GET    /api/v1/vehicles/:id/history`
+- `POST   /api/v1/vehicles/:id/transfer`
 
-## Rentals
+### Rental Contracts
+- `GET    /api/v1/contracts`
+- `POST   /api/v1/contracts` *(Requires `Idempotency-Key`)*
+- `GET    /api/v1/contracts/:id`
+- `PATCH  /api/v1/contracts/:id`
+- `POST   /api/v1/contracts/:id/return` *(Requires `Idempotency-Key`)*
+- `POST   /api/v1/contracts/:id/cancel` *(Requires `Idempotency-Key`)*
 
-```text
-GET    /rentals
-POST   /rentals
-GET    /rentals/:id
-PATCH  /rentals/:id
-POST   /rentals/:id/return
-POST   /rentals/:id/charges
-```
+### Workshop & Repairs
+- `GET    /api/v1/repairs`
+- `POST   /api/v1/repairs`
+- `GET    /api/v1/repairs/:id`
+- `PATCH  /api/v1/repairs/:id`
+- `POST   /api/v1/repairs/:id/complete` *(Requires `Idempotency-Key`)*
+- `GET    /api/v1/repairs/parts`
+- `POST   /api/v1/repairs/parts`
 
-## Payments
+### Register & Shifts
+- `POST   /api/v1/shifts/open`
+- `GET    /api/v1/shifts/current`
+- `POST   /api/v1/shifts/:id/close` *(Requires `Idempotency-Key`)*
+- `GET    /api/v1/shifts/:id/report`
 
-```text
-GET    /payments
-POST   /payments
-GET    /payments/:id
-POST   /payments/:id/refund
-```
+### Cash Movements & Withdrawals
+- `GET    /api/v1/cash/transactions`
+- `POST   /api/v1/cash/withdrawals` *(Requires `Idempotency-Key`)*
 
-## Deposits
-
-```text
-GET    /deposits
-GET    /deposits/:id
-POST   /deposits/:id/refund
-POST   /deposits/:id/retain
-```
-
-## Shifts
-
-```text
-POST   /shifts/open
-GET    /shifts/current
-POST   /shifts/:id/close
-GET    /shifts/:id/report
-```
-
-## Repairs
-
-```text
-GET    /repairs
-POST   /repairs
-GET    /repairs/:id
-PATCH  /repairs/:id
-POST   /repairs/:id/items
-POST   /repairs/:id/complete
-```
+### Reports (Read-Only Projections)
+- `GET    /api/v1/reports/daily`
+- `GET    /api/v1/reports/shift/:id`
+- `GET    /api/v1/reports/vehicles`
+- `GET    /api/v1/reports/workshop`
 
 ---
 
@@ -2873,488 +2807,202 @@ Receive payment
 Refund payment
 Receive deposit
 Refund deposit
-Retain deposit
-Add extra charge
-Change vehicle status
-Transfer vehicle
-Close shift
-Modify employee permissions
-Modify price rules
-Create expense
-Approve expense
+# 71. Security, Idempotency & Request Tracing
+
+Sensitive information includes DNI, Passport, customer documents, payment references, financial data, and employee PINs.
+
+## 71.1 PIN Hashing & Security Rules
+
+1. `pin_hash`: Employee PIN codes MUST NEVER be stored in plaintext. They must be stored hashed using `bcrypt` or `argon2`.
+2. **Brute-Force Throttling**: The authentication endpoint limits login attempts to 3 failed attempts per 5 minutes per user/IP. Exceeding 3 failed attempts locks the user account for 15 minutes.
+
+---
+
+## 71.2 Idempotency Architecture (`idempotency_keys`)
+
+To prevent duplicate financial postings caused by network retries or accidental double-clicking:
+
+```text
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+key                  VARCHAR(255) NOT NULL
+user_id              BIGINT NOT NULL (FK -> users.id)
+request_id           VARCHAR(255) NOT NULL
+endpoint             VARCHAR(255) NOT NULL
+request_hash         VARCHAR(64) NOT NULL
+response_status      INT NULL
+response_body        TEXT NULL
+status               ENUM ('PROCESSING', 'COMPLETED', 'FAILED') DEFAULT 'PROCESSING'
+expires_at           TIMESTAMP NOT NULL
+created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+UNIQUE KEY uq_idempotency (key, user_id, endpoint)
+```
+
+### Idempotency Enforcement Algorithm
+
+1. Client sends `Idempotency-Key: <UUIDv4>` header on state-changing endpoints (`POST /contracts`, `POST /contracts/:id/return`, `POST /repairs/:id/complete`, `POST /shifts/:id/close`, `POST /cash/withdrawals`).
+2. Backend inspects `idempotency_keys` for `(key, user_id, endpoint)`:
+   - **Case A (Found & COMPLETED)**: Verify `request_hash`. If match, return stored `response_status` and `response_body` directly without re-executing operation. If payload differs, abort with `422 Unprocessable Entity`.
+   - **Case B (Found & PROCESSING)**: Return `409 Conflict` (Operation in progress).
+   - **Case C (Not Found)**: Record new entry in `PROCESSING` state, execute business logic within ACID transaction, update entry to `COMPLETED` with status/body, and commit.
+
+### Request Context Tracing
+
+- `request_id` (`X-Request-ID`): Tracks a single HTTP connection attempt (`req-XXXX`).
+- `idempotency_key`: Tracks the overarching logical business transaction (`idem-YYYY`) across client retries.
+- Both identifiers MUST be propagated to `audit_logs`, `financial_events`, and `cash_movements`.
+
+---
+
+# 82. State Machines & Transition Rules
+
+State transitions must be validated on the backend. Illegal transitions return `422 Unprocessable Entity`.
+
+## 82.1 Vehicle State Machine
+
+```text
+AVAILABLE ────► RENTED ────► AVAILABLE
+    │             │
+    ▼             ▼
+RESERVED       DAMAGED ────► MAINTENANCE ────► AVAILABLE
+                  │               │
+                  ▼               ▼
+                 LOST          RETIRED
+```
+
+- **Forbidden Jumps**: `LOST` → `RENTED` (Must transition through `MAINTENANCE` → `AVAILABLE` first).
+
+## 82.2 Contract State Machine
+
+```text
+DRAFT ────► ACTIVE ────► RETURN_PENDING ────► COMPLETED
+  │           │
+  ▼           ▼
+CANCELLED   OVERDUE ────► COMPLETED
+```
+
+- **Forbidden Reversals**: `COMPLETED` → `ACTIVE` is strictly prohibited. Reopen attempts are rejected.
+
+## 82.3 Shift State Machine
+
+```text
+OPEN ────► CLOSED
+ │
+ ▼
+REVIEW_REQUIRED ────► CLOSED (Manager Approved)
 ```
 
 ---
 
-# 74. Dashboard KPIs
+# 83. Atomic MySQL Database Transactions
 
-Useful KPIs:
+Operations that alter multiple operational or financial tables MUST run inside an explicit MySQL Transaction (`START TRANSACTION ... COMMIT / ROLLBACK`).
+
+## 83.1 Contract Activation Transaction Sequence
+
+```sql
+START TRANSACTION;
+
+-- 1. Lock target vehicle row to prevent concurrent rental
+SELECT id, status FROM vehicles WHERE id = 101 FOR UPDATE;
+-- Verify status == 'AVAILABLE', else ROLLBACK
+
+-- 2. Insert contract snapshot
+INSERT INTO rental_contracts (store_id, customer_id, contract_number, employee_id, status, ...)
+VALUES (...);
+
+-- 3. Insert items
+INSERT INTO rental_items (rental_contract_id, vehicle_id, unit_price, ...) VALUES (...);
+
+-- 4. Log financial event
+INSERT INTO financial_events (store_id, source_type, source_id, type, amount, direction, payment_method, ...)
+VALUES (1, 'CONTRACT', contract_id, 'RENTAL_PAYMENT', 70.00, 'IN', 'CASH', ...);
+
+-- 5. If CASH, insert register drawer movement
+INSERT INTO cash_movements (store_id, shift_id, type, amount, reason, ...)
+VALUES (1, active_shift_id, 'RENTAL_PAYMENT', 70.00, ...);
+
+-- 6. Update vehicle status
+UPDATE vehicles SET status = 'RENTED' WHERE id = 101;
+
+-- 7. Log vehicle status history & audit trail
+INSERT INTO vehicle_status_history (vehicle_id, old_status, new_status, ...) VALUES (...);
+INSERT INTO audit_logs (store_id, user_id, action, entity_type, entity_id, ...) VALUES (...);
+
+COMMIT;
+```
+
+If any step fails, `ROLLBACK` is executed immediately, leaving no dangling contracts or mismatched vehicle statuses.
+
+---
+
+# 86. Typed System Settings (`settings`)
+
+## 86.1 settings Table Schema
 
 ```text
-Revenue today
-Revenue this month
-Revenue by store
-Revenue by vehicle category
-Average rental value
-Average rental duration
-Fleet utilization
-Top rented vehicle
-Top rented category
-Cash/Card ratio
-Deposits held
-Deposits retained
-Refunds
-Repair revenue
-Repair costs
-Expenses
-Shift discrepancies
+id                   BIGINT AUTO_INCREMENT PRIMARY KEY
+store_id             BIGINT NULL (FK -> stores.id; NULL = Global Company Setting)
+key                  VARCHAR(100) NOT NULL UNIQUE
+value                TEXT NOT NULL
+value_type           ENUM ('STRING', 'INTEGER', 'DECIMAL', 'BOOLEAN', 'JSON') NOT NULL
+description          TEXT NULL
+updated_by           BIGINT NOT NULL (FK -> users.id)
+updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+```
+
+Backend service strictly validates `value` against `value_type` upon `PATCH /api/v1/settings/:key`.
+
+---
+
+# 89. Comprehensive Database Index Strategy
+
+To guarantee sub-10ms query execution times for real-time POS interactions and dynamic report aggregations:
+
+```sql
+-- Customers & Auth
+CREATE INDEX idx_customers_phone ON customers(phone);
+CREATE INDEX idx_customers_dni ON customers(dni);
+CREATE INDEX idx_customers_passport ON customers(passport_number);
+
+-- Fleet & Availability
+CREATE INDEX idx_vehicles_store_status ON vehicles(store_id, status);
+CREATE INDEX idx_vehicles_category ON vehicles(category_id);
+CREATE INDEX idx_vehicles_qr ON vehicles(qr_code);
+
+-- Rental Contracts & Search
+CREATE INDEX idx_contracts_store_status ON rental_contracts(store_id, status);
+CREATE INDEX idx_contracts_customer ON rental_contracts(customer_id);
+CREATE INDEX idx_contracts_vehicle_status ON rental_contracts(store_id, status, expected_return_at);
+
+-- Financial Events & Cash Drawer
+CREATE INDEX idx_financial_events_source ON financial_events(source_type, source_id, created_at);
+CREATE INDEX idx_cash_movements_shift ON cash_movements(shift_id, created_at);
+CREATE INDEX idx_cash_movements_ref ON cash_movements(reference_id);
+
+-- Repairs & Workshop
+CREATE INDEX idx_repairs_store_status ON repair_orders(store_id, status);
+CREATE INDEX idx_repair_parts_order ON repair_ticket_parts(repair_order_id);
+
+-- Audit & Settlements
+CREATE INDEX idx_audit_user_created ON audit_logs(user_id, created_at);
+CREATE INDEX idx_audit_entity ON audit_logs(entity_type, entity_id);
+CREATE INDEX idx_neighbor_contract ON neighbor_settlements(contract_id, status);
 ```
 
 ---
 
-# 75. Daily Closing Workflow
-
-At the end of the day:
-
-```text
-1. Employee closes active rentals.
-2. Employees close their shifts.
-3. System calculates expected cash.
-4. Employee enters actual cash.
-5. System calculates difference.
-6. Manager reviews discrepancies.
-7. Manager reviews refunds.
-8. Manager reviews deposit retention.
-9. Manager reviews expenses.
-10. Manager closes operational day if desired.
-```
-
----
-
-# 76. Monthly Financial Workflow
-
-Management can filter:
-
-```text
-01/08/2026 â†’ 31/08/2026
-```
-
-and see:
-
-```text
-Rental revenue
-Repair revenue
-Extra charge revenue
-Retained deposits
-Expenses
-Refunds
-Cash
-Card
-```
-
-Deposits received and refunded should remain distinguishable from revenue.
-
----
-
-# 77. Initial Price Catalog
-
-The supplied photographs show an existing printed price list and repair catalog.
-
-The application should not hardcode these prices.
-
-Instead, create an import/seed process.
-
-Example initial rental categories visible in the supplied pricing sheet:
-
-```text
-Bikes
-E-Bikes
-Scooters
-XL Cars
-S Cars / Quads
-Buggy's
-```
-
-The photographed sheet contains duration-based prices such as:
-
-```text
-20 minutes
-30 minutes
-1 hour
-2 hours
-5 hours
-1 day
-1/2 day
-1 week
-2 weeks
-```
-
-Not every category has every duration.
-
-The database must therefore allow missing combinations.
-
-Example:
-
-```text
-Scooter + 1 hour = 15 â‚¬
-Scooter + 1 day = 40 â‚¬
-```
-
-while another category may only have:
-
-```text
-XL Car + 20 minutes = 15 â‚¬
-XL Car + 30 minutes = 20 â‚¬
-XL Car + 1 hour = 30 â‚¬
-```
-
-The exact values must be verified against the current official price sheet before production import.
-
----
-
-# 78. Repair Catalog Import
-
-The photographed repair sheet contains replacement parts with:
-
-- Part name
-- Vehicle/model applicability
-- Customer-facing price
-- Labor price
-
-The system should separate:
-
-```text
-Part
-Labor
-```
-
-Example:
-
-```text
-Repair:
-Brake replacement
-
-Part:
-Brake pads
-
-Labor:
-Mechanical labor
-```
-
-This allows management to change labor rates independently from part prices.
-
----
-
-# 79. Documents and Contracts
-
-The paper rental contract shown in the photos contains fields such as:
-
-```text
-Bike number
-Deposit
-Total
-Start time
-Arrival/return time
-Customer name
-DNI/passport
-Card number
-Card expiry
-Date
-Contract number
-Customer signature
-```
-
-The digital system should preserve equivalent information.
-
-However, do not store full card numbers unless there is a specific legal/payment-provider requirement.
-
-For normal card payments, store only safe references such as:
-
-```text
-payment provider
-transaction ID
-masked card information if returned by provider
-```
-
----
-
-# 80. Digital Contract Number
-
-Use a readable contract number:
-
-```text
-MAL-2026-000001
-TOR-2026-000001
-```
-
-or:
-
-```text
-MAL-20260818-0001
-```
-
-The database primary key remains a UUID.
-
-The contract number is a human-facing business identifier.
-
----
-
-# 81. Business Identifiers
-
-Recommended:
-
-```text
-Customer:
-CUS-000001
-
-Vehicle:
-MAL-BIKE-001
-
-Rental:
-MAL-2026-000001
-
-Repair:
-MAL-REP-2026-000001
-
-Payment:
-MAL-PAY-2026-000001
-
-Expense:
-MAL-EXP-2026-000001
-```
-
-These identifiers are for users.
-
-UUIDs remain the technical primary keys.
-
----
-
-# 82. Status Architecture
-
-Statuses should be enums/constants shared between frontend and backend.
-
-Do not let the frontend invent arbitrary status strings.
-
-Examples:
-
-```text
-RentalStatus
-VehicleStatus
-PaymentStatus
-DepositStatus
-RepairStatus
-ShiftStatus
-ReservationStatus
-ExpenseStatus
-```
-
----
-
-# 83. Transactions
-
-The backend must use database transactions for operations that modify multiple financial records.
-
-Example: completing a rental:
-
-```text
-BEGIN TRANSACTION
-
-Create rental payment
-Create payment allocation
-Create financial transaction
-Create deposit transaction
-Update vehicle status
-Update rental status
-
-COMMIT
-```
-
-If one operation fails, the entire financial operation must roll back.
-
----
-
-# 84. API Authorization
-
-Every endpoint must check:
-
-```text
-authenticated user
-+
-role
-+
-store access
-+
-resource ownership/access
-```
-
-Example:
-
-An employee in MÃ¡laga must not be able to:
-
-```text
-GET /stores/TOR/rentals
-```
-
-unless their permissions allow Torremolinos access.
-
----
-
-# 85. Manager Approval
-
-Sensitive operations should support approval.
-
-Examples:
-
-```text
-Large discount
-Deposit retention above threshold
-Large refund
-Manual cash adjustment
-Expense approval
-Price override
-Vehicle marked as lost
-```
-
-A configurable threshold can be stored in:
-
-```text
-company_settings
-```
-
----
-
-# 86. company_settings
-
-```text
-id
-company_id
-key
-value
-value_type
-description
-updated_by_user_id
-updated_at
-```
-
-Examples:
-
-```text
-DEFAULT_CURRENCY = EUR
-DEFAULT_DEPOSIT
-MAX_EMPLOYEE_DISCOUNT
-REQUIRE_MANAGER_FOR_REFUND
-REQUIRE_MANAGER_FOR_DEPOSIT_RETENTION
-```
-
-For more structured systems, sensitive settings can be dedicated columns instead of key/value storage.
-
----
-
-# 87. Notifications
-
-The architecture can later support:
-
-```text
-notifications
-```
-
-Fields:
-
-```text
-id
-user_id
-type
-title
-message
-reference_type
-reference_id
-read_at
-created_at
-```
-
-Examples:
-
-```text
-Vehicle overdue
-Low inventory
-Shift discrepancy
-Maintenance required
-Reservation approaching
-```
-
----
-
-# 88. Search
-
-Global search should support:
-
-```text
-Customer name
-DNI
-Passport
-Phone
-Contract number
-Vehicle code
-Repair number
-Payment number
-```
-
-Search must be indexed.
-
----
-
-# 89. Database Indexes
-
-Important indexes:
-
-```text
-customers.dni
-customers.passport_number
-customers.phone
-customers.email
-
-vehicles.store_id
-vehicles.status
-vehicles.category_id
-vehicles.vehicle_code
-
-rental_contracts.store_id
-rental_contracts.customer_id
-rental_contracts.status
-rental_contracts.contract_number
-rental_contracts.started_at
-
-rental_items.vehicle_id
-rental_items.start_at
-rental_items.expected_return_at
-
-payments.store_id
-payments.shift_id
-payments.payment_method
-payments.paid_at
-
-deposits.store_id
-deposits.status
-
-employees.store_id
-employee_shifts.store_id
-employee_shifts.employee_id
-```
-
----
-
-# 90. Data Integrity
-
-Use database constraints for:
-
-- Unique contract number
-- Unique vehicle code per company/store
-- Unique employee code
-- Valid foreign keys
-- Non-negative monetary values where appropriate
-- Valid status transitions where possible
-
-Application validation alone is not enough.
+# 90. Concurrency Controls & Row Locking
+
+To prevent race conditions when two counter clerks attempt to rent the same vehicle simultaneously:
+
+1. **Pessimistic Row Locking**: All contract creation, vehicle transfer, and return endpoints execute `SELECT id, status FROM vehicles WHERE id = ? FOR UPDATE;` inside an active MySQL transaction.
+2. **Conditional Atomic Updates**: Status transitions enforce optimistic checking:
+   ```sql
+   UPDATE vehicles
+   SET status = 'RENTED'
+   WHERE id = ? AND status = 'AVAILABLE';
+   ```
+   If `affected_rows == 0`, the backend aborts the operation and returns `409 Conflict` (`VEHICLE_NO_LONGER_AVAILABLE`).
 
 ---
 

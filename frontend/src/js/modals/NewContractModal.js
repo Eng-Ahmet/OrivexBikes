@@ -368,8 +368,8 @@ export function renderNewContractModal(container) {
         duration_hours: durationHours,
         rental_fee: currentCalculatedFee,
         payment_method: modalEl.querySelector('#paymentMethod').value,
-        credit_card_number: ebikeCardNumber ? ebikeCardNumber.value : '',
-        credit_card_expiry: ebikeCardExpiry ? ebikeCardExpiry.value : ''
+        card_last4: ebikeCardNumber && ebikeCardNumber.value ? ebikeCardNumber.value.replace(/\s+/g, '').slice(-4) : '',
+        card_expiry: ebikeCardExpiry ? ebikeCardExpiry.value : ''
       };
 
       const res = await api.createRental(data);

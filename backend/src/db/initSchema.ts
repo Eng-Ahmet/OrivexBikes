@@ -12,6 +12,7 @@ export interface User {
   last_name: string;
   phone: string;
   is_active: boolean;
+  pin_hash?: string;
 }
 
 export interface Store {
@@ -24,6 +25,7 @@ export interface Store {
   phone: string;
   is_active: boolean;
   initial_cash_float?: number;
+  timezone?: string;
 }
 
 export interface Vehicle {
@@ -33,7 +35,7 @@ export interface Vehicle {
   qr_code: string;
   frame_number: string;
   name: string;
-  status: 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'OUT_OF_SERVICE';
+  status: 'AVAILABLE' | 'RENTED' | 'RESERVED' | 'MAINTENANCE' | 'DAMAGED' | 'LOST' | 'RETIRED' | 'TRANSFER_PENDING';
   deposit_amount: number;
   hourly_rate?: number;
   daily_rate?: number;
@@ -73,18 +75,61 @@ export interface RentalContract {
   start_time: string;
   end_time: string;
   expected_end_time?: string;
-  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  actual_return_at?: string;
+  status: 'DRAFT' | 'ACTIVE' | 'RETURN_PENDING' | 'OVERDUE' | 'COMPLETED' | 'CANCELLED';
   rental_fee: number;
   deposit_collected: number;
   deposit_refunded: number;
+  deposit_retained?: number;
   extra_charges: number;
   payment_method: 'CASH' | 'CARD';
+  card_guarantee_mode?: 'REFERENCE_ONLY' | 'EXTERNAL_AUTHORIZATION' | 'PRE_AUTHORIZATION';
+  card_last4?: string;
+  card_expiry?: string;
   created_at: string;
+  updated_at?: string;
+  cancelled_at?: string;
+  cancelled_by?: number;
+  cancellation_reason?: string;
   item_owner?: 'STORE' | 'NEIGHBOR';
   neighbor_name?: string;
   store_commission?: number;
   neighbor_payout?: number;
   extensions?: ContractExtension[];
+}
+
+export interface FinancialEvent {
+  id: number;
+  company_id: number;
+  store_id: number;
+  source_type: 'CONTRACT' | 'REPAIR';
+  source_id: number;
+  type: 'RENTAL_PAYMENT' | 'REPAIR_PAYMENT' | 'DEPOSIT_COLLECTED' | 'DEPOSIT_APPLIED_TO_CHARGE' | 'DEPOSIT_REFUNDED' | 'DAMAGE_CHARGE' | 'LATE_FEE' | 'OTHER_CHARGE';
+  amount: number;
+  direction: 'IN' | 'OUT' | 'NONE';
+  payment_method: 'CASH' | 'CARD' | 'BANK_TRANSFER' | 'DEPOSIT_TRANSFER';
+  reference_id?: string;
+  created_by: number;
+  request_id: string;
+  idempotency_key?: string;
+  created_at: string;
+}
+
+export interface NeighborSettlement {
+  id: number;
+  vehicle_id: number;
+  contract_id: number;
+  neighbor_name: string;
+  gross_rental_amount: number;
+  store_commission: number;
+  neighbor_share: number;
+  amount_paid: number;
+  payment_method?: 'CASH' | 'CARD' | 'BANK_TRANSFER';
+  status: 'PENDING' | 'PAID' | 'CANCELLED';
+  paid_at?: string;
+  paid_by?: number;
+  created_at: string;
+  updated_at?: string;
 }
 
 export interface Shift {
@@ -101,7 +146,7 @@ export interface Shift {
   total_withdrawals?: number;
   expected_cash?: number;
   discrepancy?: number;
-  status: 'OPEN' | 'CLOSED';
+  status: 'OPEN' | 'CLOSED' | 'REVIEW_REQUIRED';
   notes?: string;
   cash_movements?: CashMovement[];
 }
@@ -109,10 +154,54 @@ export interface Shift {
 export interface CashMovement {
   id: number;
   shift_id: number;
-  type: 'WITHDRAWAL' | 'ADDITION';
+  type: 'WITHDRAWAL' | 'ADDITION' | 'RENTAL_PAYMENT' | 'DEPOSIT_COLLECTED' | 'DEPOSIT_REFUNDED' | 'NEIGHBOR_PAYOUT';
   amount: number;
   reason: string;
   performed_by: string;
+  created_by?: number;
+  request_id?: string;
+  idempotency_key?: string;
+  created_at: string;
+}
+
+export interface IdempotencyKey {
+  id: number;
+  key: string;
+  user_id: number;
+  request_id: string;
+  endpoint: string;
+  request_hash: string;
+  response_status?: number;
+  response_body?: string;
+  status: 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  expires_at: string;
+  created_at: string;
+}
+
+export interface Setting {
+  id: number;
+  store_id?: number;
+  key: string;
+  value: string;
+  value_type: 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'JSON';
+  description?: string;
+  updated_by: number;
+  updated_at: string;
+}
+
+export interface AuditLog {
+  id: number;
+  company_id: number;
+  store_id: number;
+  user_id: number;
+  action: string;
+  entity_type: string;
+  entity_id: number;
+  old_values?: string;
+  new_values?: string;
+  request_id: string;
+  idempotency_key?: string;
+  ip_address?: string;
   created_at: string;
 }
 
@@ -143,7 +232,20 @@ export interface RepairPart {
   name: string;
   pvp_part_only: number;
   pvp_with_labor: number;
+  stock_quantity: number;
+  min_stock?: number;
   category: 'Scooter' | 'Bicycle' | 'General';
+}
+
+export interface RepairTicketPart {
+  id: number;
+  repair_order_id: number;
+  part_id: number;
+  part_name: string;
+  quantity: number;
+  unit_cost: number;
+  selling_price: number;
+  total: number;
 }
 
 export interface RepairService {
@@ -162,11 +264,13 @@ export interface RepairWorkOrder {
   device_model: string;
   issue_description: string;
   parts_used?: string;
+  parts?: RepairTicketPart[];
   parts_cost: number;
   labor_cost: number;
   total_price: number;
-  status: 'RECEIVED' | 'IN_PROGRESS' | 'READY' | 'DELIVERED_PAID';
+  status: 'RECEIVED' | 'IN_PROGRESS' | 'READY' | 'DELIVERED_PAID' | 'CANCELLED';
   created_at: string;
+  updated_at?: string;
 }
 
 // Generate exact 53 Malaga physical inventory units based on handwritten sheet
@@ -548,12 +652,22 @@ export const memoryData = {
       status: 'IN_PROGRESS',
       created_at: new Date().toISOString()
     }
-  ] as RepairWorkOrder[]
+  ] as RepairWorkOrder[],
+
+  financial_events: [] as FinancialEvent[],
+  cash_movements: [] as CashMovement[],
+  neighbor_settlements: [] as NeighborSettlement[],
+  idempotency_keys: [] as IdempotencyKey[],
+  settings: [
+    { id: 1, store_id: 1, key: 'GRACE_PERIOD_MINUTES', value: '15', value_type: 'INTEGER', description: 'Grace period minutes before extra hour fee', updated_by: 1, updated_at: new Date().toISOString() },
+    { id: 2, store_id: 1, key: 'CARD_GUARANTEE_MODE', value: 'REFERENCE_ONLY', value_type: 'STRING', description: 'Default credit card guarantee mode', updated_by: 1, updated_at: new Date().toISOString() }
+  ] as Setting[],
+  audit_logs: [] as AuditLog[]
 };
 
 export const initializeSchema = async () => {
   if (!isMySQLActive()) {
-    console.log(`⚡ Initialized exact Málaga physical inventory (53 units across 12 categories), contract extensions, & overdue countdown alerts.`);
+    console.log(`⚡ Initialized exact Málaga physical inventory (53 units across 12 categories), SSOT financial events, idempotency, & neighbor settlements.`);
     return;
   }
 };

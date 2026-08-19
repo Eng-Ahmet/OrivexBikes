@@ -7,6 +7,9 @@ import { initializeSchema } from './db/initSchema.js';
 import { requestLogger, errorHandler } from './middleware/logger.js';
 import apiRouter from './routes/index.js';
 
+import { requestTracingMiddleware } from './middleware/requestTracing.js';
+import { idempotencyMiddleware } from './middleware/idempotency.js';
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -14,16 +17,21 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-dev-user-id', 'x-dev-username', 'x-dev-role', 'x-dev-store-id']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID', 'x-request-id', 'Idempotency-Key', 'idempotency-key', 'x-dev-user-id', 'x-dev-username', 'x-dev-role', 'x-dev-store-id']
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request Tracing & Idempotency Middlewares
+app.use(requestTracingMiddleware);
+app.use(idempotencyMiddleware);
+
 // Request Logger
 app.use(requestLogger);
 
-// API Routes
+// API Routes (/api/v1 and /api)
+app.use('/api/v1', apiRouter);
 app.use('/api', apiRouter);
 
 // Frontend Proxy & Static Serving
