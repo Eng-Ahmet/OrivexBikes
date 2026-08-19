@@ -5,13 +5,23 @@ import { t } from '../i18n.js';
 export function renderNewContractModal(container) {
   if (!container) return;
 
+  const now = new Date();
+  const formatDateTimeLocal = (dateObj) => {
+    const tzOffset = dateObj.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(dateObj.getTime() - tzOffset)).toISOString().slice(0, 16);
+    return localISOTime;
+  };
+
+  const defaultStart = formatDateTimeLocal(now);
+  const defaultReturn = formatDateTimeLocal(new Date(now.getTime() + (2 * 3600 * 1000))); // Default +2h
+
   container.innerHTML = `
-    <div id="contractModal" class="modal fade" tabindex="-1">
+    <div id="contractModal" class="modal fade" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content modal-content-glass">
           <div class="modal-header border-secondary">
             <h5 class="modal-title fw-bold text-info"><i class="fa-solid fa-file-signature me-2"></i> Issue Official Rental Contract</h5>
-            <button type="button" class="btn-close btn-close-white" id="closeContractModalBtn"></button>
+            <button type="button" class="btn-close btn-close-white" id="closeContractModalBtn" data-bs-dismiss="modal"></button>
           </div>
           <form id="newContractForm">
             <div class="modal-body">
@@ -25,8 +35,11 @@ export function renderNewContractModal(container) {
                   <input type="text" id="custPassport" class="form-control bg-dark text-light border-secondary" placeholder="e.g. X1234567A" required />
                 </div>
 
+                <!-- DYNAMIC PHONE LABEL & REQUIRED STATE -->
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-phone me-1"></i> Customer Phone Number *</label>
+                  <label id="phoneLabel" class="form-label text-secondary small fw-semibold">
+                    <i class="fa-solid fa-phone me-1"></i> Customer Phone Number <span id="phoneReqBadge" class="text-danger">*</span>
+                  </label>
                   <input type="tel" id="custPhone" class="form-control bg-dark text-light border-secondary" placeholder="e.g. +34 612 345 678" required />
                 </div>
 
@@ -36,20 +49,36 @@ export function renderNewContractModal(container) {
                   <select id="contractVehicleSelect" class="form-select bg-dark text-light border-secondary" required></select>
                 </div>
 
-                <!-- CONDITIONAL BATTERY LEVEL FIELD FOR ELECTRIC VEHICLES ONLY -->
-                <div id="batteryFieldCol" class="col-md-6 d-none">
-                  <label class="form-label text-warning small fw-semibold"><i class="fa-solid fa-bolt me-1"></i> E-Bike / Scooter Battery Level Check (%) *</label>
-                  <div class="input-group">
-                    <input type="number" id="custBatteryLevel" class="form-control bg-dark text-warning border-warning" min="1" max="100" value="100" />
-                    <span class="input-group-text bg-dark text-warning border-warning">%</span>
+                <!-- CONDITIONAL E-BIKE BATTERY & CHARGER SERIAL FIELDS -->
+                <div id="ebikeFieldsRow" class="col-12 d-none">
+                  <div class="p-3 bg-dark bg-opacity-75 rounded border border-warning">
+                    <h6 class="text-warning fw-bold mb-2"><i class="fa-solid fa-bolt me-1"></i> E-Bike Battery & Charger / Key Registration</h6>
+                    <div class="row g-2">
+                      <div class="col-md-6">
+                        <label class="form-label text-secondary small">Battery Level Check (%) *</label>
+                        <div class="input-group input-group-sm">
+                          <input type="number" id="ebikeBatteryLevel" class="form-control bg-dark text-warning border-warning" min="1" max="100" value="100" />
+                          <span class="input-group-text bg-dark text-warning border-warning">%</span>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label text-secondary small">Charger / Key Code Serial</label>
+                        <input type="text" id="ebikeChargerSerial" class="form-control form-control-sm bg-dark text-light border-warning" placeholder="e.g. CHG-EB-8842" />
+                      </div>
+                    </div>
                   </div>
-                  <div class="form-text text-secondary small">Required for electric scooters & VISA e-bikes.</div>
                 </div>
 
+                <!-- DEPARTURE & EXPECTED RETURN DATETIME PICKERS -->
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-clock me-1"></i> Dynamic Duration Tariff *</label>
-                  <select id="tariffSelect" class="form-select bg-dark text-light border-secondary" required></select>
+                  <label class="form-label text-info small fw-semibold"><i class="fa-solid fa-calendar-minus me-1"></i> Departure Date & Time (تاريخ المغادرة) *</label>
+                  <input type="datetime-local" id="startTimeInput" class="form-control bg-dark text-light border-info" value="${defaultStart}" required />
                 </div>
+                <div class="col-md-6">
+                  <label class="form-label text-info small fw-semibold"><i class="fa-solid fa-calendar-plus me-1"></i> Expected Return Date & Time (تاريخ الإرجاع المتوقع) *</label>
+                  <input type="datetime-local" id="expectedReturnTimeInput" class="form-control bg-dark text-light border-info" value="${defaultReturn}" required />
+                </div>
+
                 <div class="col-md-6">
                   <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-credit-card me-1"></i> Payment Method *</label>
                   <select id="paymentMethod" class="form-select bg-dark text-light border-secondary">
@@ -63,7 +92,8 @@ export function renderNewContractModal(container) {
               <div class="bg-dark bg-opacity-75 p-3 rounded border border-secondary my-3">
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Selected Physical Unit:</span><strong id="calcVehicleName" class="text-light">-</strong></div>
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Category:</span><span id="calcCategoryBadge" class="badge bg-info-subtle text-info">-</span></div>
-                <div class="d-flex justify-content-between text-secondary mb-1"><span>Rental Fee:</span><strong id="calcRentalFee" class="text-light">€0.00</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>Calculated Duration:</span><strong id="calcElapsedDuration" class="text-info">2 Hours</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>Automated Tariff Fee:</span><strong id="calcRentalFee" class="text-light">€0.00</strong></div>
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Refundable Deposit:</span><strong id="calcDeposit" class="text-warning">€0.00</strong></div>
                 <div id="neighborDebtRow" class="d-none d-flex justify-content-between text-secondary mb-1"><span>Neighbor Debt (80% Payout):</span><strong id="calcNeighborDebt" class="text-warning">€0.00</strong></div>
                 <div class="d-flex justify-content-between text-secondary border-top border-secondary pt-2 mt-2"><span>Total Payable Now:</span><strong id="calcTotal" class="text-info fs-5">€0.00</strong></div>
@@ -71,7 +101,7 @@ export function renderNewContractModal(container) {
             </div>
 
             <div class="modal-footer border-secondary">
-              <button type="button" class="btn btn-secondary btn-sm" id="cancelContractModalBtn">Cancel</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="cancelContractModalBtn" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-info btn-sm fw-bold"><i class="fa-solid fa-check me-1"></i> Issue Contract</button>
             </div>
           </form>
@@ -85,99 +115,119 @@ export function renderNewContractModal(container) {
 
   const form = modalEl.querySelector('#newContractForm');
   const vehicleSelect = modalEl.querySelector('#contractVehicleSelect');
-  const tariffSelect = modalEl.querySelector('#tariffSelect');
-  const batteryFieldCol = modalEl.querySelector('#batteryFieldCol');
-  const batteryInput = modalEl.querySelector('#custBatteryLevel');
+  const startTimeInput = modalEl.querySelector('#startTimeInput');
+  const returnTimeInput = modalEl.querySelector('#expectedReturnTimeInput');
+  const custPhone = modalEl.querySelector('#custPhone');
+  const phoneReqBadge = modalEl.querySelector('#phoneReqBadge');
+  const ebikeFieldsRow = modalEl.querySelector('#ebikeFieldsRow');
 
   let vehiclesList = [];
+  let currentCalculatedFee = 0;
 
-  function getTariffOptionsForCategory(cat) {
-    const norm = (cat || '').toLowerCase();
-    if (norm.includes('xl')) {
-      return [
-        { code: '20m', label: '20 Minutos (€15)', fee: 15 },
-        { code: '30m', label: '30 Minutos (€20)', fee: 20 },
-        { code: '1h', label: '1 Hora (€30)', fee: 30 }
-      ];
+  function getBootstrapModalInstance() {
+    if (window.bootstrap && window.bootstrap.Modal) {
+      return window.bootstrap.Modal.getOrCreateInstance(modalEl);
     }
-    if (norm.includes('s cars') || norm.includes('quad')) {
-      return [
-        { code: '20m', label: '20 Minutos (€10)', fee: 10 },
-        { code: '30m', label: '30 Minutos (€15)', fee: 15 },
-        { code: '1h', label: '1 Hora (€25)', fee: 25 }
-      ];
-    }
-    if (norm.includes('buggy')) {
-      return [
-        { code: '30m', label: '30 Minutos (€5)', fee: 5 },
-        { code: '1h', label: '1 Hora (€25)', fee: 25 }
-      ];
-    }
-    if (norm.includes('bike') && !norm.includes('e-bike')) {
-      return [
-        { code: '1h', label: '1 Hora (€5)', fee: 5 },
-        { code: '5h', label: '5 Horas (€15)', fee: 15 },
-        { code: '1d', label: '1 Día (€20)', fee: 20 },
-        { code: '3d', label: '+3 Días (15 €/día)', fee: 45 },
-        { code: '1w', label: '+1 Semana (10 €/día)', fee: 70 },
-        { code: '2w', label: '+2 Semanas (8 €/día)', fee: 112 }
-      ];
-    }
-    if (norm.includes('e-bike')) {
-      return [
-        { code: '1h', label: '1 Hora (€15)', fee: 15 },
-        { code: '2h', label: '2 Horas (€20)', fee: 20 },
-        { code: '5h', label: '5 Horas (€25)', fee: 25 },
-        { code: '1d', label: '1 Día (€40)', fee: 40 },
-        { code: '3d', label: '+3 Días (30 €/día)', fee: 90 },
-        { code: '1w', label: '+1 Semana (25 €/día)', fee: 175 },
-        { code: '2w', label: '+2 Semanas (20 €/día)', fee: 280 }
-      ];
-    }
-    // Default Scooters
-    return [
-      { code: '30m', label: '30 Minutos (€10)', fee: 10 },
-      { code: '1h', label: '1 Hora (€15)', fee: 15 },
-      { code: '2h', label: '2 Horas (€20)', fee: 20 },
-      { code: '1d', label: '1 Día (€40)', fee: 40 },
-      { code: '3d', label: '+3 Días (30 €/día)', fee: 90 },
-      { code: '1w', label: '+1 Semana (25 €/día)', fee: 175 },
-      { code: '2w', label: '+2 Semanas (20 €/día)', fee: 280 }
-    ];
+    return null;
   }
 
-  function onVehicleChange() {
-    if (!vehicleSelect || !vehicleSelect.value) return;
-    const vId = Number(vehicleSelect.value);
-    const v = vehiclesList.find(item => item.id === vId);
-    if (!v) return;
+  // AUTOMATED OFFICIAL TARIFF ENGINE WITH ACTIVE TIER MULTIPLICATION
+  function calculateAutoTariff(category, totalMins) {
+    const normCat = (category || '').toLowerCase();
+    const totalHours = totalMins / 60;
+    const totalDays = Math.ceil(totalMins / (24 * 60));
 
-    // CONDITIONAL BATTERY FIELD: Only show for E-Bikes and E-Scooters!
-    const isElectric = v.category.includes('E-Bike') || v.category.includes('Scooter');
-    if (isElectric && batteryFieldCol) {
-      batteryFieldCol.classList.remove('d-none');
-      if (batteryInput) {
-        batteryInput.value = v.battery_level || 100;
-        batteryInput.required = true;
+    // XL Cars & Jeep
+    if (normCat.includes('xl')) {
+      if (totalMins <= 25) return { fee: 15, durationStr: '20 Minutos' };
+      if (totalMins <= 45) return { fee: 20, durationStr: '30 Minutos' };
+      return { fee: 30 * Math.ceil(totalHours), durationStr: `${Math.ceil(totalHours)} Hour(s)` };
+    }
+
+    // Quads & S Cars
+    if (normCat.includes('s cars') || normCat.includes('quad')) {
+      if (totalMins <= 25) return { fee: 10, durationStr: '20 Minutos' };
+      if (totalMins <= 45) return { fee: 15, durationStr: '30 Minutos' };
+      return { fee: 25 * Math.ceil(totalHours), durationStr: `${Math.ceil(totalHours)} Hour(s)` };
+    }
+
+    // Buggy's
+    if (normCat.includes('buggy')) {
+      if (totalMins <= 45) return { fee: 5, durationStr: '30 Minutos' };
+      return { fee: 25 * Math.ceil(totalHours), durationStr: `${Math.ceil(totalHours)} Hour(s)` };
+    }
+
+    // Standard Bicycles (Quert / Altec / MTB / Bici Niño)
+    if (normCat.includes('bike') && !normCat.includes('e-bike')) {
+      if (totalHours <= 1.5) return { fee: 5, durationStr: '1 Hora' };
+      if (totalHours <= 6.0) return { fee: 15, durationStr: '5 Horas' };
+      if (totalDays === 1) return { fee: 20, durationStr: '1 Día' };
+      if (totalDays === 2) return { fee: 35, durationStr: '2 Días' };
+
+      // 3 to 6 Days Tier (€15 / day)
+      if (totalDays <= 6) {
+        const fee = totalDays * 15;
+        return { fee, durationStr: `${totalDays} Días (Tier +3 Días @ €15/día)` };
       }
-    } else if (batteryFieldCol) {
-      batteryFieldCol.classList.add('d-none');
-      if (batteryInput) batteryInput.required = false;
+
+      // 7 to 13 Days Tier (€10 / day)
+      if (totalDays <= 13) {
+        const fee = totalDays * 10;
+        return { fee, durationStr: `${totalDays} Días (Tier +1 Semana @ €10/día)` };
+      }
+
+      // 14 Days & Above Tier (€8 / day)
+      const fee = totalDays * 8;
+      return { fee, durationStr: `${totalDays} Días (Tier +2 Semanas @ €8/día)` };
     }
 
-    const options = getTariffOptionsForCategory(v.category);
-    if (tariffSelect) {
-      tariffSelect.innerHTML = '';
-      options.forEach(opt => {
-        const o = document.createElement('option');
-        o.value = opt.code;
-        o.setAttribute('data-fee', opt.fee);
-        o.textContent = opt.label;
-        tariffSelect.appendChild(o);
-      });
+    // E-Bikes VISA
+    if (normCat.includes('e-bike')) {
+      if (totalHours <= 1.5) return { fee: 15, durationStr: '1 Hora' };
+      if (totalHours <= 3.0) return { fee: 20, durationStr: '2 Horas' };
+      if (totalHours <= 8.0) return { fee: 25, durationStr: '5 Horas' };
+      if (totalDays === 1) return { fee: 40, durationStr: '1 Día' };
+      if (totalDays === 2) return { fee: 60, durationStr: '2 Días' };
+
+      // 3 to 6 Days Tier (€30 / day)
+      if (totalDays <= 6) {
+        const fee = totalDays * 30;
+        return { fee, durationStr: `${totalDays} Días (Tier +3 Días @ €30/día)` };
+      }
+
+      // 7 to 13 Days Tier (€25 / day)
+      if (totalDays <= 13) {
+        const fee = totalDays * 25;
+        return { fee, durationStr: `${totalDays} Días (Tier +1 Semana @ €25/día)` };
+      }
+
+      // 14 Days & Above Tier (€20 / day)
+      const fee = totalDays * 20;
+      return { fee, durationStr: `${totalDays} Días (Tier +2 Semanas @ €20/día)` };
     }
 
-    updateCalc();
+    // Scooters (Etwow / Ninebot)
+    if (totalMins <= 45) return { fee: 10, durationStr: '30 Minutos' };
+    if (totalHours <= 1.5) return { fee: 15, durationStr: '1 Hora' };
+    if (totalHours <= 3.0) return { fee: 20, durationStr: '2 Horas' };
+    if (totalDays === 1) return { fee: 40, durationStr: '1 Día' };
+    if (totalDays === 2) return { fee: 60, durationStr: '2 Días' };
+
+    // 3 to 6 Days Tier (€30 / day)
+    if (totalDays <= 6) {
+      const fee = totalDays * 30;
+      return { fee, durationStr: `${totalDays} Días (Tier +3 Días @ €30/día)` };
+    }
+
+    // 7 to 13 Days Tier (€25 / day)
+    if (totalDays <= 13) {
+      const fee = totalDays * 25;
+      return { fee, durationStr: `${totalDays} Días (Tier +1 Semana @ €25/día)` };
+    }
+
+    // 14 Days & Above Tier (€20 / day)
+    const fee = totalDays * 20;
+    return { fee, durationStr: `${totalDays} Días (Tier +2 Semanas @ €20/día)` };
   }
 
   function updateCalc() {
@@ -186,18 +236,44 @@ export function renderNewContractModal(container) {
     const v = vehiclesList.find(item => item.id === vId);
     if (!v) return;
 
-    let fee = 15;
-    if (tariffSelect && tariffSelect.options && tariffSelect.selectedIndex >= 0) {
-      const selectedOpt = tariffSelect.options[tariffSelect.selectedIndex];
-      if (selectedOpt && selectedOpt.hasAttribute('data-fee')) {
-        fee = Number(selectedOpt.getAttribute('data-fee'));
+    // DYNAMIC PHONE VALIDATION: Required for Bikes & Scooters; Optional for Cars, Quads, Buggys, Accessories
+    const normCat = (v.category || '').toLowerCase();
+    const isBikeOrScooter = normCat.includes('bike') || normCat.includes('scooter');
+    if (isBikeOrScooter) {
+      if (custPhone) custPhone.required = true;
+      if (phoneReqBadge) {
+        phoneReqBadge.textContent = '*';
+        phoneReqBadge.className = 'text-danger';
+      }
+    } else {
+      if (custPhone) custPhone.required = false;
+      if (phoneReqBadge) {
+        phoneReqBadge.textContent = '(Optional)';
+        phoneReqBadge.className = 'text-secondary font-monospace';
       }
     }
 
+    // CONDITIONAL E-BIKE BATTERY & CHARGER SERIAL FIELDS: Show ONLY for E-Bikes (VISA)!
+    const isEbike = normCat.includes('e-bike');
+    if (isEbike && ebikeFieldsRow) {
+      ebikeFieldsRow.classList.remove('d-none');
+    } else if (ebikeFieldsRow) {
+      ebikeFieldsRow.classList.add('d-none');
+    }
+
+    const sTime = new Date(startTimeInput.value).getTime();
+    const rTime = new Date(returnTimeInput.value).getTime();
+    let elapsedMins = Math.max(15, Math.round((rTime - sTime) / 60000));
+
+    if (isNaN(elapsedMins) || elapsedMins <= 0) elapsedMins = 60;
+
+    const tariffResult = calculateAutoTariff(v.category, elapsedMins);
+    currentCalculatedFee = tariffResult.fee;
     const dep = v.deposit_amount || 30;
 
     const elName = modalEl.querySelector('#calcVehicleName');
     const elBadge = modalEl.querySelector('#calcCategoryBadge');
+    const elDuration = modalEl.querySelector('#calcElapsedDuration');
     const elFee = modalEl.querySelector('#calcRentalFee');
     const elDep = modalEl.querySelector('#calcDeposit');
     const elNeighborRow = modalEl.querySelector('#neighborDebtRow');
@@ -206,27 +282,33 @@ export function renderNewContractModal(container) {
 
     if (elName) elName.textContent = `${v.name} (${v.qr_code})`;
     if (elBadge) elBadge.textContent = v.category;
-    if (elFee) elFee.textContent = `€${fee.toFixed(2)}`;
+    if (elDuration) elDuration.textContent = tariffResult.durationStr;
+    if (elFee) elFee.textContent = `€${tariffResult.fee.toFixed(2)}`;
     if (elDep) elDep.textContent = `€${dep.toFixed(2)}`;
 
     if (v.item_owner === 'NEIGHBOR') {
-      const payout = fee * 0.8;
+      const payout = tariffResult.fee * 0.8;
       if (elNeighborRow) elNeighborRow.classList.remove('d-none');
       if (elNeighborDebt) elNeighborDebt.textContent = `€${payout.toFixed(2)} (Owed to ${v.neighbor_name || 'Partner'})`;
     } else {
       if (elNeighborRow) elNeighborRow.classList.add('d-none');
     }
 
-    if (elTotal) elTotal.textContent = `€${(fee + dep).toFixed(2)}`;
+    if (elTotal) elTotal.textContent = `€${(tariffResult.fee + dep).toFixed(2)}`;
   }
 
-  if (vehicleSelect) vehicleSelect.addEventListener('change', onVehicleChange);
-  if (tariffSelect) tariffSelect.addEventListener('change', updateCalc);
+  if (vehicleSelect) vehicleSelect.addEventListener('change', updateCalc);
+  if (startTimeInput) startTimeInput.addEventListener('input', updateCalc);
+  if (returnTimeInput) returnTimeInput.addEventListener('input', updateCalc);
 
   const hideModal = () => {
-    if (modalEl) {
+    const bsModal = getBootstrapModalInstance();
+    if (bsModal) {
+      bsModal.hide();
+    } else if (modalEl) {
       modalEl.style.display = 'none';
       modalEl.classList.remove('show');
+      document.body.classList.remove('modal-open');
     }
   };
 
@@ -238,12 +320,19 @@ export function renderNewContractModal(container) {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const sTime = new Date(startTimeInput.value).getTime();
+      const rTime = new Date(returnTimeInput.value).getTime();
+      const durationHours = Math.max(1, Math.round((rTime - sTime) / (3600 * 1000)));
+
       const data = {
         customer_name: modalEl.querySelector('#custName').value,
         customer_passport: modalEl.querySelector('#custPassport').value,
-        customer_phone: modalEl.querySelector('#custPhone').value,
+        customer_phone: modalEl.querySelector('#custPhone').value || '-',
         vehicle_id: Number(vehicleSelect.value),
-        duration_hours: tariffSelect.value.includes('d') ? 24 : tariffSelect.value.includes('w') ? 168 : 2,
+        start_time: new Date(startTimeInput.value).toISOString(),
+        expected_end_time: new Date(returnTimeInput.value).toISOString(),
+        duration_hours: durationHours,
+        rental_fee: currentCalculatedFee,
         payment_method: modalEl.querySelector('#paymentMethod').value
       };
 
@@ -284,10 +373,19 @@ export function renderNewContractModal(container) {
       vehicleSelect.appendChild(opt);
     });
 
-    onVehicleChange();
-    if (modalEl) {
+    const nowFresh = new Date();
+    if (startTimeInput) startTimeInput.value = formatDateTimeLocal(nowFresh);
+    if (returnTimeInput) returnTimeInput.value = formatDateTimeLocal(new Date(nowFresh.getTime() + (2 * 3600 * 1000)));
+
+    updateCalc();
+
+    const bsModal = getBootstrapModalInstance();
+    if (bsModal) {
+      bsModal.show();
+    } else if (modalEl) {
       modalEl.style.display = 'block';
       modalEl.classList.add('show');
+      document.body.classList.add('modal-open');
     }
   });
 }

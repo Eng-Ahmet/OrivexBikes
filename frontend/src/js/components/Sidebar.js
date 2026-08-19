@@ -6,7 +6,7 @@ export function renderSidebar(container) {
   const isAdmin = state.activeRole === 'ADMIN';
 
   const navHtml = `
-    <nav class="nav nav-pills flex-column gap-2 mb-4">
+    <nav class="nav nav-pills flex-column gap-2">
       <button class="sidebar-btn ${state.activeTab === 'fleetTab' ? 'active' : ''}" data-tab="fleetTab">
         <i class="fa-solid fa-bicycle me-2"></i> ${t('fleet_tab')}
       </button>
@@ -34,16 +34,10 @@ export function renderSidebar(container) {
         </button>
       ` : ''}
     </nav>
-
-    <div>
-      <button class="btn btn-info w-100 fw-bold shadow-sm py-2 btn-new-contract-trigger">
-        <i class="fa-solid fa-plus me-1"></i> ${t('new_contract_btn')}
-      </button>
-    </div>
   `;
 
   container.innerHTML = `
-    <div class="sidebar-panel d-flex flex-column justify-content-between h-100">
+    <div class="sidebar-panel flex-column justify-content-start h-100">
       ${navHtml}
     </div>
   `;
@@ -59,12 +53,6 @@ export function renderSidebar(container) {
       const tabId = btn.getAttribute('data-tab');
       setActiveTab(tabId);
       window.dispatchEvent(new CustomEvent('app:tabChanged', { detail: { tabId } }));
-    });
-  });
-
-  document.querySelectorAll('.btn-new-contract-trigger').forEach(btn => {
-    btn.addEventListener('click', () => {
-      window.dispatchEvent(new CustomEvent('app:openNewContractModal'));
     });
   });
 }

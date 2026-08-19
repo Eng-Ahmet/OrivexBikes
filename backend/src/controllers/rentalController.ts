@@ -24,7 +24,7 @@ export const getRentals = (req: Request, res: Response) => {
 };
 
 export const createRental = (req: Request, res: Response) => {
-  const { customer_name, customer_passport, customer_phone, vehicle_id, duration_hours, payment_method } = req.body;
+  const { customer_name, customer_passport, customer_phone, vehicle_id, duration_hours, rental_fee, start_time, expected_end_time, payment_method } = req.body;
 
   if (!customer_name || !customer_passport || !vehicle_id) {
     return res.status(400).json({ error: 'Customer details and vehicle are required' });
@@ -34,32 +34,24 @@ export const createRental = (req: Request, res: Response) => {
   if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
   if (vehicle.status !== 'AVAILABLE') return res.status(400).json({ error: 'Vehicle is not currently available for rent' });
 
-  // Rate calculation
-  const hours = Number(duration_hours || 1);
-  let rentalFee = vehicle.rate_1h || 15;
-  if (hours <= 0.5) rentalFee = vehicle.rate_30m || vehicle.rate_1h;
-  else if (hours === 1) rentalFee = vehicle.rate_1h;
-  else if (hours === 2) rentalFee = vehicle.rate_2h || (vehicle.rate_1h * 2);
-  else if (hours === 5) rentalFee = vehicle.rate_5h || (vehicle.rate_1h * 3.5);
-  else if (hours >= 24 && hours < 72) rentalFee = vehicle.rate_1d;
-  else if (hours >= 72) rentalFee = (vehicle.rate_3d || (vehicle.rate_1d * 0.8)) * Math.ceil(hours / 24);
+  const now = new Date();
+  const startTimeStr = start_time ? new Date(start_time).toISOString() : now.toISOString();
+  
+  let expectedEndTimeStr = expected_end_time ? new Date(expected_end_time).toISOString() : new Date(now.getTime() + (Number(duration_hours || 1) * 3600 * 1000)).toISOString();
 
+  // Price Calculation from request or default
+  const calculatedRentalFee = Number(rental_fee || vehicle.rate_1h || 15);
   const deposit = vehicle.deposit_amount || 30;
 
   // Neighbor Commission Split (80% Neighbor Payout / 20% Store Commission)
   let storeCommission = 0;
   let neighborPayout = 0;
   if (vehicle.item_owner === 'NEIGHBOR') {
-    storeCommission = rentalFee * 0.20;
-    neighborPayout = rentalFee * 0.80;
+    storeCommission = calculatedRentalFee * 0.20;
+    neighborPayout = calculatedRentalFee * 0.80;
   }
 
   const contractNum = `QQ-2026-${String(memoryData.contracts.length + 1).padStart(4, '0')}`;
-  const now = new Date();
-  const startTime = now.toISOString();
-
-  // Expected return time calculation
-  const expectedEndTime = new Date(now.getTime() + (hours * 3600 * 1000)).toISOString();
 
   const newContract: RentalContract = {
     id: Date.now(),
@@ -72,16 +64,16 @@ export const createRental = (req: Request, res: Response) => {
     customer_phone: customer_phone || '-',
     vehicle_id: vehicle.id,
     vehicle_name: vehicle.name,
-    start_time: startTime,
-    end_time: expectedEndTime,
-    expected_end_time: expectedEndTime,
+    start_time: startTimeStr,
+    end_time: expectedEndTimeStr,
+    expected_end_time: expectedEndTimeStr,
     status: 'ACTIVE',
-    rental_fee: rentalFee,
+    rental_fee: calculatedRentalFee,
     deposit_collected: deposit,
     deposit_refunded: 0,
     extra_charges: 0,
     payment_method: payment_method || 'CARD',
-    created_at: startTime,
+    created_at: startTimeStr,
     item_owner: vehicle.item_owner,
     neighbor_name: vehicle.neighbor_name,
     store_commission: storeCommission,
