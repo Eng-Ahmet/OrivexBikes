@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # QQBikes Full-Stack Application (Backend + Served Frontend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qqbikes_app
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      - PORT=${PORT:-5000}
+      - NODE_ENV=${NODE_ENV:-production}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-qqbikes_secret}
+      - DB_NAME=${DB_NAME:-qqbikes_db}
+      - JWT_SECRET=${JWT_SECRET:-qqbikes_super_secret_jwt_key_2026}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - qqbikes_network
+    restart: always
+
+  # MySQL 8 Database Service (Isolated Internal Port - No Host Exposure)
+  db:
+    image: mysql:8.0
+    container_name: qqbikes_db
+    expose:
+      - "${DB_PORT:-3306}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-qqbikes_secret}
+      MYSQL_DATABASE: ${DB_NAME:-qqbikes_db}
+    volumes:
+      - qqbikes_mysql_data:/var/lib/mysql
+    networks:
+      - qqbikes_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-qqbikes_secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+networks:
+  qqbikes_network:
+    driver: bridge
+    name: qqbikes_network
+
+volumes:
+  qqbikes_mysql_data:
+    name: qqbikes_mysql_data
