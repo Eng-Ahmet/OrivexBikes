@@ -20,50 +20,47 @@ export function renderNewContractModal(container) {
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content modal-content-glass">
           <div class="modal-header border-secondary">
-            <h5 class="modal-title fw-bold text-info"><i class="fa-solid fa-file-signature me-2"></i> Issue Official Rental Contract</h5>
+            <h5 class="modal-title fw-bold text-info"><i class="fa-solid fa-file-signature me-2"></i> ${t('modal_contract_title')}</h5>
             <button type="button" class="btn-close btn-close-white" id="closeContractModalBtn" data-bs-dismiss="modal"></button>
           </div>
           <form id="newContractForm">
             <div class="modal-body">
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-user me-1"></i> Customer Full Name *</label>
+                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-user me-1"></i> ${t('label_cust_name')}</label>
                   <input type="text" id="custName" class="form-control bg-dark text-light border-secondary" placeholder="e.g. John Doe" required />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-id-card me-1"></i> Passport / DNI / ID *</label>
+                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-id-card me-1"></i> ${t('label_cust_passport')}</label>
                   <input type="text" id="custPassport" class="form-control bg-dark text-light border-secondary" placeholder="e.g. X1234567A" required />
                 </div>
 
                 <!-- DYNAMIC PHONE LABEL & REQUIRED STATE -->
                 <div class="col-md-6">
                   <label id="phoneLabel" class="form-label text-secondary small fw-semibold">
-                    <i class="fa-solid fa-phone me-1"></i> Customer Phone Number <span id="phoneReqBadge" class="text-danger">*</span>
+                    <i class="fa-solid fa-phone me-1"></i> ${t('label_cust_phone')} <span id="phoneReqBadge" class="text-danger">*</span>
                   </label>
                   <input type="tel" id="custPhone" class="form-control bg-dark text-light border-secondary" placeholder="e.g. +34 612 345 678" required />
                 </div>
 
                 <!-- SELECT PHYSICAL UNIT / SERIAL / QR CODE -->
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-bicycle me-1"></i> Select Physical Unit / Serial QR *</label>
+                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-bicycle me-1"></i> ${t('label_select_unit')}</label>
                   <select id="contractVehicleSelect" class="form-select bg-dark text-light border-secondary" required></select>
                 </div>
 
-                <!-- CONDITIONAL E-BIKE BATTERY & CHARGER SERIAL FIELDS -->
+                <!-- E-BIKE CREDIT CARD (VISA) SECURITY GUARANTEE DEPOSIT FIELDS -->
                 <div id="ebikeFieldsRow" class="col-12 d-none">
                   <div class="p-3 bg-dark bg-opacity-75 rounded border border-warning">
-                    <h6 class="text-warning fw-bold mb-2"><i class="fa-solid fa-bolt me-1"></i> E-Bike Battery & Charger / Key Registration</h6>
+                    <h6 class="text-warning fw-bold mb-2"><i class="fa-solid fa-credit-card me-1"></i> ${t('ebike_card_title')}</h6>
                     <div class="row g-2">
-                      <div class="col-md-6">
-                        <label class="form-label text-secondary small">Battery Level Check (%) *</label>
-                        <div class="input-group input-group-sm">
-                          <input type="number" id="ebikeBatteryLevel" class="form-control bg-dark text-warning border-warning" min="1" max="100" value="100" />
-                          <span class="input-group-text bg-dark text-warning border-warning">%</span>
-                        </div>
+                      <div class="col-md-8">
+                        <label class="form-label text-secondary small">${t('ebike_card_number')}</label>
+                        <input type="text" id="ebikeCardNumber" class="form-control form-control-sm bg-dark text-warning border-warning font-monospace" placeholder="4532 •••• •••• 8892" maxlength="19" />
                       </div>
-                      <div class="col-md-6">
-                        <label class="form-label text-secondary small">Charger / Key Code Serial</label>
-                        <input type="text" id="ebikeChargerSerial" class="form-control form-control-sm bg-dark text-light border-warning" placeholder="e.g. CHG-EB-8842" />
+                      <div class="col-md-4">
+                        <label class="form-label text-secondary small">${t('ebike_card_expiry')}</label>
+                        <input type="text" id="ebikeCardExpiry" class="form-control form-control-sm bg-dark text-warning border-warning font-monospace text-center" placeholder="08/28" maxlength="5" />
                       </div>
                     </div>
                   </div>
@@ -71,16 +68,16 @@ export function renderNewContractModal(container) {
 
                 <!-- DEPARTURE & EXPECTED RETURN DATETIME PICKERS -->
                 <div class="col-md-6">
-                  <label class="form-label text-info small fw-semibold"><i class="fa-solid fa-calendar-minus me-1"></i> Departure Date & Time (تاريخ المغادرة) *</label>
+                  <label class="form-label text-info small fw-semibold"><i class="fa-solid fa-calendar-minus me-1"></i> ${t('label_departure_time')}</label>
                   <input type="datetime-local" id="startTimeInput" class="form-control bg-dark text-light border-info" value="${defaultStart}" required />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-info small fw-semibold"><i class="fa-solid fa-calendar-plus me-1"></i> Expected Return Date & Time (تاريخ الإرجاع المتوقع) *</label>
+                  <label class="form-label text-info small fw-semibold"><i class="fa-solid fa-calendar-plus me-1"></i> ${t('label_return_time')}</label>
                   <input type="datetime-local" id="expectedReturnTimeInput" class="form-control bg-dark text-light border-info" value="${defaultReturn}" required />
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-credit-card me-1"></i> Payment Method *</label>
+                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-credit-card me-1"></i> ${t('label_payment_method')}</label>
                   <select id="paymentMethod" class="form-select bg-dark text-light border-secondary">
                     <option value="CARD">Credit / Debit Card (VISA)</option>
                     <option value="CASH">Cash</option>
@@ -92,17 +89,17 @@ export function renderNewContractModal(container) {
               <div class="bg-dark bg-opacity-75 p-3 rounded border border-secondary my-3">
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Selected Physical Unit:</span><strong id="calcVehicleName" class="text-light">-</strong></div>
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Category:</span><span id="calcCategoryBadge" class="badge bg-info-subtle text-info">-</span></div>
-                <div class="d-flex justify-content-between text-secondary mb-1"><span>Calculated Duration:</span><strong id="calcElapsedDuration" class="text-info">2 Hours</strong></div>
-                <div class="d-flex justify-content-between text-secondary mb-1"><span>Automated Tariff Fee:</span><strong id="calcRentalFee" class="text-light">€0.00</strong></div>
-                <div class="d-flex justify-content-between text-secondary mb-1"><span>Refundable Deposit:</span><strong id="calcDeposit" class="text-warning">€0.00</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>${t('label_calculated_duration')}:</span><strong id="calcElapsedDuration" class="text-info">2 Hours</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>${t('label_auto_fee')}:</span><strong id="calcRentalFee" class="text-light">€0.00</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>${t('label_deposit')}:</span><strong id="calcDeposit" class="text-warning">€0.00</strong></div>
                 <div id="neighborDebtRow" class="d-none d-flex justify-content-between text-secondary mb-1"><span>Neighbor Debt (80% Payout):</span><strong id="calcNeighborDebt" class="text-warning">€0.00</strong></div>
-                <div class="d-flex justify-content-between text-secondary border-top border-secondary pt-2 mt-2"><span>Total Payable Now:</span><strong id="calcTotal" class="text-info fs-5">€0.00</strong></div>
+                <div class="d-flex justify-content-between text-secondary border-top border-secondary pt-2 mt-2"><span>${t('label_total_payable')}:</span><strong id="calcTotal" class="text-info fs-5">€0.00</strong></div>
               </div>
             </div>
 
             <div class="modal-footer border-secondary">
-              <button type="button" class="btn btn-secondary btn-sm" id="cancelContractModalBtn" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-info btn-sm fw-bold"><i class="fa-solid fa-check me-1"></i> Issue Contract</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="cancelContractModalBtn" data-bs-dismiss="modal">${t('cancel')}</button>
+              <button type="submit" class="btn btn-info btn-sm fw-bold"><i class="fa-solid fa-check me-1"></i> ${t('btn_issue_contract')}</button>
             </div>
           </form>
         </div>
@@ -117,12 +114,23 @@ export function renderNewContractModal(container) {
   const vehicleSelect = modalEl.querySelector('#contractVehicleSelect');
   const startTimeInput = modalEl.querySelector('#startTimeInput');
   const returnTimeInput = modalEl.querySelector('#expectedReturnTimeInput');
+  const custNameInput = modalEl.querySelector('#custName');
+  const custPassportInput = modalEl.querySelector('#custPassport');
   const custPhone = modalEl.querySelector('#custPhone');
   const phoneReqBadge = modalEl.querySelector('#phoneReqBadge');
   const ebikeFieldsRow = modalEl.querySelector('#ebikeFieldsRow');
+  const ebikeCardNumber = modalEl.querySelector('#ebikeCardNumber');
+  const ebikeCardExpiry = modalEl.querySelector('#ebikeCardExpiry');
 
   let vehiclesList = [];
   let currentCalculatedFee = 0;
+
+  // LATIN-ONLY CHARACTER VALIDATION HELPER
+  function isLatinOnly(str) {
+    if (!str) return true;
+    const hasArabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+    return !hasArabic.test(str);
+  }
 
   function getBootstrapModalInstance() {
     if (window.bootstrap && window.bootstrap.Modal) {
@@ -164,19 +172,16 @@ export function renderNewContractModal(container) {
       if (totalDays === 1) return { fee: 20, durationStr: '1 Día' };
       if (totalDays === 2) return { fee: 35, durationStr: '2 Días' };
 
-      // 3 to 6 Days Tier (€15 / day)
       if (totalDays <= 6) {
         const fee = totalDays * 15;
         return { fee, durationStr: `${totalDays} Días (Tier +3 Días @ €15/día)` };
       }
 
-      // 7 to 13 Days Tier (€10 / day)
       if (totalDays <= 13) {
         const fee = totalDays * 10;
         return { fee, durationStr: `${totalDays} Días (Tier +1 Semana @ €10/día)` };
       }
 
-      // 14 Days & Above Tier (€8 / day)
       const fee = totalDays * 8;
       return { fee, durationStr: `${totalDays} Días (Tier +2 Semanas @ €8/día)` };
     }
@@ -189,19 +194,16 @@ export function renderNewContractModal(container) {
       if (totalDays === 1) return { fee: 40, durationStr: '1 Día' };
       if (totalDays === 2) return { fee: 60, durationStr: '2 Días' };
 
-      // 3 to 6 Days Tier (€30 / day)
       if (totalDays <= 6) {
         const fee = totalDays * 30;
         return { fee, durationStr: `${totalDays} Días (Tier +3 Días @ €30/día)` };
       }
 
-      // 7 to 13 Days Tier (€25 / day)
       if (totalDays <= 13) {
         const fee = totalDays * 25;
         return { fee, durationStr: `${totalDays} Días (Tier +1 Semana @ €25/día)` };
       }
 
-      // 14 Days & Above Tier (€20 / day)
       const fee = totalDays * 20;
       return { fee, durationStr: `${totalDays} Días (Tier +2 Semanas @ €20/día)` };
     }
@@ -213,19 +215,16 @@ export function renderNewContractModal(container) {
     if (totalDays === 1) return { fee: 40, durationStr: '1 Día' };
     if (totalDays === 2) return { fee: 60, durationStr: '2 Días' };
 
-    // 3 to 6 Days Tier (€30 / day)
     if (totalDays <= 6) {
       const fee = totalDays * 30;
       return { fee, durationStr: `${totalDays} Días (Tier +3 Días @ €30/día)` };
     }
 
-    // 7 to 13 Days Tier (€25 / day)
     if (totalDays <= 13) {
       const fee = totalDays * 25;
       return { fee, durationStr: `${totalDays} Días (Tier +1 Semana @ €25/día)` };
     }
 
-    // 14 Days & Above Tier (€20 / day)
     const fee = totalDays * 20;
     return { fee, durationStr: `${totalDays} Días (Tier +2 Semanas @ €20/día)` };
   }
@@ -236,7 +235,6 @@ export function renderNewContractModal(container) {
     const v = vehiclesList.find(item => item.id === vId);
     if (!v) return;
 
-    // DYNAMIC PHONE VALIDATION: Required for Bikes & Scooters; Optional for Cars, Quads, Buggys, Accessories
     const normCat = (v.category || '').toLowerCase();
     const isBikeOrScooter = normCat.includes('bike') || normCat.includes('scooter');
     if (isBikeOrScooter) {
@@ -253,7 +251,6 @@ export function renderNewContractModal(container) {
       }
     }
 
-    // CONDITIONAL E-BIKE BATTERY & CHARGER SERIAL FIELDS: Show ONLY for E-Bikes (VISA)!
     const isEbike = normCat.includes('e-bike');
     if (isEbike && ebikeFieldsRow) {
       ebikeFieldsRow.classList.remove('d-none');
@@ -320,20 +317,32 @@ export function renderNewContractModal(container) {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const nameVal = custNameInput.value.trim();
+      const passportVal = custPassportInput.value.trim();
+
+      // LATIN-ONLY CHARACTER VALIDATION CHECK
+      if (!isLatinOnly(nameVal) || !isLatinOnly(passportVal)) {
+        showToast('⚠️ Customer details must be written in Latin script (Spanish / English / Standard Western characters). Arabic script is disallowed in database records.', 'error');
+        return;
+      }
+
       const sTime = new Date(startTimeInput.value).getTime();
       const rTime = new Date(returnTimeInput.value).getTime();
       const durationHours = Math.max(1, Math.round((rTime - sTime) / (3600 * 1000)));
 
       const data = {
-        customer_name: modalEl.querySelector('#custName').value,
-        customer_passport: modalEl.querySelector('#custPassport').value,
-        customer_phone: modalEl.querySelector('#custPhone').value || '-',
+        customer_name: nameVal,
+        customer_passport: passportVal,
+        customer_phone: custPhone.value || '-',
         vehicle_id: Number(vehicleSelect.value),
         start_time: new Date(startTimeInput.value).toISOString(),
         expected_end_time: new Date(returnTimeInput.value).toISOString(),
         duration_hours: durationHours,
         rental_fee: currentCalculatedFee,
-        payment_method: modalEl.querySelector('#paymentMethod').value
+        payment_method: modalEl.querySelector('#paymentMethod').value,
+        credit_card_number: ebikeCardNumber ? ebikeCardNumber.value : '',
+        credit_card_expiry: ebikeCardExpiry ? ebikeCardExpiry.value : ''
       };
 
       const res = await api.createRental(data);
@@ -359,7 +368,6 @@ export function renderNewContractModal(container) {
       return;
     }
 
-    // Filter available units by category if preselected
     let filteredList = vehiclesList;
     if (preselectedCategory) {
       filteredList = vehiclesList.filter(v => v.category.includes(preselectedCategory));

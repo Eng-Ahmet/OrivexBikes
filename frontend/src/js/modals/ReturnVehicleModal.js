@@ -8,7 +8,7 @@ export function renderReturnVehicleModal(container) {
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content modal-content-glass">
           <div class="modal-header border-secondary">
-            <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-flag-checkered me-2"></i> Return Vehicle & Release Deposit</h5>
+            <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-flag-checkered me-2"></i> ${t('modal_return_title')}</h5>
             <button type="button" class="btn-close btn-close-white" id="closeReturnModalBtn" data-bs-dismiss="modal"></button>
           </div>
           <form id="returnVehicleForm">
@@ -22,34 +22,34 @@ export function renderReturnVehicleModal(container) {
 
               <!-- ITEMIZED EXTRA CHARGES & DAMAGE / INCIDENT ADD-ONS -->
               <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary mb-3">
-                <h6 class="text-light fw-bold mb-2"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Extra Charges, Incidents, & Part Add-ons (رسوم الأضرار والمشتريات الإضافية)</h6>
+                <h6 class="text-light fw-bold mb-2"><i class="fa-solid fa-screwdriver-wrench me-1"></i> ${t('label_extra_charges_title')}</h6>
                 <div class="row g-2 mb-2">
                   <div class="col-md-6">
-                    <label class="form-label text-secondary small">Charge Reason / Description</label>
+                    <label class="form-label text-secondary small">${t('label_charge_reason')}</label>
                     <select id="extraReasonSelect" class="form-select form-select-sm bg-dark text-light border-secondary">
-                      <option value="No Extra Charges">None (No Damage / Clean Return)</option>
-                      <option value="Vehicle Damage Repair">Vehicle Damage Repair (صيانة وتصليح ضرر)</option>
-                      <option value="Helmet / Accessory Purchase">Helmet / Accessory Purchase (شراء خوذة أو ملحق)</option>
-                      <option value="Charger Replacement">Charger Replacement (استبدال شاحن)</option>
-                      <option value="Late Return Penalty">Late Return Overdue Fee (غرامة تأخير)</option>
+                      <option value="No Extra Charges">None (Clean Return)</option>
+                      <option value="Vehicle Damage Repair">Vehicle Damage Repair</option>
+                      <option value="Helmet / Accessory Purchase">Helmet / Accessory Purchase</option>
+                      <option value="Charger Replacement">Charger Replacement</option>
+                      <option value="Late Return Penalty">Late Return Overdue Fee</option>
                     </select>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label text-secondary small">Extra Charge Amount (€)</label>
+                    <label class="form-label text-secondary small">${t('label_extra_amount')}</label>
                     <input type="number" id="extraChargesInput" class="form-control form-control-sm bg-dark text-warning border-secondary" step="0.5" min="0" value="0.00" />
                   </div>
                 </div>
               </div>
 
               <div class="bg-dark bg-opacity-75 p-3 rounded border border-secondary">
-                <div class="d-flex justify-content-between text-secondary mb-1"><span>Extra Charges Deducted:</span><strong id="calcDeduction" class="text-danger">-€0.00</strong></div>
-                <div class="d-flex justify-content-between text-light fw-bold fs-5 border-top border-secondary pt-2 mt-2"><span>Net Deposit Refundable to Customer:</span><strong id="calcRefundNet" class="text-success">€0.00</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>${t('label_deduction')}:</span><strong id="calcDeduction" class="text-danger">-€0.00</strong></div>
+                <div class="d-flex justify-content-between text-light fw-bold fs-5 border-top border-secondary pt-2 mt-2"><span>${t('label_net_refund')}:</span><strong id="calcRefundNet" class="text-success">€0.00</strong></div>
               </div>
             </div>
 
             <div class="modal-footer border-secondary">
-              <button type="button" class="btn btn-secondary btn-sm" id="cancelReturnModalBtn" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-success btn-sm fw-bold"><i class="fa-solid fa-check me-1"></i> Confirm Vehicle Return & Deposit Release</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="cancelReturnModalBtn" data-bs-dismiss="modal">${t('cancel')}</button>
+              <button type="submit" class="btn btn-success btn-sm fw-bold"><i class="fa-solid fa-check me-1"></i> ${t('btn_confirm_return')}</button>
             </div>
           </form>
         </div>

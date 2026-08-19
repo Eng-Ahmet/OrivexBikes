@@ -1,88 +1,98 @@
 export default {
-  // Navigation & Tabs
-  fleet_tab: "Inventario de Flota",
-  rentals_tab: "Contratos Activos",
-  shifts_tab: "Turnos y Caja",
-  tariffs_tab: "Tarifas Oficiales",
-  schedules_tab: "Horarios y Turnos",
-  repairs_tab: "Taller y Repuestos",
-  reports_tab: "Analítica Ejecutiva",
+  app_title: "QQBikes - Sistema de Gestión de Alquiler y Tienda",
+  store_location: "Tienda #1 (Málaga Centro)",
+  fleet_management: "Gestión de Flota",
+  rental_contracts: "Contratos de Alquiler",
+  shifts_cash: "Turnos y Caja",
+  tariffs_prices: "Tarifas y Precios",
+  schedules_planner: "Planificador de Horarios",
+  repairs_catalog: "Taller e Inspecciones",
+  analytics_reports: "Auditoría y Analítica",
   settings_tab: "Configuración",
+  
+  // Dashboard & Fleet Filters
+  all_categories: "Todas las Categorías",
+  category_bicycles: "Bicicletas (Quert/Altec/MTB)",
+  category_ebikes: "E-Bikes (VISA)",
+  category_scooters: "Patinetes Eléctricos",
+  category_xlcars: "Coches XL y Jeep",
+  category_quads: "Quads y Coches S",
+  category_buggys: "Buggys",
+  
   btn_new_contract: "Nuevo Contrato",
+  btn_add_vehicle: "Añadir Vehículo",
+  btn_filter: "Filtrar",
 
-  // Fleet & Category Titles
-  fleet_title: "Inventario de Flota y Alquiler",
-  fleet_subtitle: "Gestión unificada de flota, disponibilidad y tarifas en tiempo real.",
-  category_units: "Unidades Disponibles",
-  btn_rent_category: "Alquilar Vehículo",
+  // Table Headers
+  th_qr_code: "Código QR / Serie",
+  th_vehicle_name: "Nombre del Vehículo",
+  th_category: "Categoría",
+  th_status: "Estado",
+  th_deposit: "Fianza (€)",
+  th_hourly_rate: "Tarifa / Hora (€)",
+  th_actions: "Acciones",
+  
+  // Status Labels
+  status_available: "Disponible",
+  status_rented: "Alquilado",
+  status_maintenance: "En Mantenimiento",
 
-  // New Contract Modal
-  modal_contract_title: "Emitir Contrato Oficial de Alquilar",
+  // Modals & Labels
+  modal_contract_title: "Nuevo Contrato de Alquiler de Vehículo",
+  modal_return_title: "Devolución de Vehículo y Cierre de Contrato",
   label_cust_name: "Nombre Completo del Cliente *",
-  label_cust_passport: "Pasaporte / DNI / ID *",
-  label_cust_phone: "Teléfono del Cliente",
-  label_select_unit: "Seleccionar Unidad / Código QR *",
+  label_cust_passport: "Pasaporte / DNI / NIE *",
+  label_cust_phone: "Número de Teléfono",
+  label_select_unit: "Seleccionar Unidad Física (QR / Serie) *",
+  
+  ebike_card_title: "Tarjeta de Crédito de Garantía E-Bike (VISA)",
+  ebike_card_number: "Número de Tarjeta de Crédito (16 Dígitos)",
+  ebike_card_expiry: "Fecha de Caducidad (MM/AA)",
+
   label_departure_time: "Fecha y Hora de Salida *",
-  label_return_time: "Fecha y Hora Prevista de Devolución *",
-  label_payment_method: "Método de Pago *",
+  label_return_time: "Fecha y Hora Prevista de Retorno *",
+  label_payment_method: "Método de Pago",
   label_calculated_duration: "Duración Calculada",
-  label_auto_fee: "Tarifa Calculada Automáticamente",
-  label_deposit: "Fianza Reembolsable",
-  label_total_payable: "Total a Pagar Ahora",
-  btn_issue_contract: "Emitir Contrato",
-  ebike_battery_title: "Registro de Batería y Cargador / Llave E-Bike",
-  ebike_battery_level: "Nivel de Batería (%) *",
-  ebike_charger_code: "Código Serie de Cargador / Llave",
+  label_auto_fee: "Tarifa Automática de Alquiler",
+  label_deposit: "Fianza de Garantía",
+  label_total_payable: "Total a Pagar en Tienda",
+  btn_issue_contract: "Emitir Contrato y Desbloquear Vehículo",
+  cancel: "Cancelar",
+
+  // Workshop & Repairs
+  workshop_title: "Registro de Reparaciones de Clientes",
+  workshop_subtitle: "Gestión de partes de reparación y piezas de recambio para clientes externos.",
 
   // Return Modal
-  modal_return_title: "Devolución de Vehículo y Liberación de Fianza",
-  label_extra_charges_title: "Cargos Extra, Incidentes y Repuestos",
-  label_charge_reason: "Motivo del Cargo Extra",
-  label_extra_amount: "Importe Cargo Extra (€)",
-  label_deduction: "Deducción por Cargos Extra",
+  label_extra_charges_title: "Cargos Extra, Incidentes y Compras",
+  label_charge_reason: "Concepto de Cargo",
+  label_extra_amount: "Importe Extra (€)",
+  label_deduction: "Deducción de Fianza",
   label_net_refund: "Fianza Neta a Devolver al Cliente",
-  btn_confirm_return: "Confirmar Devolución y Liberar Fianza",
+  btn_confirm_return: "Confirmar Devolución y Liberar Vehículo",
 
-  // Shift & Cash
-  shifts_title: "Control de Turnos y Arqueo de Caja",
-  shifts_subtitle: "Registro de aperturas, cierres, retiradas de efectivo y arqueo diario.",
-  shift_active_operator: "Operador Activo:",
+  // Shifts
+  shifts_title: "Turnos de Caja y Cuadrante de Efectivo",
+  shifts_subtitle: "Control de arqueo de caja, salidas de dinero y cierres de turno por empleado.",
   shift_active: "Turno Abierto",
-  starting_float: "Fondo Inicial de Caja",
-  cash_rentals: "Ventas en Efectivo",
-  cash_withdrawals: "Retiradas de Efectivo",
-  expected_drawer_cash: "Efectivo Esperado en Caja",
-  btn_record_payout: "Registrar Retirada / Gasto",
-  btn_close_shift: "Cerrar Turno y Arquear",
-  shift_history_title: "Historial de Cierres de Turno y Arqueos",
-  th_date_time: "Fecha / Hora",
-  th_employee: "Operador",
+  shift_active_operator: "Operador de Caja Activo:",
+  starting_float: "Fianza de Caja Inicial",
+  cash_rentals: "Ventas / Alquileres en Efectivo",
+  cash_withdrawals: "Salidas / Retiradas de Efectivo",
+  expected_drawer_cash: "Efectivo Esperado en Arqueo",
+  btn_record_payout: "Registrar Salida de Efectivo",
+  btn_close_shift: "Cerrar Turno y Realizar Arqueo",
+  shift_history_title: "Historial de Turnos y Auditoría de Arqueos",
+  th_date_time: "Fecha y Hora",
+  th_employee: "Empleado",
   th_opening_cash: "Fondo Inicial",
-  th_cash_rentals: "Efectivo Alquileres",
+  th_cash_rentals: "Alquileres Efectivo",
   th_withdrawals: "Retiradas",
   th_expected: "Esperado",
-  th_closing: "Conteo Real",
-  th_discrepancy: "Diferencia",
-  th_notes: "Notas / Observaciones",
+  th_closing: "Contado",
+  th_discrepancy: "Descuadre",
+  th_notes: "Notas / Explicación",
 
-  // Analytics
-  analytics_title: "Analítica Ejecutiva y Auditoría",
-  analytics_subtitle: "Informe consolidado de ingresos, ventas por método de pago y registros históricos.",
-  tab_contracts_history: "Historial de Contratos de Alquiler",
-  tab_repairs_history: "Historial de Reparaciones de Taller",
-  tab_shifts_history: "Historial de Turnos y Caja",
-  kpi_total_revenue: "Ingresos Totales",
-  kpi_cash_sales: "Ventas Efectivo",
-  kpi_card_sales: "Ventas Tarjeta (VISA)",
-  kpi_deposits: "Fianzas Retenidas Activas",
-  btn_filter_date: "Filtrar Fechas",
-
-  // Workshop Repairs
-  workshop_title: "Taller de Reparaciones y Catálogo de Repuestos",
-  workshop_subtitle: "Gestión de órdenes de trabajo de clientes externos y stock de recambios.",
-
-  // Common
-  cancel: "Cancelar",
-  save: "Guardar",
-  close: "Cerrar"
+  // Tariffs Page
+  tariffs_title: "Tabla Oficial de Tarifas de Alquiler de Flota"
 };

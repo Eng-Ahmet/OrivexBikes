@@ -30,8 +30,8 @@ export async function renderShiftsPage(container) {
           <h5 class="fw-bold text-light mb-1"><i class="fa-solid fa-store text-info me-2"></i> Active Counter Shift Summary</h5>
           <span class="text-secondary small">${t('shift_active_operator')} <strong class="text-info">${(currentShift && currentShift.employee_name) || state.currentUser?.username}</strong></span>
         </div>
-        <span class="badge ${isShiftOpen ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary'} rounded-pill px-3 py-2">
-          ${isShiftOpen ? `<i class="fa-solid fa-circle text-success me-1 font-monospace" style="font-size: 0.55rem;"></i> ${t('shift_active')}` : 'No Active Shift'}
+        <span class="badge ${isShiftOpen ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary'} rounded-pill px-3 py-2 d-inline-flex align-items-center">
+          ${isShiftOpen ? `<span class="status-dot-active me-2"></span> ${t('shift_active')}` : 'No Active Shift'}
         </span>
       </div>
 
