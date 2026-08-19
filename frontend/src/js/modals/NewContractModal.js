@@ -1,5 +1,6 @@
 import { api } from '../api.js';
 import { showToast } from '../components/Toast.js';
+import { t } from '../i18n.js';
 
 export function renderNewContractModal(container) {
   container.innerHTML = `
@@ -26,8 +27,10 @@ export function renderNewContractModal(container) {
                   <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-phone me-1"></i> Customer Phone Number *</label>
                   <input type="tel" id="custPhone" class="form-control bg-dark text-light border-secondary" placeholder="e.g. +34 612 345 678" required />
                 </div>
+
+                <!-- SELECT PHYSICAL UNIT / SERIAL / QR CODE -->
                 <div class="col-md-6">
-                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-bicycle me-1"></i> Select Available Vehicle *</label>
+                  <label class="form-label text-secondary small fw-semibold"><i class="fa-solid fa-bicycle me-1"></i> Select Physical Unit / Serial QR *</label>
                   <select id="contractVehicleSelect" class="form-select bg-dark text-light border-secondary" required></select>
                 </div>
 
@@ -56,7 +59,7 @@ export function renderNewContractModal(container) {
 
               <!-- Dynamic Pricing Calculation Card -->
               <div class="bg-dark bg-opacity-75 p-3 rounded border border-secondary my-3">
-                <div class="d-flex justify-content-between text-secondary mb-1"><span>Selected Vehicle:</span><strong id="calcVehicleName" class="text-light">-</strong></div>
+                <div class="d-flex justify-content-between text-secondary mb-1"><span>Selected Physical Unit:</span><strong id="calcVehicleName" class="text-light">-</strong></div>
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Category:</span><span id="calcCategoryBadge" class="badge bg-info-subtle text-info">-</span></div>
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Rental Fee:</span><strong id="calcRentalFee" class="text-light">€0.00</strong></div>
                 <div class="d-flex justify-content-between text-secondary mb-1"><span>Refundable Deposit:</span><strong id="calcDeposit" class="text-warning">€0.00</strong></div>
@@ -177,7 +180,7 @@ export function renderNewContractModal(container) {
     const fee = selectedOpt ? Number(selectedOpt.getAttribute('data-fee')) : 15;
     const dep = v.deposit_amount || 30;
 
-    container.querySelector('#calcVehicleName').textContent = v.name;
+    container.querySelector('#calcVehicleName').textContent = `${v.name} (${v.qr_code})`;
     container.querySelector('#calcCategoryBadge').textContent = v.category;
     container.querySelector('#calcRentalFee').textContent = `€${fee.toFixed(2)}`;
     container.querySelector('#calcDeposit').textContent = `€${dep.toFixed(2)}`;
@@ -228,7 +231,7 @@ export function renderNewContractModal(container) {
   });
 
   window.addEventListener('app:openNewContractModal', async (e) => {
-    const preselectedId = e.detail?.vehicleId;
+    const preselectedCategory = e.detail?.category;
     vehiclesList = await api.getVehicles('ALL', 'AVAILABLE');
 
     vehicleSelect.innerHTML = '';
@@ -237,11 +240,17 @@ export function renderNewContractModal(container) {
       return;
     }
 
-    vehiclesList.forEach(v => {
+    // Filter available units by category if preselected
+    let filteredList = vehiclesList;
+    if (preselectedCategory) {
+      filteredList = vehiclesList.filter(v => v.category.includes(preselectedCategory));
+      if (filteredList.length === 0) filteredList = vehiclesList;
+    }
+
+    filteredList.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.id;
-      opt.textContent = `${v.name} (${v.category} • Depósito €${v.deposit_amount || 30})`;
-      if (preselectedId && v.id === preselectedId) opt.selected = true;
+      opt.textContent = `${v.name} [Serial / QR: ${v.qr_code}] (Depósito €${v.deposit_amount || 30})`;
       vehicleSelect.appendChild(opt);
     });
 
