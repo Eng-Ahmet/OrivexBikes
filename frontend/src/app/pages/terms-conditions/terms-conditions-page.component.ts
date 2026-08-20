@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
               <i class="fa-solid fa-file-contract me-1"></i> Contrato de Alquiler
             </span>
             <h1 class="fw-extrabold text-white font-heading mb-1">CONDICIONES GENERALES DEL CONTRATO DE ALQUILER</h1>
-            <p class="text-secondary small mb-0">Normativa Española de Consumidores y Usuarios | QQBikes Málaga S.L.</p>
+            <p class="text-secondary small mb-0">Normativa Española de Consumidores y Usuarios | Orivex Technology S.L.</p>
           </div>
 
           <div class="btn-group rounded-pill p-1 bg-secondary bg-opacity-20 border border-secondary">

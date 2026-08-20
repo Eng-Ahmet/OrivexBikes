@@ -13,8 +13,8 @@ import { RouterModule } from '@angular/router';
         <span class="badge bg-primary px-3 py-2 rounded-pill mb-2">
           <i class="fa-solid fa-sun me-1 text-warning"></i> Málaga Born & Raised
         </span>
-        <h1 class="display-5 fw-extrabold font-heading text-white mb-2">About QQBikes Málaga</h1>
-        <p class="text-secondary lead mb-0">Providing high-quality e-bikes, city bicycles, scooters, and guided coastal experiences since 2025.</p>
+        <h1 class="display-5 fw-extrabold font-heading text-white mb-2">About OrivexBike</h1>
+        <p class="text-secondary lead mb-0">Providing high-quality e-bikes, city bicycles, scooters, and guided coastal experiences powered by Orivex Technology.</p>
       </div>
 
       <div class="row g-4 mb-5">
@@ -22,7 +22,7 @@ import { RouterModule } from '@angular/router';
           <div class="card bg-dark border-secondary-subtle rounded-4 p-4 h-100 shadow-sm">
             <h3 class="fw-bold text-white font-heading mb-3"><i class="fa-solid fa-bullseye text-primary me-2"></i> Our Mission</h3>
             <p class="text-secondary mb-3">
-              QQBikes was founded with a clear vision: to empower tourists and locals to explore the Costa del Sol sustainably, effortlessly, and safely.
+              OrivexBike by Orivex Technology was founded with a clear vision: to empower tourists and locals to explore the Costa del Sol sustainably, effortlessly, and safely.
             </p>
             <p class="text-secondary mb-0">
               We operate state-of-the-art rental hubs in Málaga Central Beach Promenade and Mijas Coastal Resort, maintaining a fleet of over 50 inspected vehicles.

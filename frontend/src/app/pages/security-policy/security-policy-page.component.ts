@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
               <i class="fa-solid fa-lock me-1"></i> Seguridad y Auditoría
             </span>
             <h1 class="fw-extrabold text-white font-heading mb-1">POLÍTICA INTERNA DE PROTECCIÓN Y SEGURIDAD DE DATOS</h1>
-            <p class="text-secondary small mb-0">Protocolos de Control de Acceso, Cifrado y Auditoría de Información | QQBikes Málaga S.L.</p>
+            <p class="text-secondary small mb-0">Protocolos de Control de Acceso, Cifrado y Auditoría de Información | Orivex Technology S.L.</p>
           </div>
 
           <div class="btn-group rounded-pill p-1 bg-secondary bg-opacity-20 border border-secondary">
@@ -36,17 +36,17 @@ import { RouterModule } from '@angular/router';
         <div class="text-secondary leading-relaxed">
           <div class="alert alert-dark border-success border-opacity-50 text-light rounded-4 p-3 mb-4">
             <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-shield-halved text-success me-2"></i> POLÍTICA INTERNA DE SEGURIDAD Y PROTECCIÓN DE DATOS</h5>
-            <span class="small text-secondary">Normas de acceso restringido, cifrado de identidad, control de auditoría y gestión de incidentes.</span>
+            <span class="small text-secondary">Normas de acceso restringido, cifrado de identidad, control de auditoría y gestión de incidentes por Orivex Technology S.L.</span>
           </div>
 
           <h5 class="fw-bold text-white mb-2">1. Principio de Mínimo Acceso y Roles (RBAC)</h5>
           <p>
-            Cada perfil en QQBikes (Administrador vs. Empleado de mostrador) dispone de permisos estrictamente delimitados a las funciones de su puesto. Los empleados de mostrador sólo pueden crear reservas, verificar contratos y registrar entregas o devoluciones. No se permite la descarga masiva de bases de datos de clientes ni el acceso a configuraciones críticas.
+            Cada perfil en OrivexBike (Administrador vs. Empleado de mostrador) dispone de permisos strictly delimitados a las funciones de su puesto. Los empleados de mostrador sólo pueden crear reservas, verificar contratos y registrar entregas o devoluciones. No se permite la descarga masiva de bases de datos de clientes ni el acceso a configuraciones críticas.
           </p>
 
           <h5 class="fw-bold text-white mb-2 mt-4">2. Protección de Documentos de Identidad</h5>
           <p>
-            Los documentos oficiales de identidad (DNI, NIE o Pasaporte) requeridos para el contrato de alquiler son almacenados de forma cifrada en la base de datos y aislados de las APIs públicas. QQBikes prohíbe expresamente el envío de copias de documentos mediante canales de mensajería no seguros o almacenamiento en dispositivos personales.
+            Los documentos oficiales de identidad (DNI, NIE o Pasaporte) requeridos para el contrato de alquiler son almacenados de forma cifrada en la base de datos y aislados de las APIs públicas. OrivexBike prohíbe expresamente el envío de copias de documentos mediante canales de mensajería no seguros o almacenamiento en dispositivos personales.
           </p>
 
           <h5 class="fw-bold text-white mb-2 mt-4">3. Tokenización y Datos de Tarjetas Bancarias</h5>
@@ -61,7 +61,7 @@ import { RouterModule } from '@angular/router';
 
           <h5 class="fw-bold text-white mb-2 mt-4">5. Gestión de Incidentes y Brechas de Seguridad</h5>
           <p>
-            Ante cualquier sospecha de brecha o acceso no autorizado a datos personales, el personal notificará inmediatamente al equipo de seguridad de QQBikes para iniciar el protocolo de contención, evaluación de riesgo y notificación a la Agencia Española de Protección de Datos (AEPD) en el plazo legal de 72 horas.
+            Ante cualquier sospecha de brecha o acceso no autorizado a datos personales, el personal notificará inmediatamente al equipo de seguridad de Orivex Technology para iniciar el protocolo de contención, evaluación de riesgo y notificación a la Agencia Española de Protección de Datos (AEPD) en el plazo legal de 72 horas.
           </p>
         </div>
 

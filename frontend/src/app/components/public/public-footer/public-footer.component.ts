@@ -16,10 +16,10 @@ import { RouterModule } from '@angular/router';
               <div class="bg-primary bg-gradient text-white rounded-3 p-2 me-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
                 <i class="fa-solid fa-bicycle"></i>
               </div>
-              <span class="fs-4 fw-bold font-heading text-white">QQ<span class="text-primary">Bikes</span></span>
+              <span class="fs-4 fw-bold font-heading text-white">Orivex<span class="text-primary">Bike</span></span>
             </div>
             <p class="text-secondary small mb-3">
-              Málaga's premier bike, e-bike, and electric scooter rental platform. Certified quality fleet, transparent pricing, and instant online bookings.
+              Málaga's premier bike, e-bike, and electric scooter rental platform powered by Orivex Technology. Certified quality fleet, transparent pricing, and instant online bookings.
             </p>
             <div class="d-flex gap-3 text-secondary">
               <a href="#" class="text-secondary hover-text-primary"><i class="fa-brands fa-facebook fa-lg"></i></a>
@@ -59,7 +59,7 @@ import { RouterModule } from '@angular/router';
             <h6 class="fw-bold text-white mb-3 font-heading">Store Contact</h6>
             <p class="text-secondary small mb-2"><i class="fa-solid fa-store text-warning me-2"></i> Málaga Beach & Mijas Hubs</p>
             <p class="text-secondary small mb-2"><i class="fa-solid fa-phone text-success me-2"></i> +34 952 000 111</p>
-            <p class="text-secondary small mb-3"><i class="fa-solid fa-envelope text-primary me-2"></i> info&#64;qqbikes.es</p>
+            <p class="text-secondary small mb-3"><i class="fa-solid fa-envelope text-primary me-2"></i> info&#64;orivexbike.com</p>
 
             <a routerLink="/book" class="btn btn-outline-primary btn-sm w-100 rounded-pill shadow-sm">
               <i class="fa-solid fa-calendar-check me-2"></i> Book Online Now
@@ -70,7 +70,7 @@ import { RouterModule } from '@angular/router';
         <hr class="border-secondary my-4" />
 
         <div class="d-flex flex-wrap align-items-center justify-content-between text-secondary small gap-2">
-          <div>© 2026 QQBikes Málaga S.L. All rights reserved.</div>
+          <div>© 2026 Orivex Technology S.L. All rights reserved.</div>
           <div class="d-flex flex-wrap gap-3">
             <a routerLink="/privacy" class="text-secondary text-decoration-none"><i class="fa-solid fa-user-shield me-1"></i> Privacy Policy</a>
             <a routerLink="/terms" class="text-secondary text-decoration-none"><i class="fa-solid fa-file-contract me-1"></i> Terms & Conditions</a>

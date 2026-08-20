@@ -1,7 +1,7 @@
 {
-  "name": "qqbikes-management-system",
+  "name": "orivexbike-management-system",
   "version": "1.0.0",
-  "description": "QQBikes Rental & Store Management System - Node.js TypeScript MySQL Backend & Angular Modern PWA Frontend",
+  "description": "OrivexBike Rental & Store Management System - Node.js TypeScript MySQL Backend & Angular Modern PWA Frontend",
   "main": "backend/src/server.ts",
   "scripts": {
     "start": "npx tsx backend/src/server.ts",
@@ -14,14 +14,15 @@
   },
   "keywords": [
     "rental",
-    "qqbikes",
+    "orivexbike",
+    "orivex",
     "pos",
     "express",
     "mysql",
     "typescript",
     "angular"
   ],
-  "author": "QQBikes Málaga S.L.",
+  "author": "Orivex Technology S.L.",
   "license": "ISC",
   "dependencies": {
     "@angular/common": "^22.1.3",

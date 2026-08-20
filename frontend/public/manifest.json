@@ -1,7 +1,7 @@
 {
-  "name": "QQBikes Rental & Store Management System",
-  "short_name": "QQBikes",
-  "description": "Professional bike & scooter rental management system, contracts, shift cash drawer audits, and repair workshop POS for Málaga stores.",
+  "name": "OrivexBike Rental & Store Management System",
+  "short_name": "OrivexBike",
+  "description": "Professional bike & scooter rental management system, contracts, shift cash drawer audits, and repair workshop POS by Orivex Technology.",
   "id": "./index.html",
   "start_url": "./index.html",
   "scope": "./",
@@ -27,7 +27,7 @@
   "related_applications": [
     {
       "platform": "play",
-      "id": "com.qqbikes.app.twa",
+      "id": "com.orivexbike.app.twa",
       "url": "https://play.google.com/store/apps/details?id=com.qqbikes.app.twa"
     }
   ],

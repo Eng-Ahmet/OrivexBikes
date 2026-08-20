@@ -29,9 +29,9 @@ import { I18nService, Language } from '../../core/services/i18n.service';
             </div>
             <div>
               <h1 class="fs-4 fw-black tracking-tight text-white mb-0 font-heading">
-                QQ<span class="text-cyan">Bikes</span> <span class="badge bg-primary bg-opacity-20 text-cyan border border-cyan border-opacity-30 rounded-pill ms-2 font-mono extra-small">v2.0</span>
+                Orivex<span class="text-cyan">Bike</span> <span class="badge bg-primary bg-opacity-20 text-cyan border border-cyan border-opacity-30 rounded-pill ms-2 font-mono extra-small">v2.0</span>
               </h1>
-              <span class="text-white-50 extra-small">Málaga & Torremolinos Hubs</span>
+              <span class="text-white-50 extra-small">Powered by Orivex Technology</span>
             </div>
           </div>
 

@@ -122,9 +122,9 @@ export class BookingConfirmationComponent {
     doc.rect(0, 0, 210, 35, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
-    doc.text('QQBikes Rental & Store Management', 14, 20);
+    doc.text('OrivexBike Rental & Store Management', 14, 20);
     doc.setFontSize(10);
-    doc.text('Málaga Beach Promenade Store • www.qqbikes.es', 14, 28);
+    doc.text('Orivex Technology • www.orivexbike.com', 14, 28);
 
     // Title
     doc.setTextColor(0, 0, 0);

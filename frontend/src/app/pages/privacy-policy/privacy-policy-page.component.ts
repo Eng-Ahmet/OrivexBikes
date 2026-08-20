@@ -36,19 +36,19 @@ import { RouterModule } from '@angular/router';
         <div class="text-secondary leading-relaxed">
           <div class="alert alert-dark border-primary border-opacity-50 text-light rounded-4 p-3 mb-4">
             <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-shield-halved text-primary me-2"></i> POLÍTICA DE PRIVACIDAD (RGPD / LOPDGDD)</h5>
-            <span class="small text-secondary">Responsable del Tratamiento: QQBikes Málaga S.L. | CIF: B-93000000 | Paseo Marítimo 42, 29016 Málaga | Email: privacy&#64;qqbikes.es</span>
+            <span class="small text-secondary">Responsable del Tratamiento: Orivex Technology S.L. | CIF: B-93000000 | Paseo Marítimo 42, 29016 Málaga | Email: privacy&#64;orivexbike.com</span>
           </div>
 
           <h5 class="fw-bold text-white mb-2">1. Responsable del Tratamiento</h5>
           <p>
-            El responsable del tratamiento de los datos personales recopilados a través de esta plataforma es <strong>QQBikes Málaga S.L.</strong> en cumplimiento estricto del Reglamento General de Protección de Datos (RGPD UE 2016/679) y la Ley Orgánica 3/2018 (LOPDGDD).
+            El responsable del tratamiento de los datos personales recopilados a través de esta plataforma es <strong>Orivex Technology S.L.</strong> en cumplimiento estricto del Reglamento General de Protección de Datos (RGPD UE 2016/679) y la Ley Orgánica 3/2018 (LOPDGDD).
           </p>
 
           <h5 class="fw-bold text-white mb-2 mt-4">2. Categorías de Datos Objeto de Tratamiento</h5>
           <ul class="list-unstyled ps-3">
             <li class="mb-2"><i class="fa-solid fa-check text-primary me-2"></i> <strong>Datos Identificativos:</strong> Nombre, apellidos, documento oficial de identidad (DNI, NIE o Pasaporte), firma digital y fotografía del estado pre/post alquiler.</li>
             <li class="mb-2"><i class="fa-solid fa-check text-primary me-2"></i> <strong>Datos de Contacto:</strong> Teléfono de contacto (WhatsApp) y correo electrónico oficial para notificación de confirmación de reserva y vouchers.</li>
-            <li class="mb-2"><i class="fa-solid fa-check text-primary me-2"></i> <strong>Datos de Pago:</strong> Identificador de transacción y tokenización mediante pasarela segura Redsys/Stripe PCI-DSS Nivel 1. QQBikes <strong>no almacena números completos de tarjeta ni CVC</strong>.</li>
+            <li class="mb-2"><i class="fa-solid fa-check text-primary me-2"></i> <strong>Datos de Pago:</strong> Identificador de transacción y tokenización mediante pasarela segura Redsys/Stripe PCI-DSS Nivel 1. OrivexBike <strong>no almacena números completos de tarjeta ni CVC</strong>.</li>
             <li class="mb-2"><i class="fa-solid fa-check text-primary me-2"></i> <strong>Datos de Localización GPS:</strong> Datos de geolocalización únicamente activados para seguridad, asistencia técnica y recuperación de flota en caso de robo, conforme a las recomendaciones de la AEPD.</li>
           </ul>
 
@@ -64,13 +64,13 @@ import { RouterModule } from '@angular/router';
 
           <h5 class="fw-bold text-white mb-2 mt-4">5. Ejercicio de Derechos</h5>
           <p>
-            El cliente puede ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad enviando una comunicación formal a <strong class="text-white">privacy&#64;qqbikes.es</strong> o presentando una reclamación ante la Agencia Española de Protección de Datos (AEPD).
+            El cliente puede ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad enviando una comunicación formal a <strong class="text-white">privacy&#64;orivexbike.com</strong> o presentando una reclamación ante la Agencia Española de Protección de Datos (AEPD).
           </p>
         </div>
 
         <!-- Footer Actions -->
         <div class="mt-5 pt-3 border-top border-secondary d-flex flex-wrap align-items-center justify-content-between gap-3">
-          <span class="text-secondary small"><i class="fa-solid fa-circle-check text-success me-1"></i> Documento Oficial RGPD / LOPDGDD</span>
+          <span class="text-secondary small"><i class="fa-solid fa-circle-check text-success me-1"></i> Orivex Technology Legal Compliance Certified</span>
           <div class="d-flex gap-2">
             <a routerLink="/book" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
               <i class="fa-solid fa-calendar-check me-1"></i> Proceed to Online Booking

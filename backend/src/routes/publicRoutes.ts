@@ -270,9 +270,9 @@ router.post('/bookings', (req: Request, res: Response) => {
 
   const totalAmountSnapshot = durationDays * dailyRateSnapshot;
 
-  // 5. Booking Code Generator (QQB-8F4K2M)
+  // 5. Booking Code Generator (ORV-8F4K2M)
   const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const bookingNumber = `QQB-${randomChars}`;
+  const bookingNumber = `ORV-${randomChars}`;
 
   // 6. Unified Domain Mapping: Create Real RentalContract
   const newContract: RentalContract = {

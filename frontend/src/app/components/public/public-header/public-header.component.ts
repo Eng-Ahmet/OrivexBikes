@@ -16,8 +16,8 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
             <i class="fa-solid fa-bicycle fa-lg"></i>
           </div>
           <div>
-            <span class="fs-4 fw-bold tracking-tight text-white font-heading">QQ<span class="text-primary">Bikes</span></span>
-            <span class="d-block text-secondary" style="font-size: 0.65rem; margin-top: -4px;">Málaga Coast Rentals & Tours</span>
+            <span class="fs-4 fw-bold tracking-tight text-white font-heading">Orivex<span class="text-primary">Bike</span></span>
+            <span class="d-block text-secondary" style="font-size: 0.65rem; margin-top: -4px;">Powered by Orivex Technology</span>
           </div>
         </a>
 

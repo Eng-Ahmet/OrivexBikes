@@ -4,7 +4,7 @@ export type Language = 'es' | 'en' | 'ar';
 
 const TRANSLATIONS: Record<Language, Record<string, string>> = {
   es: {
-    appTitle: 'QQBikes - Sistema de Gestión',
+    appTitle: 'OrivexBike - Sistema de Gestión',
     fleet: 'Flota de Vehículos',
     rentals: 'Contratos / Alquileres',
     shifts: 'Turnos y Caja',
@@ -126,7 +126,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     securitySSOTSub: 'Modelo de permisos simplificado de 2 roles (ADMIN y EMPLEADO) por tienda.'
   },
   en: {
-    appTitle: 'QQBikes - Management System',
+    appTitle: 'OrivexBike - Management System',
     fleet: 'Vehicle Fleet',
     rentals: 'Contracts & Rentals',
     shifts: 'Shifts & Cash Drawer',
@@ -238,7 +238,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     adminRoleOption: 'ADMIN (Full Control)',
     employeeRoleOption: 'EMPLOYEE (Counter & Shift)',
     quickPinClickHelp: 'Click any demo profile to quickly insert PIN:',
-    welcomeHeroTitle: 'QQBikes Staff Operational Suite',
+    welcomeHeroTitle: 'OrivexBike Staff Operational Suite',
     welcomeHeroSub: 'Unified Single Project platform for vehicle fleet management, POS contract rentals, shift till cash auditing, and workshop repairs.',
     fleetControlTitle: 'Fleet & POS Contract Management',
     fleetControlSub: 'Real-time tracking of available bikes, scooters, active rental contracts, and deposits.',
@@ -248,7 +248,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     securitySSOTSub: 'Simplified 2-Role permission model (ADMIN & EMPLOYEE) bound per store location.'
   },
   ar: {
-    appTitle: 'QQBikes - نظام الإدارة والتأجير',
+    appTitle: 'OrivexBike - نظام الإدارة والتأجير',
     fleet: 'أسطول الدراجات',
     rentals: 'عقود التأجير',
     shifts: 'ورديات صندوق النقد',
