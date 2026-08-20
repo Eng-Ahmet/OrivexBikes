@@ -38,7 +38,7 @@ import { I18nService } from '../../core/services/i18n.service';
                 <span class="text-secondary small fw-bold">Active Operating Expenses</span>
                 <h3 class="fw-bold text-white mb-0 mt-1">€{{ totalActiveAmount.toFixed(2) }}</h3>
               </div>
-              <div class="bg-warning bg-opacity-20 text-warning rounded-circle p-3">
+              <div class="icon-box-circle bg-warning bg-opacity-20 text-warning p-3" style="width: 48px; height: 48px;">
                 <i class="fa-solid fa-receipt fa-lg"></i>
               </div>
             </div>
@@ -51,7 +51,7 @@ import { I18nService } from '../../core/services/i18n.service';
                 <span class="text-secondary small fw-bold">Active Entries Count</span>
                 <h3 class="fw-bold text-info mb-0 mt-1">{{ activeCount }}</h3>
               </div>
-              <div class="bg-info bg-opacity-20 text-info rounded-circle p-3">
+              <div class="icon-box-circle bg-info bg-opacity-20 text-info p-3" style="width: 48px; height: 48px;">
                 <i class="fa-solid fa-list-check fa-lg"></i>
               </div>
             </div>
@@ -64,7 +64,7 @@ import { I18nService } from '../../core/services/i18n.service';
                 <span class="text-secondary small fw-bold">Voided Reversals</span>
                 <h3 class="fw-bold text-danger mb-0 mt-1">{{ voidedCount }}</h3>
               </div>
-              <div class="bg-danger bg-opacity-20 text-danger rounded-circle p-3">
+              <div class="icon-box-circle bg-danger bg-opacity-20 text-danger p-3" style="width: 48px; height: 48px;">
                 <i class="fa-solid fa-ban fa-lg"></i>
               </div>
             </div>

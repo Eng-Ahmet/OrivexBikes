@@ -60,8 +60,8 @@ import { I18nService } from '../../core/services/i18n.service';
             <div class="card bg-dark border-secondary h-100 shadow-sm position-relative overflow-hidden">
               <div class="card-header bg-dark border-secondary d-flex align-items-center justify-content-between py-3">
                 <div class="d-flex align-items-center gap-2">
-                  <div class="bg-primary bg-opacity-20 text-primary rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                    <i class="fa-solid fa-shop"></i>
+                  <div class="icon-box-circle bg-primary bg-opacity-20 text-info p-2" style="width: 38px; height: 38px;">
+                    <i class="fa-solid fa-store fs-6"></i>
                   </div>
                   <div>
                     <h5 class="fw-bold text-white mb-0 fs-6">{{ st.name }}</h5>

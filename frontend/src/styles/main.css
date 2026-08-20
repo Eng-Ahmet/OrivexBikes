@@ -307,3 +307,34 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.5rem 0.75rem !important;
   }
 }
+
+/* ==========================================================================
+   Icon Container & Translucent Background Opacity Fixes
+   ========================================================================== */
+.bg-primary.bg-opacity-20 {
+  background-color: rgba(13, 110, 253, 0.22) !important;
+}
+.bg-warning.bg-opacity-20 {
+  background-color: rgba(255, 193, 7, 0.22) !important;
+}
+.bg-info.bg-opacity-20 {
+  background-color: rgba(13, 202, 240, 0.22) !important;
+}
+.bg-danger.bg-opacity-20 {
+  background-color: rgba(220, 53, 69, 0.22) !important;
+}
+.bg-success.bg-opacity-20 {
+  background-color: rgba(25, 135, 84, 0.22) !important;
+}
+.bg-secondary.bg-opacity-20 {
+  background-color: rgba(108, 117, 125, 0.22) !important;
+}
+
+.icon-box-circle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+}
+
