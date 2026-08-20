@@ -338,3 +338,35 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;
 }
 
+/* Responsive Table & Overflow Prevention Utilities */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--qq-radius);
+  max-width: 100%;
+}
+
+button, select, input, .nav-link, a {
+  touch-action: manipulation;
+}
+
+/* Modal Viewport Safety on Mobile Screens */
+@media (max-width: 575.98px) {
+  .modal-dialog {
+    margin: 0.5rem !important;
+    max-width: calc(100vw - 1rem) !important;
+  }
+  .modal-body {
+    max-height: 75vh !important;
+    overflow-y: auto !important;
+  }
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+}
+
+

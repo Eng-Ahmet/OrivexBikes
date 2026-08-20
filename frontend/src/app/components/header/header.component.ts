@@ -49,7 +49,7 @@ import { Router, RouterModule } from '@angular/router';
           <div class="dropdown">
             <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
               <i class="fa-solid fa-store text-info"></i>
-              <span>{{ state.getStoreName(state.activeStoreId()) }}</span>
+              <span class="text-truncate" style="max-width: 140px;">{{ state.getStoreName(state.activeStoreId()) }}</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow">
               <li><button class="dropdown-item fw-bold text-primary" (click)="selectStore(null)"><i class="fa-solid fa-globe me-2"></i> 🌐 All Stores Context (Company-Wide)</button></li>
@@ -68,12 +68,12 @@ import { Router, RouterModule } from '@angular/router';
         <!-- Rich Active Logged-in Staff Profile Card with Dropdown -->
         <div class="dropdown">
           <button class="btn btn-dark border border-secondary rounded-pill px-3 py-1 text-white shadow-sm d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 26px; height: 26px; font-size: 0.75rem;">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0" style="width: 26px; height: 26px; font-size: 0.75rem;">
               {{ (state.currentUser()?.first_name || state.currentUser()?.username || 'S').charAt(0).toUpperCase() }}
             </div>
             <div class="d-flex flex-column text-start" style="line-height: 1.1;">
-              <span class="fw-bold text-white small">{{ state.currentUser()?.first_name || state.currentUser()?.username }} {{ state.currentUser()?.last_name || '' }}</span>
-              <span class="text-info" style="font-size: 0.68rem;">
+              <span class="fw-bold text-white small text-truncate" style="max-width: 120px;">{{ state.currentUser()?.first_name || state.currentUser()?.username }} {{ state.currentUser()?.last_name || '' }}</span>
+              <span class="text-info text-truncate" style="font-size: 0.68rem; max-width: 120px;">
                 <i class="fa-solid fa-id-badge me-1"></i>{{ state.activeRole() }} &bull; {{ state.getStoreName(state.activeStoreId()) }}
               </span>
             </div>

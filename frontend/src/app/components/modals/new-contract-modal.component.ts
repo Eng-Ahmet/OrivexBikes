@@ -11,7 +11,7 @@ import { I18nService } from '../../core/services/i18n.service';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="modal fade" id="newContractModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content bg-dark text-light border-secondary shadow-lg rounded-4">
           <div class="modal-header border-secondary">
             <h5 class="modal-title fw-bold text-primary">
