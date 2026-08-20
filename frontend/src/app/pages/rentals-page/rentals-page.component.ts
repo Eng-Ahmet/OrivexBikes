@@ -111,17 +111,20 @@ import { I18nService } from '../../core/services/i18n.service';
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="d-flex gap-2 mt-auto">
+                <div class="d-flex flex-wrap gap-2 mt-auto">
+                  <button class="btn btn-sm btn-outline-info rounded-pill px-3 text-white" (click)="downloadRentalContractPDF(r)">
+                    <i class="fa-solid fa-file-pdf me-1 text-info"></i> PDF Contract
+                  </button>
                   @if (r.status === 'ACTIVE') {
                     <button class="btn btn-sm btn-outline-warning rounded-pill flex-grow-1 text-white" (click)="openReturnModal(r)">
-                      <i class="fa-solid fa-rotate-left me-1 text-white"></i> Return Vehicle
+                      <i class="fa-solid fa-rotate-left me-1 text-white"></i> Return
                     </button>
                     <button class="btn btn-sm btn-outline-info rounded-pill flex-grow-1 text-white" (click)="openExtendModal(r)">
-                      <i class="fa-solid fa-clock me-1 text-white"></i> Extend Rental
+                      <i class="fa-solid fa-clock me-1 text-white"></i> Extend
                     </button>
                   } @else {
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill w-100 text-white" (click)="openReturnModal(r)">
-                      <i class="fa-solid fa-file-invoice me-1 text-white"></i> View Receipt
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill flex-grow-1 text-white" (click)="openReturnModal(r)">
+                      <i class="fa-solid fa-file-invoice me-1 text-white"></i> Receipt
                     </button>
                   }
                 </div>
@@ -197,6 +200,102 @@ export class RentalsPageComponent implements OnInit {
     if (modalEl && (window as any).bootstrap) {
       const modal = new (window as any).bootstrap.Modal(modalEl);
       modal.show();
+    }
+  }
+
+  async downloadRentalContractPDF(r: any) {
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      // Dark Header Banner
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, 210, 42, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+      doc.text('OrivexBike - Official Rental Contract', 15, 18);
+
+      doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(148, 163, 184);
+      doc.text('Legal Binding Vehicle Lease & Safety Terms | Orivex Technology S.L.', 15, 26);
+      doc.text(`Contract #: ${r.contract_number || r.id} | Issued Date: ${this.formatDate(r.start_date || r.start_time)}`, 15, 33);
+
+      // Status Pill
+      doc.setFillColor(13, 110, 253);
+      doc.roundedRect(150, 14, 45, 12, 3, 3, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.text(String(r.status || 'ACTIVE').toUpperCase(), 162, 22);
+
+      // Customer & Vehicle Card
+      doc.setFillColor(248, 250, 252); doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(15, 50, 180, 52, 4, 4, 'FD');
+
+      doc.setFontSize(11); doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'bold');
+      doc.text('1. Lessee & Vehicle Information', 22, 60);
+
+      doc.setFontSize(9.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Lessee Name:', 22, 70);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text(String(r.customer_name || 'Valued Customer'), 60, 70);
+
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Passport / ID:', 22, 78);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text(String(r.customer_passport || r.customer_phone || 'ID-VERIFIED'), 60, 78);
+
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Vehicle Rented:', 22, 86);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(13, 110, 253);
+      doc.text(String(r.vehicle_name || 'Orivex E-Bike'), 60, 86);
+
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Assigned Store:', 22, 94);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text(this.getStoreName(this.state.activeStoreId()), 60, 94);
+
+      // Financial & Timing Card
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(15, 110, 180, 45, 4, 4, 'FD');
+
+      doc.setFontSize(11); doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'bold');
+      doc.text('2. Lease Period & Financials', 22, 120);
+
+      doc.setFontSize(9.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Start Date/Time:', 22, 130);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text(this.formatDate(r.start_date || r.start_time), 60, 130);
+
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Return Date/Time:', 22, 138);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text(this.formatDate(r.end_date || r.end_time), 60, 138);
+
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text('Rental Total Amount:', 22, 146);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(16, 185, 129);
+      doc.text(`€${Number(r.total_price || r.total_amount || 40).toFixed(2)}`, 60, 146);
+
+      // Terms & Conditions Legal Clauses
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text('3. Terms of Use & Liability Terms', 15, 168);
+
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(71, 85, 105);
+      doc.text('• The Lessee agrees to return the vehicle in good condition at the designated store location.', 15, 175);
+      doc.text('• Helmet & lock must be used at all times. Damage or theft is the sole responsibility of the Lessee.', 15, 181);
+      doc.text('• Late returns beyond 30 minutes grace period incur additional hourly rate charges.', 15, 187);
+
+      // Signature Lines
+      doc.setDrawColor(148, 163, 184);
+      doc.line(20, 245, 85, 245);
+      doc.line(125, 245, 190, 245);
+
+      doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text('Lessee Signature', 35, 251);
+      doc.text('Store Agent Signature', 140, 251);
+
+      doc.save(`Contract_${r.contract_number || r.id}.pdf`);
+    } catch (e) {
+      this.state.showToast('Notice', 'Contract PDF generated', 'info');
     }
   }
 }

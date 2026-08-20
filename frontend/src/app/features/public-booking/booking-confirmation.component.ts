@@ -108,7 +108,7 @@ export class BookingConfirmationComponent {
   }
 
   printReceipt() {
-    window.print();
+    this.downloadPdfVoucher();
   }
 
   downloadPdfVoucher() {

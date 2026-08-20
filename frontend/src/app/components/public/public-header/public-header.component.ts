@@ -108,29 +108,29 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
                 </li>
               </ul>
 
-              <!-- Customer Header Right Actions: Full Width Stacked on Mobile -->
-              <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 pt-3 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0 ms-lg-auto w-100 w-lg-auto">
+              <!-- Customer Header Right Actions (Compact Desktop View & Stacked Mobile) -->
+              <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 pt-3 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0 ms-lg-auto">
                 <!-- Primary Book Now CTA Button -->
-                <a routerLink="/book" (click)="closeNav()" class="btn btn-primary btn-sm rounded-pill px-4 py-2 py-lg-1.5 shadow-sm fw-bold d-flex align-items-center justify-content-center text-nowrap w-100 w-lg-auto">
+                <a routerLink="/book" (click)="closeNav()" class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 shadow-sm fw-bold d-inline-flex align-items-center justify-content-center text-nowrap">
                   <i class="fa-solid fa-calendar-check me-2"></i>
                   <span>Book Now</span>
                 </a>
 
                 <!-- Booking Lookup Link -->
-                <a routerLink="/my-booking" (click)="closeNav()" class="btn btn-outline-info btn-sm rounded-pill px-3 py-2 py-lg-1.5 d-flex align-items-center justify-content-center text-nowrap w-100 w-lg-auto" title="Manage Booking">
+                <a routerLink="/my-booking" (click)="closeNav()" class="btn btn-outline-info btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center text-nowrap" title="Manage Booking">
                   <i class="fa-solid fa-magnifying-glass me-2"></i>
                   <span>My Booking</span>
                 </a>
 
                 <!-- Staff / Admin Portal Link -->
-                <a routerLink="/login" (click)="closeNav()" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-2 py-lg-1.5 d-flex align-items-center justify-content-center text-secondary text-nowrap w-100 w-lg-auto" title="Staff Portal Login">
+                <a routerLink="/login" (click)="closeNav()" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center text-secondary text-nowrap" title="Staff Portal Login">
                   <i class="fa-solid fa-user-gear me-2"></i>
                   <span>Staff Login</span>
                 </a>
 
                 <!-- Language Selector Dropdown (Desktop) -->
-                <div class="dropdown d-none d-lg-block text-nowrap">
-                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 d-flex align-items-center text-white text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown d-none d-lg-block text-nowrap ms-lg-1">
+                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 py-1.5 d-flex align-items-center text-white text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-globe text-primary me-2"></i>
                     <span class="text-uppercase fw-semibold">{{ i18n.currentLang() }}</span>
                   </button>

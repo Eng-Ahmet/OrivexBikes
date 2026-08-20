@@ -116,6 +116,7 @@ export class PublicVehicleDetailsComponent implements OnInit {
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
+        this.loading = true;
         this.http.get<any>(`/api/v1/public/fleet/${id}`).subscribe({
           next: (data) => {
             this.vehicle = data || this.getFallbackVehicle(id);
@@ -126,7 +127,16 @@ export class PublicVehicleDetailsComponent implements OnInit {
             this.loading = false;
           }
         });
+
+        // Safety timeout to guarantee loading spinner hides in all edge cases
+        setTimeout(() => {
+          if (this.loading) {
+            this.vehicle = this.vehicle || this.getFallbackVehicle(id);
+            this.loading = false;
+          }
+        }, 500);
       } else {
+        this.vehicle = this.getFallbackVehicle(1);
         this.loading = false;
       }
     });
