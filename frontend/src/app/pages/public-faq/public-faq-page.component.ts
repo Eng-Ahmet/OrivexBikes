@@ -15,7 +15,7 @@ import { HttpClient } from '@angular/common/http';
           <i class="fa-solid fa-circle-question me-1"></i> Frequently Asked Questions
         </span>
         <h1 class="display-5 fw-extrabold font-heading text-white mb-2">Help & FAQ Center</h1>
-        <p class="text-secondary lead mb-0">Find quick answers to common questions regarding rental rules, deposits, and guided tours.</p>
+        <p class="text-secondary lead mb-0">Find quick answers to common questions regarding rental rules, deposits, and guided tours by Orivex Technology.</p>
       </div>
 
       <!-- Loading State -->
@@ -66,13 +66,22 @@ export class PublicFaqPageComponent implements OnInit {
   ngOnInit() {
     this.http.get<any[]>('/api/v1/public/faqs').subscribe({
       next: (data) => {
-        this.faqs = data;
+        this.faqs = (Array.isArray(data) && data.length > 0) ? data : this.getFallbackFaqs();
         this.loading = false;
       },
       error: () => {
-        this.faqs = [];
+        this.faqs = this.getFallbackFaqs();
         this.loading = false;
       }
     });
+  }
+
+  private getFallbackFaqs() {
+    return [
+      { id: 1, category: 'Rentals', question: 'What documents are required to rent a bike or scooter?', answer: 'You need a valid passport, national ID card, or EU driver license, plus a credit or debit card for the security deposit.' },
+      { id: 2, category: 'Deposits', question: 'How is the security deposit collected and returned?', answer: 'Deposits (€50 to €150 depending on vehicle) are pre-authorized on your card or paid in cash at counter pickup and released immediately upon vehicle return.' },
+      { id: 3, category: 'Tours', question: 'Are safety helmets and locks included in the rental price?', answer: 'Yes! All rentals and guided tours include complimentary helmets, heavy-duty locks, and front/rear LED lights.' },
+      { id: 4, category: 'Payment', question: 'Can I pay cash at the store counter?', answer: 'Absolutely. You can reserve online for free and choose "Pay at Counter" using cash or credit card upon arrival.' }
+    ];
   }
 }

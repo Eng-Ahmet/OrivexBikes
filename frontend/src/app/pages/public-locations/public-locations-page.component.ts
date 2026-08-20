@@ -15,7 +15,7 @@ import { HttpClient } from '@angular/common/http';
           <i class="fa-solid fa-store me-1"></i> Málaga Coast Store Hubs
         </span>
         <h1 class="display-5 fw-extrabold font-heading text-white mb-2">Our Store Locations</h1>
-        <p class="text-secondary lead mb-0">Visit our rental hubs in Málaga Central Beach Promenade and Mijas Coastal Resort.</p>
+        <p class="text-secondary lead mb-0">Visit our rental hubs in Málaga Central Beach Promenade and Mijas Coastal Resort by Orivex Technology.</p>
       </div>
 
       <!-- Loading State -->
@@ -46,13 +46,13 @@ import { HttpClient } from '@angular/common/http';
                 <i class="fa-solid fa-location-dot me-2 text-danger"></i> {{ store.address }}
               </div>
               <div class="d-flex align-items-center text-secondary small mb-2">
-                <i class="fa-solid fa-phone me-2 text-success"></i> {{ store.phone }}
+                <i class="fa-solid fa-phone me-2 text-success"></i> {{ store.phone || '+34 952 000 111' }}
               </div>
               <div class="d-flex align-items-center text-secondary small mb-2">
-                <i class="fa-solid fa-envelope me-2 text-primary"></i> {{ store.email }}
+                <i class="fa-solid fa-envelope me-2 text-primary"></i> {{ store.email || 'info@orivexbike.com' }}
               </div>
               <div class="d-flex align-items-center text-secondary small">
-                <i class="fa-solid fa-clock me-2 text-warning"></i> {{ store.operating_hours }}
+                <i class="fa-solid fa-clock me-2 text-warning"></i> {{ store.operating_hours || 'Mon-Sun: 09:00 - 21:00' }}
               </div>
             </div>
 
@@ -75,13 +75,20 @@ export class PublicLocationsPageComponent implements OnInit {
   ngOnInit() {
     this.http.get<any[]>('/api/v1/public/stores').subscribe({
       next: (data) => {
-        this.stores = data;
+        this.stores = (Array.isArray(data) && data.length > 0) ? data : this.getFallbackStores();
         this.loading = false;
       },
       error: () => {
-        this.stores = [];
+        this.stores = this.getFallbackStores();
         this.loading = false;
       }
     });
+  }
+
+  private getFallbackStores() {
+    return [
+      { id: 1, name: 'Málaga Beach Campsite Store', city: 'Málaga', address: 'Paseo Marítimo 42, 29016 Málaga', phone: '+34 952 000 111', email: 'malaga@orivexbike.com', operating_hours: '09:00 - 21:00 Daily' },
+      { id: 2, name: 'Mijas Coastal Resort Store', city: 'Mijas', address: 'Calle Mar 15, 29649 Mijas Costa', phone: '+34 951 222 333', email: 'mijas@orivexbike.com', operating_hours: '09:00 - 20:00 Daily' }
+    ];
   }
 }
