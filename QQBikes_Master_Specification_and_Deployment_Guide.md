@@ -1,6 +1,18 @@
 # 🚲 QQBikes Rental & Store Management System
 ## Unified Master Architecture, SSOT Database Specifications & PWA/TWA Deployment Guide
 
+[🌐 English Specification](QQBikes_Master_Specification_and_Deployment_Guide.md) | [🇸🇦 المرجع الشامل باللغة العربية](QQBikes_Master_Specification_and_Deployment_Guide_AR.md)
+
+---
+
+## 🌐 Live Interactive Trial & System Links
+
+- **🖥️ Interactive System Interface**: [http://localhost:5000](http://localhost:5000)
+- **📊 Branch P&L Performance API**: `http://localhost:5000/api/v1/stores/pnl`
+- **⚙️ Auth Verification Endpoint**: `http://localhost:5000/api/v1/auth/me`
+- **📱 Android Digital Asset Links**: `http://localhost:5000/.well-known/assetlinks.json`
+- **🧪 Integration Test Runner**: `npm test`
+
 ---
 
 ## 1. Purpose & Business Scope
