@@ -122,7 +122,19 @@ export interface RentalContract {
   end_time: string;
   expected_end_time?: string;
   actual_return_at?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'RETURN_PENDING' | 'OVERDUE' | 'COMPLETED' | 'CANCELLED';
+  status: 'DRAFT' | 'CONFIRMED' | 'ACTIVE' | 'RETURN_PENDING' | 'OVERDUE' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+  payment_status?: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'REFUNDED';
+  deposit_status?: 'NOT_COLLECTED' | 'COLLECTED' | 'RELEASED' | 'FORFEITED';
+  booking_channel?: 'STORE_COUNTER' | 'PUBLIC_WEB';
+  daily_rate_snapshot?: number;
+  hourly_rate_snapshot?: number;
+  deposit_snapshot?: number;
+  total_amount_snapshot?: number;
+  expires_at?: string;
+  terms_accepted?: boolean;
+  privacy_accepted?: boolean;
+  terms_version?: string;
+  privacy_version?: string;
   rental_fee: number;
   deposit_collected: number;
   deposit_refunded: number;
@@ -583,6 +595,71 @@ export interface PublicBooking {
   notes?: string;
   qr_code_payload: string;
   created_at: string;
+}
+
+export interface CustomerReview {
+  id: number;
+  customer_name: string;
+  rating: number;
+  comment: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  approved_by?: number | null;
+  approved_at?: string | null;
+  rejected_by?: number | null;
+  rejected_at?: string | null;
+  created_at: string;
+}
+
+export interface SupportTicket {
+  id: number;
+  ticket_code: string;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+  staff_notes?: string;
+  created_at: string;
+}
+
+export interface TourBooking {
+  id: number;
+  booking_code: string;
+  tour_id: number;
+  tour_title: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  booking_date: string;
+  booking_time: string;
+  participants: number;
+  price_per_person: number;
+  total_amount: number;
+  status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  payment_status: 'PAY_AT_STORE' | 'PAID';
+  created_at: string;
+}
+
+export interface NotificationOutbox {
+  id: number;
+  type: 'EMAIL_CONFIRMATION' | 'SUPPORT_NOTIFICATION';
+  recipient: string;
+  payload: any;
+  status: 'PENDING' | 'SENT' | 'FAILED';
+  attempts: number;
+  last_error?: string;
+  created_at: string;
+  processed_at?: string;
+}
+
+export interface FaqItem {
+  id: number;
+  category: string;
+  question: string;
+  answer: string;
+  is_active: boolean;
+  order_num: number;
 }
 
 export interface RepairTicketPart {
@@ -1101,6 +1178,21 @@ export const memoryData = {
     }
   ] as Tour[],
   public_bookings: [] as PublicBooking[],
+  customer_reviews: [
+    { id: 1, customer_name: 'Sofia Martinez', rating: 5, comment: 'Renting the e-bike for a day along Malaga promenade was the highlight of our vacation! Super smooth bikes and great service.', status: 'APPROVED', approved_by: 1, approved_at: '2026-08-10T10:00:00.000Z', created_at: '2026-08-09T14:20:00.000Z' },
+    { id: 2, customer_name: 'Lucas Weber', rating: 5, comment: 'Patinete Ninebot was in pristine condition. Easy online booking, quick pick up at Málaga Beach store.', status: 'APPROVED', approved_by: 1, approved_at: '2026-08-12T11:00:00.000Z', created_at: '2026-08-11T16:45:00.000Z' },
+    { id: 3, customer_name: 'David Smith', rating: 4, comment: 'Great sunset tour experience. Highly recommended for couples visiting Malaga!', status: 'APPROVED', approved_by: 1, approved_at: '2026-08-15T09:30:00.000Z', created_at: '2026-08-14T18:10:00.000Z' }
+  ] as CustomerReview[],
+  support_tickets: [] as SupportTicket[],
+  tour_bookings: [] as TourBooking[],
+  notification_outbox: [] as NotificationOutbox[],
+  faqs: [
+    { id: 1, category: 'Rental Requirements', question: 'What do I need to rent a bike or scooter?', answer: 'You need a valid passport or government ID card, a contact phone number, and a security deposit (cash or credit card guarantee).', is_active: true, order_num: 1 },
+    { id: 2, category: 'Deposits & Liability', question: 'How does the security deposit work?', answer: 'A security deposit (e.g. €30 - €100 depending on vehicle category) is pre-authorized or collected at pickup and fully released upon safe, undamaged return.', is_active: true, order_num: 2 },
+    { id: 3, category: 'Booking & Payment', question: 'Can I pay at the store?', answer: 'Yes! You can reserve your bike online with zero upfront charge ("Pay at Store") or complete payment online.', is_active: true, order_num: 3 },
+    { id: 4, category: 'Late Returns & Extensions', question: 'What happens if I return the bike late?', answer: 'We offer a 15-minute grace period. Beyond that, additional hourly rates apply as specified in your rental agreement.', is_active: true, order_num: 4 },
+    { id: 5, category: 'Guided Tours', question: 'Are helmets and gear included in guided tours?', answer: 'Yes, all guided tours include a high-quality helmet, e-bike/scooter rental, lock, and expert local guide.', is_active: true, order_num: 5 }
+  ] as FaqItem[],
   audit_logs: [] as AuditLog[],
 
   employees: [

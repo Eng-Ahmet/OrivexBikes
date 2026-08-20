@@ -105,9 +105,26 @@ export class AppComponent implements OnInit {
   }
 
   private checkRoute(url: string) {
-    const publicPaths = ['/home', '/book', '/login'];
-    const isPublicRoute = publicPaths.some(path => url === path || url.startsWith(path + '?') || url.startsWith(path + '#') || url.endsWith(path));
-    // If it's not explicitly a public landing page, show the admin layout with sidebar
+    const publicPaths = [
+      '/home',
+      '/bikes',
+      '/book',
+      '/booking-confirmation',
+      '/my-booking',
+      '/tours',
+      '/locations',
+      '/reviews',
+      '/support',
+      '/faq',
+      '/about',
+      '/privacy',
+      '/terms',
+      '/rental-terms',
+      '/not-found',
+      '/login'
+    ];
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    const isPublicRoute = publicPaths.some(path => cleanUrl === path || cleanUrl.startsWith(path + '/'));
     this.isAdminRoute.set(!isPublicRoute);
   }
 }

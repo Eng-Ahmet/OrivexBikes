@@ -2,14 +2,13 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { I18nService, Language } from '../../../core/services/i18n.service';
-import { StateService } from '../../../core/services/state.service';
 
 @Component({
   selector: 'app-public-header',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <nav class="navbar navbar-expand-lg sticky-top border-bottom border-secondary-subtle px-3 px-md-5 bg-dark bg-gradient">
+    <nav class="navbar navbar-expand-lg sticky-top border-bottom border-secondary-subtle px-3 px-md-5 bg-dark bg-gradient shadow">
       <div class="container-fluid">
         <!-- Public Brand Logo & Title -->
         <a class="navbar-brand d-flex align-items-center text-decoration-none me-4" routerLink="/home">
@@ -36,19 +35,45 @@ import { StateService } from '../../../core/services/state.service';
               </a>
             </li>
             <li class="nav-item">
-              <a [routerLink]="['/book']" [queryParams]="{mode: 'TOUR'}" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
-                <i class="fa-solid fa-person-biking me-1 text-info"></i> Tours & Experiences
+              <a routerLink="/bikes" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
+                <i class="fa-solid fa-bolt me-1 text-warning"></i> Bikes & Scooters
               </a>
             </li>
             <li class="nav-item">
-              <a [routerLink]="['/book']" [queryParams]="{mode: 'FLEET'}" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
-                <i class="fa-solid fa-bolt me-1 text-warning"></i> Bikes & Scooters
+              <a routerLink="/tours" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
+                <i class="fa-solid fa-person-biking me-1 text-info"></i> Guided Tours
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/locations" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
+                <i class="fa-solid fa-store me-1 text-success"></i> Locations
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/reviews" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
+                <i class="fa-solid fa-star me-1 text-warning"></i> Reviews
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/faq" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
+                <i class="fa-solid fa-circle-question me-1 text-secondary"></i> FAQ
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/support" routerLinkActive="active" class="nav-link text-light px-3 py-2 rounded-3">
+                <i class="fa-solid fa-headset me-1 text-danger"></i> Support
               </a>
             </li>
           </ul>
 
           <!-- Customer Header Right Actions -->
           <div class="d-flex align-items-center flex-wrap gap-2">
+            <!-- Booking Lookup Link -->
+            <a routerLink="/my-booking" class="btn btn-outline-info btn-sm rounded-pill px-3 d-flex align-items-center gap-1">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>My Booking</span>
+            </a>
+
             <!-- Language Selector Dropdown -->
             <div class="dropdown">
               <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 d-flex align-items-center gap-2 text-light" type="button" data-bs-toggle="dropdown">
@@ -80,7 +105,6 @@ import { StateService } from '../../../core/services/state.service';
 })
 export class PublicHeaderComponent {
   i18n = inject(I18nService);
-  state = inject(StateService);
 
   selectLang(lang: Language) {
     this.i18n.setLanguage(lang);

@@ -10,6 +10,7 @@ import settlementRoutes from './settlementRoutes.js';
 import settingRoutes from './settingRoutes.js';
 import tariffRoutes from './tariffRoutes.js';
 import publicRoutes from './publicRoutes.js';
+import adminRoutes from './adminRoutes.js';
 import employeeRoutes from './employeeRoutes.js';
 import shiftDefinitionRoutes from './shiftDefinitionRoutes.js';
 import attendanceRoutes from './attendanceRoutes.js';
@@ -33,6 +34,7 @@ router.use('/settlements', settlementRoutes);
 router.use('/settings', settingRoutes);
 router.use('/tariffs', tariffRoutes);
 router.use('/public', publicRoutes);
+router.use('/admin', adminRoutes);
 router.use('/employees', employeeRoutes);
 router.use('/shift-definitions', shiftDefinitionRoutes);
 router.use('/attendance', attendanceRoutes);
@@ -42,5 +44,3 @@ router.use('/shift-swaps', shiftSwapRoutes);
 router.use('/payroll', payrollRoutes);
 
 export default router;
-
-

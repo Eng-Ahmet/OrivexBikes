@@ -89,7 +89,23 @@ import { I18nService } from '../../core/services/i18n.service';
               </div>
             </div>
 
-            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow-sm" [disabled]="submitting()">
+            <!-- GDPR Consents & Terms -->
+            <div class="card bg-secondary bg-opacity-10 border-secondary rounded-3 p-3 mb-4">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="termsCheck" [(ngModel)]="termsAccepted" name="termsAccepted" required>
+                <label class="form-check-label text-light small" for="termsCheck">
+                  I agree to the <a routerLink="/terms" target="_blank" class="text-primary text-decoration-underline">Terms & Conditions</a> and <a routerLink="/rental-terms" target="_blank" class="text-primary text-decoration-underline">Rental Policy</a> *
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="privacyCheck" [(ngModel)]="privacyAccepted" name="privacyAccepted" required>
+                <label class="form-check-label text-light small" for="privacyCheck">
+                  I accept the processing of my personal data according to the <a routerLink="/privacy" target="_blank" class="text-primary text-decoration-underline">Privacy Policy</a> (GDPR) *
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow-sm fw-bold" [disabled]="submitting() || !termsAccepted || !privacyAccepted">
               <i class="fa-solid fa-check-circle me-2"></i> Confirm Booking
             </button>
           </form>
@@ -144,7 +160,10 @@ export class CustomerFormComponent {
   email = '';
   phone = '';
   notes = '';
-  paymentMethod: 'STRIPE' | 'PAY_AT_COUNTER' = 'STRIPE';
+  paymentMethod: 'STRIPE' | 'PAY_AT_COUNTER' = 'PAY_AT_COUNTER';
+
+  termsAccepted = false;
+  privacyAccepted = false;
 
   submitting = signal<boolean>(false);
 
@@ -154,23 +173,34 @@ export class CustomerFormComponent {
       return;
     }
 
+    if (!this.termsAccepted || !this.privacyAccepted) {
+      alert('Please accept the Terms & Conditions and Privacy Policy.');
+      return;
+    }
+
     this.submitting.set(true);
     try {
       const mode = this.bookingMode();
       const payload = {
         type: mode,
         item_id: mode === 'TOUR' ? (this.state.selectedTour()?.id || 1) : 1,
+        vehicle_id: mode === 'FLEET' ? 1 : undefined,
         item_name: mode === 'TOUR' ? (this.state.selectedTour()?.title || 'Tour') : (this.state.selectedFleet()?.display_name || 'Vehicle'),
+        customer_name: `${this.firstName} ${this.lastName}`,
         customer_first_name: this.firstName,
         customer_last_name: this.lastName,
         customer_email: this.email,
         customer_phone: this.phone,
         booking_date: this.state.selectedDate(),
         booking_time: this.state.selectedTimeSlot(),
+        pickup_date: this.state.selectedDate(),
+        pickup_time: this.state.selectedTimeSlot(),
         duration_days: mode === 'FLEET' ? this.state.durationDays() : undefined,
         quantity_or_participants: this.state.quantityOrParticipants(),
         total_price: this.state.calculatedTotalPrice(),
         payment_method: this.paymentMethod,
+        terms_accepted: true,
+        privacy_accepted: true,
         notes: this.notes
       };
 

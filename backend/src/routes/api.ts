@@ -879,4 +879,76 @@ router.post('/settlements/:id/pay', authenticateToken, requireAdmin, (req: AuthR
   return res.json({ message: 'Settlement paid successfully', settlement: sett });
 });
 
+// --- 12. PUBLIC CONTENT MODERATION & ADMIN INTEGRATION ---
+
+// Reviews Moderation
+router.get('/reviews', authenticateToken, (req: AuthRequest, res: Response) => {
+  return res.json(memoryData.customer_reviews || []);
+});
+
+router.patch('/reviews/:id/approve', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const review = (memoryData.customer_reviews || []).find(r => r.id === id);
+  if (!review) return res.status(404).json({ error: 'Review not found' });
+
+  review.status = 'APPROVED';
+  review.approved_by = req.user?.id || 1;
+  review.approved_at = new Date().toISOString();
+  return res.json(review);
+});
+
+router.patch('/reviews/:id/reject', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const review = (memoryData.customer_reviews || []).find(r => r.id === id);
+  if (!review) return res.status(404).json({ error: 'Review not found' });
+
+  review.status = 'REJECTED';
+  review.rejected_by = req.user?.id || 1;
+  review.rejected_at = new Date().toISOString();
+  return res.json(review);
+});
+
+// Support Tickets Management
+router.get('/support', authenticateToken, (req: AuthRequest, res: Response) => {
+  return res.json(memoryData.support_tickets || []);
+});
+
+router.patch('/support/:id/status', authenticateToken, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const { status, staff_notes } = req.body;
+  const ticket = (memoryData.support_tickets || []).find(t => t.id === id);
+  if (!ticket) return res.status(404).json({ error: 'Support ticket not found' });
+
+  if (status) ticket.status = status;
+  if (staff_notes) ticket.staff_notes = staff_notes;
+  return res.json(ticket);
+});
+
+// Tour Bookings Management
+router.get('/tour-bookings', authenticateToken, (req: AuthRequest, res: Response) => {
+  return res.json(memoryData.tour_bookings || []);
+});
+
+// FAQ Management
+router.get('/faqs', authenticateToken, (req: AuthRequest, res: Response) => {
+  return res.json(memoryData.faqs || []);
+});
+
+router.post('/faqs', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const { category, question, answer } = req.body;
+  if (!question || !answer) return res.status(400).json({ error: 'Question and Answer are required' });
+
+  const faq = {
+    id: Date.now(),
+    category: category || 'General',
+    question,
+    answer,
+    is_active: true,
+    order_num: (memoryData.faqs || []).length + 1
+  };
+  memoryData.faqs = memoryData.faqs || [];
+  memoryData.faqs.push(faq);
+  return res.status(201).json(faq);
+});
+
 export default router;
