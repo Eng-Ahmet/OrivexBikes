@@ -100,6 +100,11 @@ import { StateService } from '../../core/services/state.service';
             <i class="fa-solid fa-chart-line width-20 text-info"></i>
             <span class="fw-semibold text-white">{{ i18n.t('payrollReports') }}</span>
           </a>
+
+          <a routerLink="/reviews-moderation" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-star width-20 text-warning"></i>
+            <span class="fw-semibold text-white">Customer Reviews</span>
+          </a>
         }
 
         <hr class="border-secondary my-2" />

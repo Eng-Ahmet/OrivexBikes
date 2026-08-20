@@ -449,5 +449,18 @@ export class ApiService {
   async updatePayrollRecordStatus(recordId: number | string, status: string, payment_method = 'BANK_TRANSFER', transaction_ref = ''): Promise<any> {
     return firstValueFrom(this.http.patch(`${this.apiBase}/payroll/records/${recordId}/status`, { status, payment_method, transaction_ref }, { headers: this.getHeaders(true) }));
   }
+
+  // --- REVIEWS MODERATION ---
+  async getAdminReviews(): Promise<any[]> {
+    return firstValueFrom(this.http.get<any[]>(`${this.apiBase}/admin/reviews`, { headers: this.getHeaders() }));
+  }
+
+  async approveReview(id: number | string): Promise<any> {
+    return firstValueFrom(this.http.patch(`${this.apiBase}/admin/reviews/${id}/approve`, {}, { headers: this.getHeaders(true) }));
+  }
+
+  async rejectReview(id: number | string): Promise<any> {
+    return firstValueFrom(this.http.patch(`${this.apiBase}/admin/reviews/${id}/reject`, {}, { headers: this.getHeaders(true) }));
+  }
 }
 

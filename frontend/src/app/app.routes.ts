@@ -20,6 +20,7 @@ import { PayrollPageComponent } from './pages/payroll-page/payroll-page.componen
 import { PayrollReportsPageComponent } from './pages/payroll-reports-page/payroll-reports-page.component';
 import { StoresPageComponent } from './pages/stores-page/stores-page.component';
 import { ExpensesPageComponent } from './pages/expenses-page/expenses-page.component';
+import { ReviewsModerationPageComponent } from './pages/reviews-moderation-page/reviews-moderation-page.component';
 
 // Public Customer Website Pages
 import { PublicHomePageComponent } from './pages/public-home/public-home-page.component';
@@ -95,6 +96,7 @@ export const routes: Routes = [
   { path: 'payroll-reports', component: PayrollReportsPageComponent, canActivate: [authGuard, adminGuard] },
 
   // Executive Admin Routes - Protected with AuthGuard & AdminGuard
+  { path: 'reviews-moderation', component: ReviewsModerationPageComponent, canActivate: [authGuard, adminGuard] },
   { path: 'analytics', component: AnalyticsPageComponent, canActivate: [authGuard, adminGuard] },
   { path: 'settings', component: SettingsPageComponent, canActivate: [authGuard, adminGuard] },
 
