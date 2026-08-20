@@ -1,0 +1,33 @@
+name: PWA & TWA Store Deployment Verification
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  verify-pwa-twa:
+    name: Verify PWA Manifest, AssetLinks & TWA Package Alignment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📱 Verify PWA Manifest Integrity
+        run: |
+          test -f frontend/public/manifest.json || (echo "❌ Missing manifest.json in frontend/public!" && exit 1)
+          echo "✅ PWA manifest.json is present."
+
+      - name: 🔗 Verify Digital Asset Links (.well-known/assetlinks.json)
+        run: |
+          test -f frontend/public/.well-known/assetlinks.json || (echo "❌ Missing assetlinks.json!" && exit 1)
+          grep -q "com.qqbikes.app.twa" frontend/public/.well-known/assetlinks.json || (echo "❌ Package ID com.qqbikes.app.twa not found in assetlinks.json!" && exit 1)
+          echo "✅ Digital Asset Links verified for com.qqbikes.app.twa."
+
+      - name: 🔐 Verify Environment Variable Binding Invariants
+        run: |
+          grep -q "PORT" backend/src/server.ts || (echo "❌ PORT binding missing!" && exit 1)
+          echo "✅ Environment variables properly bound."

@@ -6,5 +6,7 @@ const router = Router();
 
 router.get('/', authenticateToken, getSettings);
 router.patch('/:key', authenticateToken, requireAdmin, updateSetting);
+router.put('/:key', authenticateToken, requireAdmin, updateSetting);
 
 export default router;
+

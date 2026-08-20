@@ -6,6 +6,7 @@ const router = Router();
 
 router.post('/login', loginUser);
 router.post('/verify-pin', verifyPin);
+router.post('/logout', (req, res) => res.json({ message: 'Logged out successfully' }));
 router.get('/me', authenticateToken, getMe);
 router.get('/users', authenticateToken, listUsers);
 

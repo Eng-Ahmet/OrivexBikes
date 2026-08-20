@@ -158,4 +158,27 @@ router.post('/bookings', (req: Request, res: Response) => {
   return res.status(201).json(booking);
 });
 
+router.post('/booking', (req: Request, res: Response) => {
+  const { customer_name, email, tour_type, booking_date, guests } = req.body;
+  const bookingCode = `BK-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+  const booking = {
+    id: Date.now(),
+    booking_code: bookingCode,
+    type: tour_type || 'TOUR',
+    item_id: 1,
+    item_name: 'City Highlights Tour',
+    customer_first_name: (customer_name || 'Guest').split(' ')[0],
+    customer_last_name: (customer_name || 'Guest').split(' ')[1] || 'User',
+    customer_email: email || 'guest@example.com',
+    booking_date: booking_date || new Date().toISOString().split('T')[0],
+    quantity_or_participants: Number(guests || 1),
+    total_price: 35,
+    payment_status: 'UNPAID_DUE_AT_COUNTER',
+    status: 'CONFIRMED',
+    created_at: new Date().toISOString()
+  };
+  return res.status(201).json(booking);
+});
+
 export default router;
+

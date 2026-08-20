@@ -6,6 +6,7 @@
   "scripts": {
     "start": "tsx backend/src/server.ts",
     "dev": "tsx watch backend/src/server.ts",
+    "test": "tsx backend/src/tests/index.test.ts",
     "build": "ng build && tsc",
     "build:frontend": "ng build",
     "build:backend": "tsc"

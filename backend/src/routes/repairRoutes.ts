@@ -3,6 +3,9 @@ import { getRepairParts, getRepairServices, getRepairWorkOrders, createRepairWor
 
 const router = Router();
 
+router.get('/', getRepairWorkOrders);
+router.post('/', createRepairWorkOrder);
+
 router.get('/parts', getRepairParts);
 router.get('/services', getRepairServices);
 
@@ -11,3 +14,4 @@ router.post('/work-orders', createRepairWorkOrder);
 router.put('/work-orders/:id/status', updateRepairWorkOrderStatus);
 
 export default router;
+

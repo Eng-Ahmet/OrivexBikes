@@ -15,6 +15,7 @@ const router = Router();
 router.get('/periods', authenticateToken, getPayrollPeriods);
 router.post('/periods', authenticateToken, requireAdmin, createPayrollPeriod);
 router.post('/periods/:id/calculate', authenticateToken, requireAdmin, calculatePayrollForPeriod);
+router.post('/calculate', authenticateToken, requireAdmin, calculatePayrollForPeriod);
 router.post('/periods/:id/lock', authenticateToken, requireAdmin, lockPayrollPeriod);
 
 router.get('/records', authenticateToken, getPayrollRecords);

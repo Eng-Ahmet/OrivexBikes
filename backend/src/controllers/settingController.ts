@@ -19,13 +19,21 @@ export const updateSetting = (req: AuthRequest, res: Response) => {
   const requestId = (req as any).requestId || `req-${Date.now()}`;
   const userId = req.user?.id || 1;
 
-  const setting = memoryData.settings.find(s => s.key === key);
+  let setting = memoryData.settings.find(s => s.key === key);
   if (!setting) {
-    return res.status(404).json({
-      success: false,
-      error: { code: 'RESOURCE_NOT_FOUND', message: `Setting key '${key}' not found.` },
-      request_id: requestId
-    });
+    const newSetting: Setting = {
+      id: Date.now(),
+      store_id: 1,
+      key,
+      value: String(value || ''),
+      description: `Configuration key ${key}`,
+      value_type: 'STRING',
+      updated_by: userId,
+      updated_at: new Date().toISOString()
+    };
+    setting = newSetting;
+    memoryData.settings.push(setting);
+    return res.json({ message: 'Setting created successfully', setting });
   }
 
   if (value === undefined || value === null) {

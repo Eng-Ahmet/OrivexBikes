@@ -31,3 +31,38 @@ export const getDashboardReport = (req: AuthRequest, res: Response) => {
     recentContracts: storeContracts.slice(0, 5)
   });
 };
+
+export const getDailyReport = (req: AuthRequest, res: Response) => {
+  const date = (req.query.date as string) || new Date().toISOString().split('T')[0];
+  const scope = req.storeScope;
+  const storeId = scope?.activeStoreId || (req.query.store_id ? Number(req.query.store_id) : 1);
+
+  const contracts = memoryData.contracts.filter(c => (c.store_id === storeId || !storeId) && (c.created_at || '').startsWith(date));
+  const totalRevenue = contracts.reduce((sum, c) => sum + (c.rental_fee || 0) + (c.extra_charges || 0), 0);
+
+  return res.json({
+    date,
+    store_id: storeId,
+    total_contracts: contracts.length,
+    total_revenue: totalRevenue,
+    contracts
+  });
+};
+
+export const getMonthlyReport = (req: AuthRequest, res: Response) => {
+  const month = (req.query.month as string) || new Date().toISOString().substring(0, 7);
+  const scope = req.storeScope;
+  const storeId = scope?.activeStoreId || (req.query.store_id ? Number(req.query.store_id) : 1);
+
+  const contracts = memoryData.contracts.filter(c => (c.store_id === storeId || !storeId) && (c.created_at || '').startsWith(month));
+  const totalRevenue = contracts.reduce((sum, c) => sum + (c.rental_fee || 0) + (c.extra_charges || 0), 0);
+
+  return res.json({
+    month,
+    store_id: storeId,
+    total_contracts: contracts.length,
+    total_revenue: totalRevenue,
+    contracts
+  });
+};
+
