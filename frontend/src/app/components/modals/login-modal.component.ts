@@ -15,7 +15,7 @@ import { I18nService } from '../../core/services/i18n.service';
         <div class="modal-content bg-dark text-light border-secondary shadow-lg rounded-4">
           <div class="modal-header border-secondary">
             <h5 class="modal-title fw-bold text-primary">
-              <i class="fa-solid fa-user-shield me-2"></i> Selección de Perfil y Tienda
+              <i class="fa-solid fa-user-shield me-2"></i> {{ i18n.t('credentialsAccess') }}
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -23,25 +23,25 @@ import { I18nService } from '../../core/services/i18n.service';
           <div class="modal-body p-4">
             <form (ngSubmit)="submitLogin()">
               <div class="mb-3">
-                <label class="form-label text-secondary small">Rol de Usuario</label>
+                <label class="form-label text-secondary small">{{ i18n.t('roleSelectionLabel') }}</label>
                 <select class="form-select bg-dark text-light border-secondary" [(ngModel)]="role" name="role">
-                  <option value="ADMIN">ADMINISTRADOR</option>
-                  <option value="EMPLOYEE">EMPLEADO</option>
+                  <option value="ADMIN">{{ i18n.t('adminRoleOption') }}</option>
+                  <option value="EMPLOYEE">{{ i18n.t('employeeRoleOption') }}</option>
                 </select>
               </div>
 
               <div class="mb-4">
-                <label class="form-label text-secondary small">Local / Tienda</label>
+                <label class="form-label text-secondary small">{{ i18n.t('storeLocationLabel') }}</label>
                 <select class="form-select bg-dark text-light border-secondary" [(ngModel)]="storeId" name="storeId">
-                  <option [value]="1">Tienda Central Málaga (Store #1)</option>
-                  <option [value]="2">Camping Mijas (Campsite #2)</option>
+                  <option [value]="1">{{ i18n.t('malagaStoreOption') }}</option>
+                  <option [value]="2">{{ i18n.t('torremolinosStoreOption') }}</option>
                 </select>
               </div>
 
               <div class="d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">{{ i18n.t('cancel') }}</button>
                 <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
-                  <i class="fa-solid fa-right-to-bracket me-2"></i> Acceder
+                  <i class="fa-solid fa-right-to-bracket me-2"></i> {{ i18n.t('login') }}
                 </button>
               </div>
             </form>
@@ -62,7 +62,7 @@ export class LoginModalComponent {
   async submitLogin() {
     this.state.setActiveRole(this.role);
     this.state.setActiveStore(this.storeId);
-    this.state.showToast('Sesión Actualizada', `Perfil: ${this.role} en Tienda #${this.storeId}`, 'info');
+    this.state.showToast(this.i18n.t('login'), `Perfil: ${this.role} en Tienda #${this.storeId}`, 'info');
 
     const modalEl = document.getElementById('loginModal');
     if (modalEl && (window as any).bootstrap) {

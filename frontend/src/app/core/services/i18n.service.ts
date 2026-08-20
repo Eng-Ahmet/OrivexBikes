@@ -97,7 +97,25 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     administration: 'Administración y RRHH',
     stores: 'Tiendas y Sucursales',
     expenses: 'Gastos Operativos',
-    publicCustomerSite: 'Sitio Público de Clientes'
+    publicCustomerSite: 'Sitio Público de Clientes',
+
+    // Login Page i18n
+    staffPortal: 'Portal del Personal',
+    secureAccessTitle: 'Acceso Seguro de Administración y Control de Turno',
+    quickPinAccess: 'Acceso Rápido PIN',
+    credentialsAccess: 'Selección de Tienda y Rol',
+    employeePinLabel: 'Código PIN de Empleado (4 Dígitos)',
+    defaultPinsNotice: 'Prueba Rápida con PINs Demo:',
+    authenticateBtn: 'Autenticar y Acceder al Panel',
+    storeLocationLabel: 'Ubicación de Tienda',
+    roleSelectionLabel: 'Rol de Usuario',
+    signInStaffSuite: 'Iniciar Sesión en el Panel',
+    returnToPublicSite: 'Volver al Sitio Público de Clientes',
+    malagaStoreOption: 'Málaga Beach Campsite Store',
+    torremolinosStoreOption: 'Torremolinos Central Hub',
+    adminRoleOption: 'ADMIN (Control Total)',
+    employeeRoleOption: 'EMPLEADO (Mostrador y Turno)',
+    quickPinClickHelp: 'Haz clic en cualquier perfil demo para cargar el PIN automáticamente:'
   },
   en: {
     appTitle: 'QQBikes - Management System',
@@ -193,7 +211,25 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     administration: 'Administration & HR',
     stores: 'Stores & Branches',
     expenses: 'Operating Expenses',
-    publicCustomerSite: 'Public Customer Site'
+    publicCustomerSite: 'Public Customer Site',
+
+    // Login Page i18n
+    staffPortal: 'Staff Portal',
+    secureAccessTitle: 'Secure Administrative & Shift Control Access',
+    quickPinAccess: 'Quick PIN Access',
+    credentialsAccess: 'Store & Role Selection',
+    employeePinLabel: '4-Digit Employee PIN Code',
+    defaultPinsNotice: 'Quick Demo PIN Templates:',
+    authenticateBtn: 'Authenticate & Access Dashboard',
+    storeLocationLabel: 'Store Location',
+    roleSelectionLabel: 'User Role Selection',
+    signInStaffSuite: 'Sign In to Staff Suite',
+    returnToPublicSite: 'Return to Public Customer Site',
+    malagaStoreOption: 'Málaga Beach Campsite Store',
+    torremolinosStoreOption: 'Torremolinos Central Hub',
+    adminRoleOption: 'ADMIN (Full Control)',
+    employeeRoleOption: 'EMPLOYEE (Counter & Shift)',
+    quickPinClickHelp: 'Click any demo profile to quickly insert PIN:'
   },
   ar: {
     appTitle: 'QQBikes - نظام الإدارة والتأجير',
@@ -289,7 +325,25 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     administration: 'الإدارة والموارد البشرية',
     stores: 'الفروع والمتاجر',
     expenses: 'المصاريف التشغيلية',
-    publicCustomerSite: 'موقع العملاء المباشر'
+    publicCustomerSite: 'موقع العملاء المباشر',
+
+    // Login Page i18n
+    staffPortal: 'بوابة الموظفين والإدارة',
+    secureAccessTitle: 'تسجيل الدخول الآمن لإدارة النظام والورديات',
+    quickPinAccess: 'دخول سريع برمز PIN',
+    credentialsAccess: 'الدخول ببيانات الفرع والصلاحية',
+    employeePinLabel: 'رمز PIN الخاص بالموظف (4 أرقام)',
+    defaultPinsNotice: 'نماذج تجريبية سريعة لرموز PIN:',
+    authenticateBtn: 'تأكيد الدخول للنظام',
+    storeLocationLabel: 'الفرع / المتجر',
+    roleSelectionLabel: 'صلاحية و دور الموظف',
+    signInStaffSuite: 'تسجيل الدخول إلى لوحة التحكم',
+    returnToPublicSite: 'العودة لموقع العملاء العام',
+    malagaStoreOption: 'فرع شاطئ مالقة (Málaga Beach Campsite)',
+    torremolinosStoreOption: 'الفرع المركزي توريمولينوس (Torremolinos)',
+    adminRoleOption: 'مدير نظام ADMIN (صلاحيات كاملة)',
+    employeeRoleOption: 'موظف استقبال EMPLOYEE (شباك ووردية)',
+    quickPinClickHelp: 'انقر على أي حساب تجريبي للتعبئة التلقائية لرمز PIN:'
   }
 };
 
