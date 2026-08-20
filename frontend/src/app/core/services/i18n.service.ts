@@ -94,7 +94,10 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     shiftSwaps: 'Intercambio de Turnos',
     payroll: 'Nóminas Mensuales',
     payrollReports: 'Informes de Nómina',
-    administration: 'Administración y RRHH'
+    administration: 'Administración y RRHH',
+    stores: 'Tiendas y Sucursales',
+    expenses: 'Gastos Operativos',
+    publicCustomerSite: 'Sitio Público de Clientes'
   },
   en: {
     appTitle: 'QQBikes - Management System',
@@ -187,7 +190,10 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     shiftSwaps: 'Shift Swap Requests',
     payroll: 'Monthly Payroll',
     payrollReports: 'Payroll Reports',
-    administration: 'Administration & HR'
+    administration: 'Administration & HR',
+    stores: 'Stores & Branches',
+    expenses: 'Operating Expenses',
+    publicCustomerSite: 'Public Customer Site'
   },
   ar: {
     appTitle: 'QQBikes - نظام الإدارة والتأجير',
@@ -268,7 +274,22 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     amountPaid: 'المبلغ المدفوع',
     status: 'الحالة',
     refreshAudit: 'تحديث كشف المراجعة',
-    noPaidTxRecorded: 'لا توجد مدفوعات مسجلة اليوم لهذا الفرع.'
+    noPaidTxRecorded: 'لا توجد مدفوعات مسجلة اليوم لهذا الفرع.',
+
+    // HR & Payroll i18n Keys
+    employeeManagement: 'إدارة الموظفين',
+    employees: 'الموظفين',
+    shiftDefinitions: 'تعريف وقوالب الورديات',
+    attendance: 'الحضور والانصراف',
+    overtime: 'الساعات الإضافية',
+    leaveRequests: 'طلبات الإجازات والغياب',
+    shiftSwaps: 'تبديل الورديات',
+    payroll: 'مسير الرواتب الشهري',
+    payrollReports: 'تقارير ومستحقات الرواتب',
+    administration: 'الإدارة والموارد البشرية',
+    stores: 'الفروع والمتاجر',
+    expenses: 'المصاريف التشغيلية',
+    publicCustomerSite: 'موقع العملاء المباشر'
   }
 };
 

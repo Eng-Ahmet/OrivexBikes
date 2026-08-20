@@ -7,8 +7,8 @@
     "start": "tsx backend/src/server.ts",
     "dev": "tsx watch backend/src/server.ts",
     "test": "tsx backend/src/tests/index.test.ts",
-    "build": "ng build && tsc",
-    "build:frontend": "ng build",
+    "build": "./node_modules/.bin/ng build && tsc",
+    "build:frontend": "./node_modules/.bin/ng build",
     "build:backend": "tsc"
   },
   "keywords": [

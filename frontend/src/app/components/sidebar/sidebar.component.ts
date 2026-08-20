@@ -51,12 +51,12 @@ import { StateService } from '../../core/services/state.service';
 
         <a routerLink="/stores" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
           <i class="fa-solid fa-store width-20 text-warning"></i>
-          <span class="fw-semibold text-white">Stores & Branches</span>
+          <span class="fw-semibold text-white">{{ i18n.t('stores') }}</span>
         </a>
 
         <a routerLink="/expenses" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
           <i class="fa-solid fa-file-invoice-dollar width-20 text-warning"></i>
-          <span class="fw-semibold text-white">Operating Expenses</span>
+          <span class="fw-semibold text-white">{{ i18n.t('expenses') }}</span>
         </a>
 
         <a routerLink="/employees" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
