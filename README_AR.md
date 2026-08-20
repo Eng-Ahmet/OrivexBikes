@@ -4,10 +4,11 @@
 
 ### المنصة المؤسسية لإدارة تأجير الدراجات والمركبات، الورديات، الرواتب والترخيص لـ PWA/TWA
 
-[🌐 English Version](README.md) | [🇸🇦 النسخة العربية](README_AR.md)
+[🌐 English Version](README.md) | [🇸🇦 النسخة العربية](README_AR.md) | [🚀 Orivex Technology](https://orivex.eu)
 
 [![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/Eng-Ahmet/QQBikes/ci.yml?branch=main&style=for-the-badge&logo=github-actions&color=238636)](https://github.com/Eng-Ahmet/QQBikes/actions)
 [![Integration Tests](https://img.shields.io/badge/الاختبارات-66%2F66%20ناجح-brightgreen?style=for-the-badge&logo=codecov&color=2ea44f)](https://github.com/Eng-Ahmet/QQBikes/tree/main/backend/src/tests)
+[![Designed by Orivex](https://img.shields.io/badge/%D8%AA%D8%B5%D9%85%D9%8A%D9%85%20%D9%88%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-Orivex%20Technology-7928CA?style=for-the-badge&logo=rocket&logoColor=white)](https://orivex.eu)
 [![Node.js](https://img.shields.io/badge/Node.js-v22.x%20LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Angular](https://img.shields.io/badge/Angular-v18%20Standalone-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-v5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -20,12 +21,13 @@
 
 </div>
 
-## 🌐 روابط التجربة المباشرة والنظام (Live Demo & Links)
+## 🌐 روابط التجربة المباشرة والنظام والموقع الرسمي (Live Demo & Links)
 
 - **🖥️ واجهة النظام والنقطة المباشرة (Local Live Interface)**: [http://localhost:5000](http://localhost:5000)
-- **📊 تقرير الأرباح والخسائر بالفروع (Branch P&L Endpoint)**: `http://localhost:5000/api/v1/stores/pnl`
-- **⚙️ فحص صحة الخدمة (Health Check API)**: `http://localhost:5000/api/v1/auth/me`
-- **📱 ملف الربط الذكي للأندرويد (Digital Asset Links)**: `http://localhost:5000/.well-known/assetlinks.json`
+- **🚀 الموقع الرسمي للفريق المصمم (Orivex Technology)**: [https://orivex.eu](https://orivex.eu)
+- **📊 تقرير الأرباح والخسائر بالفروع (Branch P&L Endpoint)**: [http://localhost:5000/api/v1/stores/pnl](http://localhost:5000/api/v1/stores/pnl)
+- **⚙️ فحص صحة الخدمة (Health Check API)**: [http://localhost:5000/api/v1/auth/me](http://localhost:5000/api/v1/auth/me)
+- **📱 ملف الربط الذكي للأندرويد (Digital Asset Links)**: [http://localhost:5000/.well-known/assetlinks.json](http://localhost:5000/.well-known/assetlinks.json)
 
 ---
 
@@ -148,6 +150,6 @@ docker compose up --build
 
 <div align="center">
 
-تم التطوير بحب 🚲 لصالح **منظومة إدارة وتأجير QQBikes**
+تم التصميم والتطوير بواسطة فريق [**Orivex Technology**](https://orivex.eu) 🚀 لصالح **منظومة إدارة وتأجير QQBikes**
 
 </div>
