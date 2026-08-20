@@ -18,8 +18,8 @@ import { I18nService, Language } from '../../core/services/i18n.service';
       <div class="glow-orb orb-2"></div>
       <div class="glow-orb orb-3"></div>
 
-      <!-- LEFT SIDE: Branding, Welcome Hero, System Capabilities & Language Switcher -->
-      <div class="left-hero-panel col-12 col-lg-7 col-xl-7 p-4 p-md-5 d-flex flex-column justify-content-between text-white position-relative z-1">
+      <!-- LEFT PANEL: 50% EQUAL WIDTH (col-12 col-lg-6) - Welcome, Branding & Language Switcher -->
+      <div class="left-hero-panel col-12 col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-between text-white position-relative z-1">
         
         <!-- Top Row: Brand Emblem & Trilingual Language Switcher -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
@@ -37,17 +37,17 @@ import { I18nService, Language } from '../../core/services/i18n.service';
 
           <!-- Trilingual Language Pills Selector -->
           <div class="lang-pill-group d-flex gap-1 p-1 bg-dark bg-opacity-70 rounded-pill border border-white border-opacity-10 shadow-sm">
-            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 text-white fw-bold transition-all"
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1.5 text-white fw-bold transition-all"
                     [class.active-lang]="i18n.currentLang() === 'es'"
                     (click)="changeLang('es')">
               🇪🇸 <span class="ms-1">ES</span>
             </button>
-            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 text-white fw-bold transition-all"
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1.5 text-white fw-bold transition-all"
                     [class.active-lang]="i18n.currentLang() === 'en'"
                     (click)="changeLang('en')">
               🇬🇧 <span class="ms-1">EN</span>
             </button>
-            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 text-white fw-bold transition-all"
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1.5 text-white fw-bold transition-all"
                     [class.active-lang]="i18n.currentLang() === 'ar'"
                     (click)="changeLang('ar')">
               🇸🇦 <span class="ms-1">العربية</span>
@@ -55,133 +55,144 @@ import { I18nService, Language } from '../../core/services/i18n.service';
           </div>
         </div>
 
-        <!-- Middle Content: Welcome Messages & Capability Grid -->
+        <!-- Middle Hero Welcome Section -->
         <div class="my-auto py-4">
           <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-cyan bg-opacity-10 text-cyan border border-cyan border-opacity-25 mb-3">
             <i class="fa-solid fa-shield-halved"></i>
             <span class="extra-small fw-bold tracking-wider text-uppercase">Operational System SSOT v1.0</span>
           </div>
 
-          <h2 class="display-5 fw-extrabold text-white font-heading tracking-tight mb-3 lh-sm">
+          <h2 class="display-6 fw-extrabold text-white font-heading tracking-tight mb-3 lh-sm">
             {{ i18n.t('welcomeHeroTitle') }}
           </h2>
-          <p class="lead text-white-50 max-w-600 mb-4 fs-6">
+          <p class="lead text-white-50 mb-4 fs-6">
             {{ i18n.t('welcomeHeroSub') }}
           </p>
 
-          <!-- System Feature Showcase Grid -->
-          <div class="row g-3 max-w-750">
-            <div class="col-md-4">
-              <div class="feature-card p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10 h-100">
-                <div class="icon-box-circle bg-primary bg-opacity-20 text-cyan p-2.5 mb-2" style="width: 42px; height: 42px;">
-                  <i class="fa-solid fa-layer-group fs-5"></i>
-                </div>
-                <h6 class="fw-bold text-white mb-1 small">{{ i18n.t('fleetControlTitle') }}</h6>
+          <!-- System Feature List -->
+          <div class="d-flex flex-column gap-3 max-w-650">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10">
+              <div class="icon-box-circle bg-primary bg-opacity-20 text-cyan p-2.5" style="width: 42px; height: 42px;">
+                <i class="fa-solid fa-layer-group fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-white mb-0 small">{{ i18n.t('fleetControlTitle') }}</h6>
                 <p class="text-white-50 extra-small mb-0">{{ i18n.t('fleetControlSub') }}</p>
               </div>
             </div>
 
-            <div class="col-md-4">
-              <div class="feature-card p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10 h-100">
-                <div class="icon-box-circle bg-warning bg-opacity-20 text-warning p-2.5 mb-2" style="width: 42px; height: 42px;">
-                  <i class="fa-solid fa-cash-register fs-5"></i>
-                </div>
-                <h6 class="fw-bold text-white mb-1 small">{{ i18n.t('shiftAuditTitle') }}</h6>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10">
+              <div class="icon-box-circle bg-warning bg-opacity-20 text-warning p-2.5" style="width: 42px; height: 42px;">
+                <i class="fa-solid fa-cash-register fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-white mb-0 small">{{ i18n.t('shiftAuditTitle') }}</h6>
                 <p class="text-white-50 extra-small mb-0">{{ i18n.t('shiftAuditSub') }}</p>
               </div>
             </div>
 
-            <div class="col-md-4">
-              <div class="feature-card p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10 h-100">
-                <div class="icon-box-circle bg-info bg-opacity-20 text-info p-2.5 mb-2" style="width: 42px; height: 42px;">
-                  <i class="fa-solid fa-user-shield fs-5"></i>
-                </div>
-                <h6 class="fw-bold text-white mb-1 small">{{ i18n.t('securitySSOTTitle') }}</h6>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10">
+              <div class="icon-box-circle bg-info bg-opacity-20 text-info p-2.5" style="width: 42px; height: 42px;">
+                <i class="fa-solid fa-user-shield fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-white mb-0 small">{{ i18n.t('securitySSOTTitle') }}</h6>
                 <p class="text-white-50 extra-small mb-0">{{ i18n.t('securitySSOTSub') }}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Left Bottom Footer -->
+        <!-- Bottom Left Footer -->
         <div class="pt-4 border-top border-white border-opacity-10 d-flex align-items-center justify-content-between text-white-50 extra-small">
           <div>&copy; 2026 QQBikes Management System</div>
           <div>Powered by <strong class="text-white">Orivex Technology</strong></div>
         </div>
       </div>
 
-      <!-- RIGHT SIDE: The Login Form Panel -->
-      <div class="right-form-panel col-12 col-lg-5 col-xl-5 p-4 p-md-5 d-flex align-items-center justify-content-center position-relative z-1">
+      <!-- RIGHT PANEL: 50% EQUAL WIDTH (col-12 col-lg-6) - CLEAN NO-CARD LOGIN FORM -->
+      <div class="right-form-panel col-12 col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-between text-white position-relative z-1">
         
-        <div class="form-container-card card border-0 rounded-5 p-4 p-md-5 shadow-2xl w-100 max-w-460">
-          
-          <!-- Form Header -->
+        <div class="my-auto w-100 max-w-550 mx-auto">
+          <!-- Title & Subtitle (Plain text directly on panel - NO CARD) -->
           <div class="text-start mb-4">
-            <h3 class="fw-black text-white font-heading tracking-tight mb-1 fs-3">
+            <h3 class="fw-black text-white font-heading tracking-tight mb-2 fs-2">
               {{ i18n.t('staffPortal') }}
             </h3>
-            <p class="text-white-50 small mb-0">{{ i18n.t('secureAccessTitle') }}</p>
+            <p class="text-white-50 fs-6 mb-0">{{ i18n.t('secureAccessTitle') }}</p>
           </div>
 
-          <!-- Login Mode Tabs: PIN / Credentials -->
-          <div class="segmented-control w-100 mb-4 p-1 rounded-4 d-flex">
-            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-2.5 transition-all text-nowrap"
+          <!-- Segmented Mode Selector Buttons (Clean 100% width) -->
+          <div class="segmented-control w-100 mb-4 p-1.5 rounded-4 d-flex gap-1">
+            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-3 transition-all text-nowrap"
                     [class.active-tab]="loginMode === 'PIN'"
                     (click)="loginMode = 'PIN'">
-              <i class="fa-solid fa-key me-1.5 text-warning"></i> {{ i18n.t('quickPinAccess') }}
+              <i class="fa-solid fa-key me-2 text-warning"></i> {{ i18n.t('quickPinAccess') }}
             </button>
-            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-2.5 transition-all text-nowrap"
+            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-3 transition-all text-nowrap"
                     [class.active-tab]="loginMode === 'CREDENTIALS'"
                     (click)="loginMode = 'CREDENTIALS'">
-              <i class="fa-solid fa-id-card-clip me-1.5 text-cyan"></i> {{ i18n.t('credentialsAccess') }}
+              <i class="fa-solid fa-id-card-clip me-2 text-cyan"></i> {{ i18n.t('credentialsAccess') }}
             </button>
           </div>
 
-          <!-- PIN Login Form -->
+          <!-- PIN Form Section -->
           @if (loginMode === 'PIN') {
             <div class="mb-4">
-              <label class="form-label text-white-50 small fw-semibold d-block mb-2">
+              <label class="form-label text-white-50 fs-6 fw-semibold d-block mb-2">
                 {{ i18n.t('employeePinLabel') }}
               </label>
               <div class="input-group input-group-lg shadow-sm">
-                <span class="input-group-text bg-dark border-secondary border-opacity-50 text-cyan px-3">
-                  <i class="fa-solid fa-lock-keyhole"></i>
+                <span class="input-group-text bg-dark border-secondary border-opacity-50 text-cyan px-4">
+                  <i class="fa-solid fa-lock-keyhole fs-4"></i>
                 </span>
                 <input [type]="showPin ? 'text' : 'password'" maxlength="4"
-                       class="form-control bg-dark text-cyan border-secondary border-opacity-50 text-center fw-extrabold fs-2 tracking-widest font-mono shadow-inner"
+                       class="form-control bg-dark text-cyan border-secondary border-opacity-50 text-center fw-extrabold fs-1 tracking-widest font-mono shadow-inner py-3"
                        placeholder="••••" [(ngModel)]="pinCode" (keyup.enter)="handlePinLogin()" />
-                <button class="btn btn-dark border-secondary border-opacity-50 text-white-50" type="button" (click)="showPin = !showPin">
-                  <i class="fa-solid" [class.fa-eye]="!showPin" [class.fa-eye-slash]="showPin"></i>
+                <button class="btn btn-dark border-secondary border-opacity-50 text-white-50 px-4" type="button" (click)="showPin = !showPin">
+                  <i class="fa-solid fs-5" [class.fa-eye]="!showPin" [class.fa-eye-slash]="showPin"></i>
                 </button>
               </div>
 
-              <!-- Quick Interactive Demo PIN Chips -->
-              <div class="demo-chips-section mt-3 p-3 rounded-4 bg-dark bg-opacity-50 border border-white border-opacity-10">
-                <div class="text-white-50 extra-small fw-semibold mb-2">
-                  <i class="fa-solid fa-bolt text-warning me-1"></i> {{ i18n.t('quickPinClickHelp') }}
+              <!-- Quick Interactive Demo Profiles -->
+              <div class="mt-4 p-3.5 rounded-4 bg-dark bg-opacity-50 border border-white border-opacity-10">
+                <div class="text-white-50 small fw-semibold mb-2.5">
+                  <i class="fa-solid fa-bolt text-warning me-1.5"></i> {{ i18n.t('quickPinClickHelp') }}
                 </div>
-                <div class="d-flex flex-wrap gap-1.5">
-                  <button type="button" class="btn btn-xs btn-outline-primary rounded-pill text-white border-opacity-30 py-1 px-2.5 small"
-                          (click)="setPin('1111')">
-                    👑 <strong>1111</strong> <span class="opacity-75">(Admin)</span>
-                  </button>
-                  <button type="button" class="btn btn-xs btn-outline-info rounded-pill text-white border-opacity-30 py-1 px-2.5 small"
-                          (click)="setPin('1234')">
-                    🚴 <strong>1234</strong> <span class="opacity-75">(Gustavo)</span>
-                  </button>
-                  <button type="button" class="btn btn-xs btn-outline-success rounded-pill text-white border-opacity-30 py-1 px-2.5 small"
-                          (click)="setPin('2222')">
-                    🛠️ <strong>2222</strong> <span class="opacity-75">(Fran)</span>
-                  </button>
-                  <button type="button" class="btn btn-xs btn-outline-warning rounded-pill text-white border-opacity-30 py-1 px-2.5 small"
-                          (click)="setPin('3333')">
-                    💻 <strong>3333</strong> <span class="opacity-75">(Ahmet)</span>
-                  </button>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <button type="button" class="btn btn-dark w-100 border border-primary border-opacity-30 rounded-3 py-2 px-3 text-start d-flex align-items-center justify-content-between"
+                            (click)="setPin('1111')">
+                      <span>👑 <strong>1111</strong></span>
+                      <span class="text-white-50 extra-small">Admin</span>
+                    </button>
+                  </div>
+                  <div class="col-6">
+                    <button type="button" class="btn btn-dark w-100 border border-info border-opacity-30 rounded-3 py-2 px-3 text-start d-flex align-items-center justify-content-between"
+                            (click)="setPin('1234')">
+                      <span>🚴 <strong>1234</strong></span>
+                      <span class="text-white-50 extra-small">Gustavo</span>
+                    </button>
+                  </div>
+                  <div class="col-6">
+                    <button type="button" class="btn btn-dark w-100 border border-success border-opacity-30 rounded-3 py-2 px-3 text-start d-flex align-items-center justify-content-between"
+                            (click)="setPin('2222')">
+                      <span>🛠️ <strong>2222</strong></span>
+                      <span class="text-white-50 extra-small">Fran</span>
+                    </button>
+                  </div>
+                  <div class="col-6">
+                    <button type="button" class="btn btn-dark w-100 border border-warning border-opacity-30 rounded-3 py-2 px-3 text-start d-flex align-items-center justify-content-between"
+                            (click)="setPin('3333')">
+                      <span>💻 <strong>3333</strong></span>
+                      <span class="text-white-50 extra-small">Ahmet</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <button class="btn btn-gradient-primary btn-lg w-100 rounded-4 shadow-lg fw-bold text-white py-3 transition-all transform-hover"
+            <button class="btn btn-gradient-primary btn-lg w-100 rounded-4 shadow-lg fw-bold text-white py-3.5 fs-5 transition-all"
                     (click)="handlePinLogin()" [disabled]="!pinCode || loading()">
               @if (loading()) {
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -191,28 +202,28 @@ import { I18nService, Language } from '../../core/services/i18n.service';
               {{ i18n.t('authenticateBtn') }}
             </button>
           } @else {
-            <!-- Credentials Form -->
+            <!-- Credentials Form Section -->
             <div class="mb-3">
-              <label class="form-label text-white-50 small fw-semibold mb-1">
-                <i class="fa-solid fa-store text-cyan me-1"></i> {{ i18n.t('storeLocationLabel') }}
+              <label class="form-label text-white-50 fs-6 fw-semibold mb-1">
+                <i class="fa-solid fa-store text-cyan me-1.5"></i> {{ i18n.t('storeLocationLabel') }}
               </label>
-              <select class="form-select bg-dark text-light border-secondary border-opacity-50 rounded-3 p-3 shadow-sm" [(ngModel)]="selectedStoreId">
+              <select class="form-select form-select-lg bg-dark text-light border-secondary border-opacity-50 rounded-3 p-3 shadow-sm" [(ngModel)]="selectedStoreId">
                 <option [value]="1">🏬 {{ i18n.t('malagaStoreOption') }}</option>
                 <option [value]="2">🌴 {{ i18n.t('torremolinosStoreOption') }}</option>
               </select>
             </div>
 
             <div class="mb-4">
-              <label class="form-label text-white-50 small fw-semibold mb-1">
-                <i class="fa-solid fa-user-gear text-cyan me-1"></i> {{ i18n.t('roleSelectionLabel') }}
+              <label class="form-label text-white-50 fs-6 fw-semibold mb-1">
+                <i class="fa-solid fa-user-gear text-cyan me-1.5"></i> {{ i18n.t('roleSelectionLabel') }}
               </label>
-              <select class="form-select bg-dark text-light border-secondary border-opacity-50 rounded-3 p-3 shadow-sm" [(ngModel)]="selectedRole">
+              <select class="form-select form-select-lg bg-dark text-light border-secondary border-opacity-50 rounded-3 p-3 shadow-sm" [(ngModel)]="selectedRole">
                 <option value="ADMIN">🛡️ {{ i18n.t('adminRoleOption') }}</option>
                 <option value="EMPLOYEE">💼 {{ i18n.t('employeeRoleOption') }}</option>
               </select>
             </div>
 
-            <button class="btn btn-gradient-primary btn-lg w-100 rounded-4 shadow-lg fw-bold text-white py-3 transition-all transform-hover"
+            <button class="btn btn-gradient-primary btn-lg w-100 rounded-4 shadow-lg fw-bold text-white py-3.5 fs-5 transition-all"
                     (click)="handleCredentialsLogin()" [disabled]="loading()">
               @if (loading()) {
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -223,10 +234,10 @@ import { I18nService, Language } from '../../core/services/i18n.service';
             </button>
           }
 
-          <!-- Footer Link -->
-          <div class="text-center mt-4 border-top border-light border-opacity-10 pt-3">
-            <a href="#/book" class="text-white-50 small text-decoration-none hover-cyan transition-all">
-              <i class="fa-solid fa-arrow-left me-1"></i> {{ i18n.t('returnToPublicSite') }}
+          <!-- Bottom Return Link -->
+          <div class="text-start mt-4 border-top border-light border-opacity-10 pt-4">
+            <a href="#/book" class="text-white-50 fs-6 text-decoration-none hover-cyan transition-all">
+              <i class="fa-solid fa-arrow-left me-2"></i> {{ i18n.t('returnToPublicSite') }}
             </a>
           </div>
         </div>
@@ -258,22 +269,14 @@ import { I18nService, Language } from '../../core/services/i18n.service';
     }
 
     .left-hero-panel {
-      background: rgba(15, 23, 42, 0.4);
+      background: rgba(15, 23, 42, 0.45);
       border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .right-form-panel {
-      background: rgba(11, 15, 25, 0.85);
+      background: rgba(10, 14, 23, 0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-    }
-
-    .form-container-card {
-      background: rgba(18, 26, 43, 0.88) !important;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 35px rgba(37, 99, 235, 0.18) !important;
     }
 
     .brand-emblem {
@@ -284,32 +287,22 @@ import { I18nService, Language } from '../../core/services/i18n.service';
     }
 
     .text-cyan { color: #38bdf8 !important; }
-    .max-w-600 { max-width: 600px; }
-    .max-w-750 { max-width: 750px; }
-    .max-w-460 { max-width: 460px; }
+    .max-w-650 { max-width: 650px; }
+    .max-w-550 { max-width: 550px; }
 
     .segmented-control {
-      background: rgba(10, 15, 26, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(18, 26, 43, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
     
     .active-tab {
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
     }
 
     .active-lang {
       background: rgba(37, 99, 235, 0.85) !important;
       box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
-    }
-
-    .feature-card {
-      transition: all 0.25s ease;
-    }
-    .feature-card:hover {
-      background: rgba(30, 41, 59, 0.6) !important;
-      border-color: rgba(56, 189, 248, 0.3) !important;
-      transform: translateY(-3px);
     }
 
     .btn-gradient-primary {
