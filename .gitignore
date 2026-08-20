@@ -11,6 +11,9 @@ dist/
 *.log
 npm-debug.log*
 
+# Angular build cache
+.angular/
+
 # OS / Editor Metadata
 .DS_Store
 Thumbs.db
