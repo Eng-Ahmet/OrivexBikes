@@ -62,6 +62,13 @@ body {
   min-height: 100vh;
 }
 
+/* Universal spacing for FontAwesome icons before text labels (RTL & LTR compatible) */
+i.fa-solid:not(.me-0):not(.mx-0):not(.icon-no-margin),
+i.fa-brands:not(.me-0):not(.mx-0):not(.icon-no-margin),
+i.fa-regular:not(.me-0):not(.mx-0):not(.icon-no-margin) {
+  margin-inline-end: 0.45rem;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Outfit', sans-serif;
 }
