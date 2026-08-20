@@ -516,7 +516,7 @@ router.get('/bookings/lookup', (req: Request, res: Response) => {
 
 // 11. POST /api/v1/public/bookings/:id/cancel - Secure Customer Cancellation
 router.post('/bookings/:id/cancel', (req: Request, res: Response) => {
-  const code = req.params.id;
+  const code = String(req.params.id || '');
 
   const contract = (memoryData.contracts || []).find(
     c => c.contract_number.toUpperCase() === code.toUpperCase() || c.id === Number(code)

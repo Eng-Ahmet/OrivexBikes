@@ -59,7 +59,7 @@ app.use('/src', express.static(path.join(frontendPath, 'src'), {
   }
 }));
 
-app.get('*', (req, res, next) => {
+app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     return next();
   }

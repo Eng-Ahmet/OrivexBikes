@@ -1,8 +1,17 @@
 # Dependencies
 node_modules/
 
-# Build outputs
+# Build outputs & Transpiled Code
 dist/
+frontend/public/*.js
+frontend/public/*.css
+frontend/public/*.txt
+frontend/public/index.html
+frontend/public/prerendered-routes.json
+!frontend/public/manifest.json
+!frontend/public/sw.js
+!frontend/public/assets/
+!frontend/public/.well-known/
 
 # Environment files
 .env.local

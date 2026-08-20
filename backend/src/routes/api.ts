@@ -699,7 +699,7 @@ router.get('/settings', authenticateToken, (req: AuthRequest, res: Response) => 
 });
 
 router.patch('/settings/:key', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
-  const key = req.params.key.toUpperCase();
+  const key = String(req.params.key).toUpperCase();
   const { value } = req.body;
   const storeId = req.user?.store_id || 1;
 
