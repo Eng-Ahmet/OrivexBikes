@@ -9,8 +9,8 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
   imports: [CommonModule, RouterModule],
   template: `
     <header class="sticky-top z-3">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient border-bottom border-secondary border-opacity-25 px-2 px-md-4 py-2.5 shadow-lg" style="backdrop-filter: blur(16px); background: rgba(11, 15, 25, 0.96) !important;">
-        <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary border-opacity-25 py-2.5 shadow-lg" style="backdrop-filter: blur(16px); background: rgba(11, 15, 25, 0.96) !important;">
+        <div class="container-xl px-3 px-md-4">
           <!-- Public Brand Logo & Title -->
           <a class="navbar-brand d-flex align-items-center text-decoration-none me-3" routerLink="/home">
             <div class="brand-icon bg-primary bg-gradient text-white rounded-3 p-2 me-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
