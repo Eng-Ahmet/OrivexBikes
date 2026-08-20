@@ -77,3 +77,65 @@ export const updateVehicleStatus = (req: AuthRequest, res: Response) => {
   vehicle.status = status;
   return res.json(vehicle);
 };
+
+export const transferVehicle = (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const { target_store_id, reason } = req.body;
+  const scope = req.storeScope!;
+
+  if (!target_store_id) {
+    return res.status(400).json({ error: 'Target store ID is required for vehicle transfer' });
+  }
+
+  const targetStoreId = Number(target_store_id);
+  if (!scope.allowedStoreIds.includes(targetStoreId)) {
+    return res.status(403).json({ error: 'Access denied: Unauthorized target store context' });
+  }
+
+  const vehicle = memoryData.vehicles.find(v => v.id === id);
+  if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+  const nowIso = new Date().toISOString();
+
+  // 1. Close active FleetLocationHistory
+  const activeHist = memoryData.fleet_location_history.find(h => h.vehicle_id === vehicle.id && h.effective_end === null);
+  if (activeHist) {
+    activeHist.effective_end = nowIso;
+  }
+
+  // 2. Create new FleetLocationHistory
+  const newHist = {
+    id: Date.now(),
+    company_id: scope.companyId,
+    vehicle_id: vehicle.id,
+    store_id: targetStoreId,
+    effective_start: nowIso,
+    effective_end: null,
+    reason: reason || `Fleet relocation from store #${vehicle.current_store_id || vehicle.store_id} to #${targetStoreId}`,
+    transferred_by: req.user?.id || 1,
+    created_at: nowIso
+  };
+  memoryData.fleet_location_history.push(newHist);
+
+  // 3. Update vehicle current store pointer
+  const oldStoreId = vehicle.current_store_id || vehicle.store_id;
+  vehicle.current_store_id = targetStoreId;
+  vehicle.store_id = targetStoreId;
+
+  // 4. Audit Log
+  memoryData.audit_logs.push({
+    id: memoryData.audit_logs.length + 1,
+    company_id: scope.companyId,
+    store_id: targetStoreId,
+    user_id: req.user?.id || 1,
+    action: 'VEHICLE_TRANSFER',
+    entity_type: 'Vehicle',
+    entity_id: vehicle.id,
+    new_values: JSON.stringify({ from_store: oldStoreId, to_store: targetStoreId, reason, timestamp: nowIso }),
+    request_id: `req-${Date.now()}`,
+    created_at: nowIso
+  });
+
+  return res.json({ message: `Vehicle transferred to store #${targetStoreId} successfully`, vehicle, history: newHist });
+};
+

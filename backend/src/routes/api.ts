@@ -81,6 +81,25 @@ router.get('/users', authenticateToken, (req: AuthRequest, res: Response) => {
   return res.json(memoryData.users);
 });
 
+router.get('/auth/me', authenticateToken, (req: AuthRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthenticated' });
+  }
+  const fullUser = memoryData.users.find(u => u.id === req.user?.id || u.username === req.user?.username);
+  if (fullUser) {
+    return res.json({
+      id: fullUser.id,
+      username: fullUser.username,
+      first_name: fullUser.first_name,
+      last_name: fullUser.last_name,
+      user_type: fullUser.user_type,
+      store_id: fullUser.store_id
+    });
+  }
+  return res.json(req.user);
+});
+
+
 // --- 2. STORES / CAMPSITES & STORE MANAGEMENT ---
 
 router.get('/stores', (req, res) => {

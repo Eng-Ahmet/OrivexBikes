@@ -10,11 +10,20 @@ import settlementRoutes from './settlementRoutes.js';
 import settingRoutes from './settingRoutes.js';
 import tariffRoutes from './tariffRoutes.js';
 import publicRoutes from './publicRoutes.js';
+import employeeRoutes from './employeeRoutes.js';
+import shiftDefinitionRoutes from './shiftDefinitionRoutes.js';
+import attendanceRoutes from './attendanceRoutes.js';
+import overtimeRoutes from './overtimeRoutes.js';
+import leaveRoutes from './leaveRoutes.js';
+import shiftSwapRoutes from './shiftSwapRoutes.js';
+import payrollRoutes from './payrollRoutes.js';
+import expenseRoutes from './expenseRoutes.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/stores', storeRoutes);
+router.use('/expenses', expenseRoutes);
 router.use('/vehicles', vehicleRoutes);
 router.use('/rentals', rentalRoutes);
 router.use('/shifts', shiftRoutes);
@@ -24,5 +33,14 @@ router.use('/settlements', settlementRoutes);
 router.use('/settings', settingRoutes);
 router.use('/tariffs', tariffRoutes);
 router.use('/public', publicRoutes);
+router.use('/employees', employeeRoutes);
+router.use('/shift-definitions', shiftDefinitionRoutes);
+router.use('/attendance', attendanceRoutes);
+router.use('/overtime', overtimeRoutes);
+router.use('/leave-requests', leaveRoutes);
+router.use('/shift-swaps', shiftSwapRoutes);
+router.use('/payroll', payrollRoutes);
 
 export default router;
+
+

@@ -189,8 +189,8 @@ export class FleetPageComponent implements OnInit {
     this.filterCategories();
   }
 
-  getStoreName(id: number): string {
-    return id === 2 ? 'Camping Mijas Resort' : 'Málaga Central Beach';
+  getStoreName(id: number | null): string {
+    return this.state.getStoreName(id);
   }
 
   filterCategories() {

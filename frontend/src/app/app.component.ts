@@ -98,6 +98,9 @@ export class AppComponent implements OnInit {
     });
 
     this.checkRoute(window.location.hash || window.location.pathname);
+    if (this.state.token()) {
+      await this.api.getMe();
+    }
     await this.api.getCurrentShift();
   }
 

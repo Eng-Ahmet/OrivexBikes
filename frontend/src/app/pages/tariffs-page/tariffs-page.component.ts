@@ -133,7 +133,7 @@ export class TariffsPageComponent implements OnInit {
   ];
 
   stores = signal<any[]>([]);
-  selectedStoreId = signal<number>(1);
+  selectedStoreId = signal<number | null>(1);
   activeMatrix = signal<OfficialTariffRow[]>(this.malagaDefault);
 
   constructor() {
@@ -177,11 +177,11 @@ export class TariffsPageComponent implements OnInit {
     }
   }
 
-  getStoreName(id: number): string {
+  getStoreName(id: number | null): string {
     return this.state.getStoreName(id);
   }
 
-  setStoreView(id: number) {
+  setStoreView(id: number | null) {
     if (this.state.activeRole() === 'EMPLOYEE') return;
     this.state.setActiveStore(id);
   }

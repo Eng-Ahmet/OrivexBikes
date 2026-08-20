@@ -146,6 +146,54 @@ export const getWeeklySchedules = (req: AuthRequest, res: Response) => {
   return res.json(schedules);
 };
 
+export const createScheduleSlot = (req: AuthRequest, res: Response) => {
+  const { day_code, employee_name, role, type, title, start_time, end_time } = req.body;
+  const store_id = req.body.store_id ? Number(req.body.store_id) : (req.user?.store_id || 1);
+
+  const newSlot = {
+    id: Date.now(),
+    store_id,
+    day_code: day_code || 'L',
+    employee_name: employee_name || 'Staff',
+    role: role || 'EMPLOYEE',
+    type: type || 'STORE_COUNTER',
+    title: title || 'Turno Trabajo',
+    start_time: start_time || '10:00',
+    end_time: end_time || '17:30',
+    status: 'CONFIRMED' as const
+  };
+
+  memoryData.schedules.push(newSlot);
+  return res.status(201).json(newSlot);
+};
+
+export const updateScheduleSlot = (req: AuthRequest, res: Response) => {
+  const slotId = Number(req.params.id);
+  const slot = memoryData.schedules.find(s => s.id === slotId);
+  if (!slot) return res.status(404).json({ error: 'Schedule slot not found' });
+
+  if (req.body.employee_name) slot.employee_name = req.body.employee_name;
+  if (req.body.day_code) slot.day_code = req.body.day_code;
+  if (req.body.start_time) slot.start_time = req.body.start_time;
+  if (req.body.end_time) slot.end_time = req.body.end_time;
+  if (req.body.title) slot.title = req.body.title;
+  if (req.body.type) slot.type = req.body.type;
+  if (req.body.role) slot.role = req.body.role;
+  if (req.body.status) slot.status = req.body.status;
+
+  return res.json({ message: 'Schedule slot updated successfully', slot });
+};
+
+export const deleteScheduleSlot = (req: AuthRequest, res: Response) => {
+  const slotId = Number(req.params.id);
+  const idx = memoryData.schedules.findIndex(s => s.id === slotId);
+  if (idx === -1) return res.status(404).json({ error: 'Schedule slot not found' });
+
+  memoryData.schedules.splice(idx, 1);
+  return res.json({ message: 'Schedule slot deleted successfully' });
+};
+
+
 export const openShift = (req: AuthRequest, res: Response) => {
   const { opening_cash, pin_code } = req.body;
   const storeId = req.user?.store_id || 1;

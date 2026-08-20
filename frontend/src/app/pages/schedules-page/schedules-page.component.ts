@@ -245,11 +245,11 @@ export class SchedulesPageComponent implements OnInit {
     this.loadStoreSchedule(this.state.activeStoreId());
   }
 
-  getStoreName(id: number): string {
-    return id === 2 ? 'Camping Mijas Resort Store' : 'Málaga Central Beach Store';
+  getStoreName(id: number | null): string {
+    return this.state.getStoreName(id);
   }
 
-  async loadStoreSchedule(storeId: number) {
+  async loadStoreSchedule(storeId: number | null) {
     const dayMeta: { [key: string]: { name: string; date: string } } = {
       'L': { name: 'Lunes', date: 'Aug 18' },
       'M': { name: 'Martes', date: 'Aug 19' },

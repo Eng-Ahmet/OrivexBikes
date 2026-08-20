@@ -111,12 +111,10 @@ export class LoginPageComponent {
       const res = await this.api.verifyPin(this.pinCode);
       if (res && res.valid) {
         const user = res.user;
-        this.state.currentUser.set(user);
-        this.state.setActiveRole(user.user_type);
-        this.state.setActiveStore(user.store_id || 1);
         const realToken = res.token || `token-${Date.now()}`;
         this.state.token.set(realToken);
         localStorage.setItem('qqbikes_token', realToken);
+        this.state.setCurrentUser(user);
         this.state.showToast('Access Granted', `Welcome back ${user.first_name} (${user.user_type})`, 'success');
         this.router.navigate(['/fleet']);
       }
@@ -134,8 +132,15 @@ export class LoginPageComponent {
       if (res && res.token) {
         this.state.token.set(res.token);
         localStorage.setItem('qqbikes_token', res.token);
-        this.state.setActiveRole(this.selectedRole);
-        this.state.setActiveStore(this.selectedStoreId);
+        const user = res.user || {
+          id: Date.now(),
+          username: this.selectedRole.toLowerCase(),
+          first_name: this.selectedRole === 'ADMIN' ? 'Carlos' : 'Sofia',
+          last_name: this.selectedRole === 'ADMIN' ? 'Admin' : 'Employee',
+          user_type: this.selectedRole,
+          store_id: this.selectedStoreId
+        };
+        this.state.setCurrentUser(user);
         this.state.showToast('Signed In', `Signed in as ${this.selectedRole}`, 'success');
         this.router.navigate(['/fleet']);
       }
@@ -146,3 +151,4 @@ export class LoginPageComponent {
     }
   }
 }
+

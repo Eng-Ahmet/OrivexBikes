@@ -82,7 +82,19 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     amountPaid: 'Monto Pagado',
     status: 'Estado',
     refreshAudit: 'Actualizar Auditoría',
-    noPaidTxRecorded: 'No hay transacciones cobradas registradas hoy para este local.'
+    noPaidTxRecorded: 'No hay transacciones cobradas registradas hoy para este local.',
+
+    // HR & Payroll i18n Keys
+    employeeManagement: 'Gestión de Empleados',
+    employees: 'Empleados',
+    shiftDefinitions: 'Definición de Turnos',
+    attendance: 'Asistencia y Fichajes',
+    overtime: 'Horas Extra',
+    leaveRequests: 'Permisos y Vacaciones',
+    shiftSwaps: 'Intercambio de Turnos',
+    payroll: 'Nóminas Mensuales',
+    payrollReports: 'Informes de Nómina',
+    administration: 'Administración y RRHH'
   },
   en: {
     appTitle: 'QQBikes - Management System',
@@ -119,14 +131,14 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     reserved: 'Reserved',
     dailyRate: 'Daily Rate',
     hourlyRate: 'Hourly Rate',
-    deposit: 'Deposit / Bond',
+    deposit: 'Security Deposit',
     customerName: 'Customer Name',
-    customerDoc: 'ID / Passport',
+    customerDoc: 'Passport / ID',
     customerPhone: 'Phone Number',
     duration: 'Duration',
     paymentMethod: 'Payment Method',
     cash: 'Cash',
-    card: 'Card',
+    card: 'Credit Card',
     total: 'Total',
     actions: 'Actions',
     save: 'Save',
@@ -163,7 +175,19 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     amountPaid: 'Amount Paid',
     status: 'Status',
     refreshAudit: 'Refresh Audit Sheet',
-    noPaidTxRecorded: 'No paid transactions recorded today for this store location.'
+    noPaidTxRecorded: 'No paid transactions recorded today for this store location.',
+
+    // HR & Payroll i18n Keys
+    employeeManagement: 'Employee Management',
+    employees: 'Employees',
+    shiftDefinitions: 'Shift Definitions',
+    attendance: 'Attendance & Clocking',
+    overtime: 'Overtime Approvals',
+    leaveRequests: 'Leave Requests',
+    shiftSwaps: 'Shift Swap Requests',
+    payroll: 'Monthly Payroll',
+    payrollReports: 'Payroll Reports',
+    administration: 'Administration & HR'
   },
   ar: {
     appTitle: 'QQBikes - نظام الإدارة والتأجير',
@@ -238,9 +262,9 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     paidTransactionsAudit: 'كشف مراجعة المدفوعات اليومية',
     paidAuditDesc: 'مراجعة وتدقيق عمليات الإيجار والصيانة المدفوعة بنهاية اليوم',
     processedBy: 'تم بواسطة الموظف',
-    refCode: 'رقم العقد / الطلب',
-    paymentType: 'نوع العملية',
-    vehicleService: 'المركبة / الخدمة',
+    refCode: 'رمز المرجع / الطلب',
+    paymentType: 'نوع الدفع',
+    vehicleService: 'الخدمة / المركبة',
     amountPaid: 'المبلغ المدفوع',
     status: 'الحالة',
     refreshAudit: 'تحديث كشف المراجعة',

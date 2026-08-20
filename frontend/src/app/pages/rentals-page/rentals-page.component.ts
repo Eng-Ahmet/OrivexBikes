@@ -154,8 +154,8 @@ export class RentalsPageComponent implements OnInit {
     await this.loadRentals();
   }
 
-  getStoreName(id: number): string {
-    return id === 2 ? 'Camping Mijas Resort' : 'Málaga Central Beach';
+  getStoreName(id: number | null): string {
+    return this.state.getStoreName(id);
   }
 
   async loadRentals() {

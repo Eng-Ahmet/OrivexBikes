@@ -82,3 +82,22 @@ export const verifyPin = (req: Request, res: Response) => {
 export const listUsers = (req: AuthRequest, res: Response) => {
   return res.json(memoryData.users);
 };
+
+export const getMe = (req: AuthRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthenticated' });
+  }
+  const user = memoryData.users.find(u => u.id === req.user?.id || u.username === req.user?.username);
+  if (user) {
+    return res.json({
+      id: user.id,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      user_type: user.user_type,
+      store_id: user.store_id
+    });
+  }
+  return res.json(req.user);
+};
+
