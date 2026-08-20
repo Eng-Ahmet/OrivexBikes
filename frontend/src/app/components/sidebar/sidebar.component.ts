@@ -11,6 +11,7 @@ import { StateService } from '../../core/services/state.service';
   template: `
     <div class="card bg-dark bg-gradient border-secondary-subtle rounded-4 p-3 shadow-lg sticky-top d-flex flex-column justify-content-between" style="top: 85px; min-height: calc(100vh - 110px); background: #121824 !important;">
       <div class="nav flex-column nav-pills gap-2">
+        <!-- Operational Counter & Shift Tools (Visible to both ADMIN & EMPLOYEE) -->
         <a routerLink="/fleet" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
           <i class="fa-solid fa-layer-group width-20 text-white"></i>
           <span class="fw-semibold text-white">{{ i18n.t('fleet') }}</span>
@@ -44,40 +45,9 @@ import { StateService } from '../../core/services/state.service';
           <span class="fw-semibold text-white">{{ i18n.t('repairs') }}</span>
         </a>
 
-        <!-- Administration & HR Section Header -->
-        <div class="text-uppercase text-secondary fw-bold px-3 pt-3 pb-1" style="font-size: 0.68rem; letter-spacing: 0.05em;">
-          <i class="fa-solid fa-user-gear me-1 text-info"></i> {{ i18n.t('administration') }}
-        </div>
-
-        <a routerLink="/stores" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-store width-20 text-warning"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('stores') }}</span>
-        </a>
-
-        <a routerLink="/expenses" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-file-invoice-dollar width-20 text-warning"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('expenses') }}</span>
-        </a>
-
-        <a routerLink="/employees" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-id-card width-20 text-info"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('employees') }}</span>
-        </a>
-
-        <a routerLink="/shift-definitions" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-business-time width-20 text-info"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('shiftDefinitions') }}</span>
-        </a>
-
-
         <a routerLink="/attendance" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
           <i class="fa-solid fa-fingerprint width-20 text-info"></i>
           <span class="fw-semibold text-white">{{ i18n.t('attendance') }}</span>
-        </a>
-
-        <a routerLink="/overtime" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-user-clock width-20 text-info"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('overtime') }}</span>
         </a>
 
         <a routerLink="/leave-requests" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
@@ -90,15 +60,47 @@ import { StateService } from '../../core/services/state.service';
           <span class="fw-semibold text-white">{{ i18n.t('shiftSwaps') }}</span>
         </a>
 
-        <a routerLink="/payroll" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-money-check-dollar width-20 text-info"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('payroll') }}</span>
-        </a>
+        <!-- ADMIN ONLY SECTION: Restrict Management & HR Tools to ADMIN Role -->
+        @if (state.activeRole() === 'ADMIN') {
+          <div class="text-uppercase text-secondary fw-bold px-3 pt-3 pb-1" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+            <i class="fa-solid fa-user-gear me-1 text-info"></i> {{ i18n.t('administration') }}
+          </div>
 
-        <a routerLink="/payroll-reports" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
-          <i class="fa-solid fa-chart-line width-20 text-info"></i>
-          <span class="fw-semibold text-white">{{ i18n.t('payrollReports') }}</span>
-        </a>
+          <a routerLink="/stores" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-store width-20 text-warning"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('stores') }}</span>
+          </a>
+
+          <a routerLink="/expenses" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-file-invoice-dollar width-20 text-warning"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('expenses') }}</span>
+          </a>
+
+          <a routerLink="/employees" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-id-card width-20 text-info"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('employees') }}</span>
+          </a>
+
+          <a routerLink="/shift-definitions" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-business-time width-20 text-info"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('shiftDefinitions') }}</span>
+          </a>
+
+          <a routerLink="/overtime" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-user-clock width-20 text-info"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('overtime') }}</span>
+          </a>
+
+          <a routerLink="/payroll" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-money-check-dollar width-20 text-info"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('payroll') }}</span>
+          </a>
+
+          <a routerLink="/payroll-reports" routerLinkActive="active-tab" class="admin-sidebar-tab nav-link text-start text-light py-2 px-3 rounded-3 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-chart-line width-20 text-info"></i>
+            <span class="fw-semibold text-white">{{ i18n.t('payrollReports') }}</span>
+          </a>
+        }
 
         <hr class="border-secondary my-2" />
 
@@ -107,7 +109,6 @@ import { StateService } from '../../core/services/state.service';
           <span class="text-white">Public Customer Site</span>
         </a>
       </div>
-
 
       <!-- Log Out Action Button at Bottom of Sidebar -->
       <div class="pt-3 mt-auto border-top border-secondary">
@@ -147,4 +148,3 @@ export class SidebarComponent {
     this.router.navigate(['/login']);
   }
 }
-
