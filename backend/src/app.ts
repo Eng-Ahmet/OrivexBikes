@@ -43,7 +43,7 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
 
 // Serve public static assets (manifest.json, sw.js, assets, assetlinks.json) at root
 app.use(express.static(publicPath, {
-  setHeaders: (res, filePath) => {
+  setHeaders: (res: express.Response, filePath: string) => {
     if (filePath.endsWith('.json') || filePath.endsWith('.js') || filePath.endsWith('.html')) {
       res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     }
@@ -52,7 +52,7 @@ app.use(express.static(publicPath, {
 
 // Serve source files (/src/styles, /src/js)
 app.use('/src', express.static(path.join(frontendPath, 'src'), {
-  setHeaders: (res, filePath) => {
+  setHeaders: (res: express.Response, filePath: string) => {
     if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
       res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     }
