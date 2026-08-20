@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -8,9 +8,9 @@ import { HttpClient } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="container py-4" style="max-width: 900px;">
+    <div class="container-xl px-3 px-md-4 py-4" style="max-width: 960px;">
       <!-- Header -->
-      <div class="bg-dark bg-gradient text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 border border-secondary-subtle">
+      <div class="bg-dark bg-gradient text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 border border-secondary-subtle" style="background: #0f172a !important;">
         <span class="badge bg-secondary px-3 py-2 rounded-pill mb-2">
           <i class="fa-solid fa-circle-question me-1"></i> Frequently Asked Questions
         </span>
@@ -19,27 +19,31 @@ import { HttpClient } from '@angular/common/http';
       </div>
 
       <!-- Loading State -->
-      <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-secondary" role="status"></div>
-        <p class="text-secondary mt-3">Loading FAQ items...</p>
-      </div>
-
-      <!-- Accordion Grid -->
-      <div *ngIf="!loading" class="accordion accordion-flush" id="faqAccordion">
-        <div *ngFor="let faq of faqs; let i = index" class="accordion-item bg-dark text-white border-secondary-subtle rounded-4 mb-3 overflow-hidden shadow-sm">
-          <h2 class="accordion-header" [id]="'heading' + i">
-            <button class="accordion-button bg-dark text-white shadow-none collapsed px-4 py-3 fw-bold" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i">
-              <span class="badge bg-primary text-white me-3">{{ faq.category }}</span>
-              {{ faq.question }}
-            </button>
-          </h2>
-          <div [id]="'collapse' + i" class="accordion-collapse collapse" [attr.data-bs-parent]="'#faqAccordion'">
-            <div class="accordion-body text-secondary px-4 py-3 border-top border-secondary">
-              {{ faq.answer }}
-            </div>
-          </div>
+      @if (loading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-secondary" role="status"></div>
+          <p class="text-secondary mt-3">Loading FAQ items...</p>
         </div>
-      </div>
+      } @else {
+        <!-- Accordion Grid -->
+        <div class="accordion accordion-flush" id="faqAccordion">
+          @for (faq of faqs(); track faq.id; let i = $index) {
+            <div class="accordion-item bg-dark text-white border-secondary-subtle rounded-4 mb-3 overflow-hidden shadow-sm" style="background: #111827 !important;">
+              <h2 class="accordion-header" [id]="'heading' + i">
+                <button class="accordion-button bg-dark text-white shadow-none collapsed px-4 py-3 fw-bold" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i">
+                  <span class="badge bg-primary text-white me-3">{{ faq.category }}</span>
+                  {{ faq.question }}
+                </button>
+              </h2>
+              <div [id]="'collapse' + i" class="accordion-collapse collapse" [attr.aria-parent]="'#faqAccordion'">
+                <div class="accordion-body text-secondary px-4 py-3 border-top border-secondary">
+                  {{ faq.answer }}
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
 
       <!-- Still Have Questions CTA -->
       <div class="card bg-secondary bg-opacity-10 border-secondary rounded-4 p-4 text-center mt-5">
@@ -60,18 +64,18 @@ import { HttpClient } from '@angular/common/http';
 export class PublicFaqPageComponent implements OnInit {
   private http = inject(HttpClient);
 
-  faqs: any[] = [];
-  loading = true;
+  faqs = signal<any[]>([]);
+  loading = signal<boolean>(true);
 
   ngOnInit() {
     this.http.get<any[]>('/api/v1/public/faqs').subscribe({
       next: (data) => {
-        this.faqs = (Array.isArray(data) && data.length > 0) ? data : this.getFallbackFaqs();
-        this.loading = false;
+        this.faqs.set((Array.isArray(data) && data.length > 0) ? data : this.getFallbackFaqs());
+        this.loading.set(false);
       },
       error: () => {
-        this.faqs = this.getFallbackFaqs();
-        this.loading = false;
+        this.faqs.set(this.getFallbackFaqs());
+        this.loading.set(false);
       }
     });
   }

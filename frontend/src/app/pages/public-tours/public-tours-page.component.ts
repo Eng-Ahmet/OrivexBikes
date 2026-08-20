@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -8,9 +8,9 @@ import { HttpClient } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="container py-4">
+    <div class="container-xl px-3 px-md-4 py-4">
       <!-- Header Banner -->
-      <div class="bg-dark bg-gradient text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 border border-secondary-subtle">
+      <div class="bg-dark bg-gradient text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 border border-secondary-subtle" style="background: #0f172a !important;">
         <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mb-2">
           <i class="fa-solid fa-compass me-1"></i> Guided Experiences
         </span>
@@ -19,64 +19,68 @@ import { HttpClient } from '@angular/common/http';
       </div>
 
       <!-- Loading State -->
-      <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-info" role="status"></div>
-        <p class="text-secondary mt-3">Loading available guided tours...</p>
-      </div>
-
-      <!-- Tours Grid -->
-      <div *ngIf="!loading" class="row g-4">
-        <div *ngFor="let tour of tours" class="col-12 col-md-6 col-lg-4">
-          <div class="card bg-dark border-secondary-subtle rounded-4 h-100 shadow-sm hover-shadow transition overflow-hidden">
-            <div class="position-relative bg-secondary bg-opacity-10 text-center p-4">
-              <span class="badge bg-primary position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">
-                <i class="fa-solid fa-clock me-1"></i> {{ tour.duration_hours }} Hours
-              </span>
-              <span class="badge bg-success position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill">
-                €{{ tour.price_per_person }}/person
-              </span>
-              <i class="fa-solid fa-person-biking fa-5x text-info my-3"></i>
-            </div>
-
-            <div class="card-body p-4 d-flex flex-column">
-              <h4 class="card-title fw-bold text-white mb-2">{{ tour.title }}</h4>
-              <p class="text-secondary small mb-4 flex-grow-1">{{ tour.description }}</p>
-
-              <div class="bg-secondary bg-opacity-10 rounded-3 p-3 mb-4 text-secondary small">
-                <div class="d-flex justify-content-between mb-1">
-                  <span>Departure Store:</span>
-                  <strong class="text-white">{{ tour.store_name }}</strong>
+      @if (loading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-info" role="status"></div>
+          <p class="text-secondary mt-3">Loading available guided tours...</p>
+        </div>
+      } @else {
+        <!-- Tours Grid -->
+        <div class="row g-4">
+          @for (tour of tours(); track tour.id) {
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card bg-dark border-secondary-subtle rounded-4 h-100 shadow-sm hover-shadow transition overflow-hidden" style="background: #111827 !important;">
+                <div class="position-relative bg-secondary bg-opacity-10 text-center p-4">
+                  <span class="badge bg-primary position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">
+                    <i class="fa-solid fa-clock me-1"></i> {{ tour.duration_hours }} Hours
+                  </span>
+                  <span class="badge bg-success position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill">
+                    €{{ tour.price_per_person }}/person
+                  </span>
+                  <i class="fa-solid fa-person-biking fa-5x text-info my-3"></i>
                 </div>
-                <div class="d-flex justify-content-between">
-                  <span>Max Group Size:</span>
-                  <strong class="text-white">{{ tour.max_participants || 10 }} Bikers</strong>
+
+                <div class="card-body p-4 d-flex flex-column">
+                  <h4 class="card-title fw-bold text-white mb-2">{{ tour.title }}</h4>
+                  <p class="text-secondary small mb-4 flex-grow-1">{{ tour.description }}</p>
+
+                  <div class="bg-secondary bg-opacity-10 rounded-3 p-3 mb-4 text-secondary small">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Departure Store:</span>
+                      <strong class="text-white">{{ tour.store_name || 'Málaga Beach Store' }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <span>Max Group Size:</span>
+                      <strong class="text-white">{{ tour.max_participants || tour.max_capacity || 10 }} Bikers</strong>
+                    </div>
+                  </div>
+
+                  <a [routerLink]="['/book']" [queryParams]="{mode: 'TOUR', tourId: tour.id}" class="btn btn-info text-dark fw-bold rounded-pill w-100 shadow-sm">
+                    <i class="fa-solid fa-calendar-check me-1"></i> Book Tour Experience
+                  </a>
                 </div>
               </div>
-
-              <a [routerLink]="['/tours', tour.id]" class="btn btn-info text-dark fw-bold rounded-pill w-100 shadow-sm">
-                <i class="fa-solid fa-calendar-check me-1"></i> Book Tour Experience
-              </a>
             </div>
-          </div>
+          }
         </div>
-      </div>
+      }
     </div>
   `
 })
 export class PublicToursPageComponent implements OnInit {
   private http = inject(HttpClient);
-  tours: any[] = [];
-  loading = true;
+  tours = signal<any[]>([]);
+  loading = signal<boolean>(true);
 
   ngOnInit() {
     this.http.get<any[]>('/api/v1/public/tours').subscribe({
       next: (data) => {
-        this.tours = (Array.isArray(data) && data.length > 0) ? data : this.getFallbackTours();
-        this.loading = false;
+        this.tours.set((Array.isArray(data) && data.length > 0) ? data : this.getFallbackTours());
+        this.loading.set(false);
       },
       error: () => {
-        this.tours = this.getFallbackTours();
-        this.loading = false;
+        this.tours.set(this.getFallbackTours());
+        this.loading.set(false);
       }
     });
   }
