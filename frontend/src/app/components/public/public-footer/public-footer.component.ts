@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
   template: `
     <footer class="bg-dark text-light border-top border-secondary-subtle pt-5 pb-4 mt-5">
-      <div class="container px-4">
+      <div class="container-fluid px-3 px-md-4 w-100">
         <div class="row g-4">
           <!-- Brand Bio & Contact -->
           <div class="col-12 col-md-4">

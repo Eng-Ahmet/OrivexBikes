@@ -24,7 +24,7 @@ export interface AggregatedHomeModel {
   template: `
     <div class="home-wrapper overflow-hidden">
       <!-- 1. HERO BANNER SECTION -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="position-relative bg-dark text-white py-5 px-4 px-md-5 rounded-4 shadow-lg border border-secondary border-opacity-20 overflow-hidden" style="background: linear-gradient(135deg, #0b0f19 0%, #151d30 100%) !important;">
           <div class="row align-items-center g-4 py-2 position-relative z-1">
             <div class="col-12 col-lg-7">
@@ -106,7 +106,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 2. COMPREHENSIVE SERVICES GRID SECTION -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="text-center mb-5">
           <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-30 px-3 py-1.5 rounded-pill mb-2 fw-semibold">Our Complete Services</span>
           <h2 class="display-6 fw-bold text-white font-heading">Everything You Need For Your Ride</h2>
@@ -201,7 +201,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 3. FEATURED FLEET MODEL CATALOG SPOTLIGHT -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-2">
           <div>
             <span class="badge bg-warning text-dark fw-bold px-3 py-1.5 rounded-pill mb-2">Live Availability</span>
@@ -278,7 +278,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 4. GUIDED TOURS SPOTLIGHT SECTION -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="card bg-dark border-primary border-opacity-30 rounded-4 p-4 p-md-5 shadow-lg overflow-hidden position-relative" style="background: #0f172a !important;">
           <div class="row align-items-center g-4">
             <div class="col-12 col-lg-7">
@@ -332,7 +332,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 5. STORE LOCATIONS & CAMPSITES HUB -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="text-center mb-5">
           <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 px-3 py-1.5 rounded-pill mb-2 fw-semibold">Convenient Pickup Hubs</span>
           <h2 class="display-6 fw-bold text-white font-heading">Our Store & Campsite Locations</h2>
@@ -366,7 +366,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 6. LIVE REVIEWS & CUSTOMER RATINGS -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="text-center mb-5">
           <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill mb-2 fw-bold">Customer Ratings</span>
           <h2 class="display-6 fw-bold text-white font-heading">What Our Riders Say</h2>
@@ -391,7 +391,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 7. FREQUENTLY ASKED QUESTIONS (FAQ) -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="card bg-dark border-secondary border-opacity-25 rounded-4 p-4 p-md-5 shadow-sm" style="background: #111827 !important;">
           <div class="text-center mb-5">
             <span class="badge bg-secondary text-white px-3 py-1.5 rounded-pill mb-2">Have Questions?</span>
@@ -419,7 +419,7 @@ export interface AggregatedHomeModel {
       </section>
 
       <!-- 8. FINAL CTA BANNER -->
-      <section class="container-xl px-3 px-md-4 mb-5">
+      <section class="container-fluid px-3 px-md-4 mb-5 w-100">
         <div class="card bg-primary text-white rounded-4 p-4 p-md-5 shadow-lg border-0 text-center">
           <h2 class="display-6 fw-extrabold font-heading mb-2">Ready to Explore Málaga?</h2>
           <p class="lead opacity-90 mb-4" style="max-width: 600px; margin: 0 auto;">

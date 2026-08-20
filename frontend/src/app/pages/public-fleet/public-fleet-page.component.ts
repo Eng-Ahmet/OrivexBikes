@@ -25,7 +25,7 @@ export interface AggregatedVehicleModel {
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
-    <div class="container-xl px-3 px-md-4 py-4">
+    <div class="container-fluid px-3 px-md-4 py-4 w-100">
       <!-- Header Banner -->
       <div class="bg-dark bg-gradient text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 border border-secondary-subtle" style="background: #0f172a !important;">
         <div class="row align-items-center">

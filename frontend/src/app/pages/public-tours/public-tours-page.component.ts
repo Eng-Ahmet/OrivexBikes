@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="container-xl px-3 px-md-4 py-4">
+    <div class="container-fluid px-3 px-md-4 py-4 w-100">
       <!-- Header Banner -->
       <div class="bg-dark bg-gradient text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 border border-secondary-subtle" style="background: #0f172a !important;">
         <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mb-2">
