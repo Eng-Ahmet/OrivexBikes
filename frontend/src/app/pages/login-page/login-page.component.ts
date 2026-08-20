@@ -113,8 +113,9 @@ export class LoginPageComponent {
         const user = res.user;
         this.state.setActiveRole(user.user_type);
         this.state.setActiveStore(user.store_id || 1);
-        this.state.token.set(`token-${Date.now()}`);
-        localStorage.setItem('qqbikes_token', `token-${Date.now()}`);
+        const realToken = res.token || `token-${Date.now()}`;
+        this.state.token.set(realToken);
+        localStorage.setItem('qqbikes_token', realToken);
         this.state.showToast('Access Granted', `Welcome back ${user.first_name} (${user.user_type})`, 'success');
         this.router.navigate(['/fleet']);
       }
