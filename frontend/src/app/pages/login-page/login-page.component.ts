@@ -72,8 +72,8 @@ import { I18nService, Language } from '../../core/services/i18n.service';
           <!-- System Feature List -->
           <div class="d-flex flex-column gap-3 max-w-650">
             <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10">
-              <div class="icon-box-circle bg-primary bg-opacity-20 text-cyan p-2.5" style="width: 42px; height: 42px;">
-                <i class="fa-solid fa-layer-group fs-5"></i>
+              <div class="icon-box-circle p-2.5" style="width: 42px; height: 42px; background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.35);">
+                <i class="fa-solid fa-layer-group fs-5 text-cyan"></i>
               </div>
               <div>
                 <h6 class="fw-bold text-white mb-0 small">{{ i18n.t('fleetControlTitle') }}</h6>
@@ -82,8 +82,8 @@ import { I18nService, Language } from '../../core/services/i18n.service';
             </div>
 
             <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10">
-              <div class="icon-box-circle bg-warning bg-opacity-20 text-warning p-2.5" style="width: 42px; height: 42px;">
-                <i class="fa-solid fa-cash-register fs-5"></i>
+              <div class="icon-box-circle p-2.5" style="width: 42px; height: 42px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.35);">
+                <i class="fa-solid fa-cash-register fs-5 text-warning"></i>
               </div>
               <div>
                 <h6 class="fw-bold text-white mb-0 small">{{ i18n.t('shiftAuditTitle') }}</h6>
@@ -92,8 +92,8 @@ import { I18nService, Language } from '../../core/services/i18n.service';
             </div>
 
             <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark bg-opacity-40 border border-white border-opacity-10">
-              <div class="icon-box-circle bg-info bg-opacity-20 text-info p-2.5" style="width: 42px; height: 42px;">
-                <i class="fa-solid fa-user-shield fs-5"></i>
+              <div class="icon-box-circle p-2.5" style="width: 42px; height: 42px; background: rgba(14, 165, 233, 0.18); border: 1px solid rgba(14, 165, 233, 0.35);">
+                <i class="fa-solid fa-user-shield fs-5 text-info"></i>
               </div>
               <div>
                 <h6 class="fw-bold text-white mb-0 small">{{ i18n.t('securitySSOTTitle') }}</h6>
