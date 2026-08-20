@@ -12,7 +12,7 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
       <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary border-opacity-25 py-2.5 shadow-lg w-100" style="backdrop-filter: blur(16px); background: rgba(11, 15, 25, 0.96) !important;">
         <div class="container-fluid d-flex align-items-center justify-content-between px-3 px-md-4 w-100">
           <!-- Public Brand Logo & Title -->
-          <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto text-nowrap" routerLink="/home">
+          <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-4 text-nowrap" routerLink="/home">
             <div class="brand-icon bg-primary bg-gradient text-white rounded-3 p-1.5 me-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
               <i class="fa-solid fa-bicycle"></i>
             </div>
@@ -46,7 +46,7 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
           <!-- Navbar Collapsible Area -->
           <div class="collapse navbar-collapse mt-3 mt-lg-0" id="publicNavbarNav">
             <div class="p-3 p-lg-0 rounded-4 bg-dark bg-opacity-95 border border-secondary border-opacity-25 border-lg-0 bg-lg-transparent w-100 d-lg-flex align-items-center">
-              <ul class="navbar-nav me-auto mb-3 mb-lg-0 gap-1 align-items-lg-center text-nowrap">
+              <ul class="navbar-nav me-auto ms-lg-3 mb-3 mb-lg-0 gap-1 align-items-lg-center text-nowrap">
                 <li class="nav-item">
                   <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-house text-primary me-2"></i> <span>Home</span>
