@@ -4,6 +4,8 @@
 
 ### Enterprise Multi-Store Platform, POS Counter Engine, Attendance, Payroll & PWA/TWA Mobile System
 
+[🌐 English Version](README.md) | [🇸🇦 النسخة العربية](README_AR.md)
+
 [![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/Eng-Ahmet/QQBikes/ci.yml?branch=main&style=for-the-badge&logo=github-actions&color=238636)](https://github.com/Eng-Ahmet/QQBikes/actions)
 [![Integration Tests](https://img.shields.io/badge/Integration%20Tests-66%2F66%20PASSED-brightgreen?style=for-the-badge&logo=codecov&color=2ea44f)](https://github.com/Eng-Ahmet/QQBikes/tree/main/backend/src/tests)
 [![Node.js](https://img.shields.io/badge/Node.js-v22.x%20LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -17,6 +19,15 @@
 ---
 
 </div>
+
+## 🌐 Live Demo & System Endpoints
+
+- **🖥️ Local Live Interface**: [http://localhost:5000](http://localhost:5000)
+- **📊 Branch P&L Performance API**: `http://localhost:5000/api/v1/stores/pnl`
+- **⚙️ Auth Verification Endpoint**: `http://localhost:5000/api/v1/auth/me`
+- **📱 Android Digital Asset Links**: `http://localhost:5000/.well-known/assetlinks.json`
+
+---
 
 ## 📖 Overview
 
