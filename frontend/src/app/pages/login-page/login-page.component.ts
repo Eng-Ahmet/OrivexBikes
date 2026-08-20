@@ -144,7 +144,7 @@ import { I18nService, Language } from '../../core/services/i18n.service';
               </label>
               <div class="input-group input-group-lg shadow-sm">
                 <span class="input-group-text bg-dark border-secondary border-opacity-50 text-cyan px-4">
-                  <i class="fa-solid fa-lock-keyhole fs-4"></i>
+                  <i class="fa-solid fa-lock fs-4 text-cyan"></i>
                 </span>
                 <input [type]="showPin ? 'text' : 'password'" maxlength="4"
                        class="form-control bg-dark text-cyan border-secondary border-opacity-50 text-center fw-extrabold fs-1 tracking-widest font-mono shadow-inner py-3"
