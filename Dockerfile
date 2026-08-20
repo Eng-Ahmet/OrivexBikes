@@ -7,7 +7,8 @@ WORKDIR /app
 COPY package*.json tsconfig.json ./
 RUN npm install
 
-# Copy application source code
+# Copy application source code and Angular workspace configs
+COPY angular.json tsconfig.app.json ./
 COPY backend ./backend
 COPY frontend ./frontend
 

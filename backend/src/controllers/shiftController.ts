@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { memoryData, Shift, CashMovement, RepairWorkOrder } from '../db/initSchema.js';
+import { memoryData, Shift, CashMovement } from '../db/initSchema.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { IdempotentRequest } from '../middleware/idempotency.js';
 
@@ -45,6 +45,78 @@ export const getCurrentShift = (req: AuthRequest, res: Response) => {
   return res.json(currentShift || null);
 };
 
+export const getEmployeeStats = (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+
+  const currentShift = memoryData.shifts.find(s => s.store_id === storeId && s.status === 'OPEN');
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const storeContracts = memoryData.contracts.filter(c => c.store_id === storeId);
+  const shiftContracts = currentShift ? storeContracts.filter(c => new Date(c.created_at) >= new Date(currentShift.start_time)) : [];
+  const todayContracts = storeContracts.filter(c => c.created_at.startsWith(todayStr));
+
+  const shiftRentalInflow = shiftContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+  const todayRentalInflow = todayContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+
+  const activeWorkOrders = (memoryData as any).repair_work_orders || [];
+  const storeRepairs = activeWorkOrders.filter((w: any) => w.store_id === storeId && w.status === 'DELIVERED_PAID');
+  const shiftRepairInflow = currentShift ? storeRepairs.filter((w: any) => new Date(w.paid_at || w.created_at) >= new Date(currentShift.start_time)).reduce((sum: number, w: any) => sum + (w.total_cost || 0), 0) : 0;
+  const todayRepairInflow = storeRepairs.filter((w: any) => (w.paid_at || '').startsWith(todayStr)).reduce((sum: number, w: any) => sum + (w.total_cost || 0), 0);
+
+  const shiftInflow = shiftRentalInflow + shiftRepairInflow;
+  const todayInflow = todayRentalInflow + todayRepairInflow;
+
+  const shiftOutflow = currentShift ? ((currentShift as any).withdrawals || []).reduce((sum: number, w: any) => sum + w.amount, 0) : 0;
+  const todayOutflow = shiftOutflow;
+
+  const openingFloat = currentShift ? currentShift.opening_cash : 150;
+  const netShiftBalance = openingFloat + shiftInflow - shiftOutflow;
+
+  return res.json({
+    active_shift_open: !!currentShift,
+    shift_opening_float: openingFloat,
+    shift_contracts_count: shiftContracts.length,
+    today_contracts_count: todayContracts.length,
+    shift_inflow: shiftInflow,
+    today_inflow: todayInflow,
+    shift_outflow: shiftOutflow,
+    today_outflow: todayOutflow,
+    net_shift_balance: netShiftBalance
+  });
+};
+
+export const getPaidTransactions = (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+
+  const contracts = memoryData.contracts.filter(c => c.store_id === storeId).map(c => ({
+    id: c.id,
+    type: 'RENTAL_CONTRACT',
+    code: c.contract_number,
+    customer_name: c.customer_name,
+    vehicle_name: c.vehicle_name,
+    amount: c.rental_fee,
+    payment_method: c.payment_method || 'CARD',
+    paid_at: c.created_at,
+    status: 'ACTIVE'
+  }));
+
+  const activeWorkOrders = (memoryData as any).repair_work_orders || [];
+  const repairs = activeWorkOrders.filter((w: any) => w.store_id === storeId && w.status === 'DELIVERED_PAID').map((w: any) => ({
+    id: w.id,
+    type: 'REPAIR_WORK_ORDER',
+    code: `REP-#${w.id}`,
+    customer_name: w.customer_name,
+    vehicle_name: w.vehicle_description,
+    amount: w.total_cost || 35,
+    payment_method: 'CASH/CARD',
+    paid_at: w.paid_at || new Date().toISOString(),
+    status: 'Paid & Delivered (Locked)'
+  }));
+
+  const allTransactions = [...contracts, ...repairs].sort((a, b) => new Date(b.paid_at).getTime() - new Date(a.paid_at).getTime());
+  return res.json(allTransactions);
+};
+
 export const getShiftHistory = (req: AuthRequest, res: Response) => {
   const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
   const shifts = memoryData.shifts.filter(s => s.store_id === storeId);
@@ -59,7 +131,7 @@ export const getShiftHistory = (req: AuthRequest, res: Response) => {
       return c.store_id === storeId && cTime >= startTime && cTime <= endTime;
     });
 
-    const shiftRepairs = (memoryData.repair_work_orders || []).filter(r => {
+    const shiftRepairs = ((memoryData as any).repair_work_orders || []).filter((r: any) => {
       const rTime = new Date(r.created_at);
       return r.store_id === storeId && rTime >= startTime && rTime <= endTime;
     });
@@ -84,12 +156,23 @@ export const getWeeklySchedules = (req: AuthRequest, res: Response) => {
 };
 
 export const openShift = (req: AuthRequest, res: Response) => {
-  const { opening_cash } = req.body;
+  const { opening_cash, pin_code } = req.body;
   const storeId = req.user?.store_id || 1;
   const store = memoryData.stores.find(s => s.id === storeId);
   const requestId = (req as any).requestId || `req-${Date.now()}`;
 
-  // MySQL Single Open Shift Generated Column Constraint Rule
+  let employeeName = req.user?.username || 'Gustavo';
+  let employeeId = req.user?.id || 1;
+
+  if (pin_code) {
+    const matchedUser = memoryData.users.find(u => u.pin_hash === String(pin_code) && u.is_active);
+    if (!matchedUser) {
+      return res.status(401).json({ error: 'Invalid PIN code. Cannot open shift.' });
+    }
+    employeeName = `${matchedUser.first_name} ${matchedUser.last_name}`;
+    employeeId = matchedUser.id;
+  }
+
   const existing = memoryData.shifts.find(s => s.store_id === storeId && s.status === 'OPEN');
   if (existing) {
     return res.status(409).json({
@@ -108,8 +191,8 @@ export const openShift = (req: AuthRequest, res: Response) => {
   const newShift: Shift = {
     id: Date.now(),
     store_id: storeId,
-    employee_id: req.user?.id || 1,
-    employee_name: req.user?.username || 'Gustavo',
+    employee_id: employeeId,
+    employee_name: employeeName,
     start_time: new Date().toISOString(),
     opening_cash: initialFloat,
     total_cash_rentals: 0,
@@ -159,7 +242,7 @@ export const recordCashWithdrawal = (req: IdempotentRequest, res: Response) => {
     id: Date.now(),
     shift_id: shift.id,
     type: 'WITHDRAWAL',
-    amount: -Math.abs(Number(amount)), // Withdrawals subtract from cash drawer
+    amount: -Math.abs(Number(amount)),
     reason: reason.trim(),
     performed_by: (req as any).user?.username || 'Staff',
     created_by: (req as any).user?.id || 1,
@@ -223,11 +306,9 @@ export const closeShift = (req: IdempotentRequest, res: Response) => {
   shift.expected_cash = expected;
   shift.discrepancy = discrepancy;
   
-  // Set status: if discrepancy exists, transition to REVIEW_REQUIRED
   shift.status = Math.abs(discrepancy) > 0.01 ? 'REVIEW_REQUIRED' : 'CLOSED';
   shift.notes = notes || (discrepancy !== 0 ? `Shift closed with discrepancy: €${discrepancy.toFixed(2)}` : 'Shift closed normally');
 
-  // Audit log
   memoryData.audit_logs.push({
     id: memoryData.audit_logs.length + 1,
     company_id: 1,

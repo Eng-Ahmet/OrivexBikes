@@ -1,0 +1,30 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "eu.orivex.qqbikes.twa",
+      "sha256_cert_fingerprints": [
+        "C7:C6:D2:B6:19:97:CF:4E:75:D5:EA:0C:C2:B5:3F:28:F2:0F:C4:EC:FE:2C:D0:18:70:38:5C:96:A6:5B:24:C6",
+        "F2:0B:EF:D3:05:D6:2E:44:04:74:8E:16:21:E1:F2:73:27:09:3F:78:CF:7C:01:0B:30:7B:06:9D:91:3D:AF:62",
+        "4F:8A:12:9C:3E:7B:66:9A:01:88:E2:B5:44:CD:77:E1:90:3A:88:BC:11:F4:6D:E8:29:9C:55:AF:33:10:88:BB"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.qqbikes.app.twa",
+      "sha256_cert_fingerprints": [
+        "C7:C6:D2:B6:19:97:CF:4E:75:D5:EA:0C:C2:B5:3F:28:F2:0F:C4:EC:FE:2C:D0:18:70:38:5C:96:A6:5B:24:C6",
+        "F2:0B:EF:D3:05:D6:2E:44:04:74:8E:16:21:E1:F2:73:27:09:3F:78:CF:7C:01:0B:30:7B:06:9D:91:3D:AF:62",
+        "4F:8A:12:9C:3E:7B:66:9A:01:88:E2:B5:44:CD:77:E1:90:3A:88:BC:11:F4:6D:E8:29:9C:55:AF:33:10:88:BB"
+      ]
+    }
+  }
+]

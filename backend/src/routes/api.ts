@@ -55,14 +55,78 @@ router.post('/auth/login', (req, res) => {
   });
 });
 
+router.post('/auth/verify-pin', (req, res) => {
+  const { pin } = req.body;
+  if (!pin) return res.status(400).json({ error: 'PIN code is required' });
+
+  const user = memoryData.users.find(u => u.pin_hash === String(pin) && u.is_active);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid PIN code. Access denied.' });
+  }
+
+  return res.json({
+    valid: true,
+    user: {
+      id: user.id,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      user_type: user.user_type,
+      store_id: user.store_id
+    }
+  });
+});
+
 router.get('/users', authenticateToken, (req: AuthRequest, res: Response) => {
   return res.json(memoryData.users);
 });
 
-// --- 2. STORES / CAMPSITES ---
+// --- 2. STORES / CAMPSITES & STORE MANAGEMENT ---
 
 router.get('/stores', (req, res) => {
-  return res.json(memoryData.stores);
+  return res.json(memoryData.stores.filter(s => s.is_active));
+});
+
+router.post('/stores', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const { name, code, city, address, phone, initial_cash_float } = req.body;
+
+  const newStore = {
+    id: Date.now(),
+    company_id: 1,
+    name: name || 'New QQ Store Center',
+    code: code || `STR-${Math.floor(100 + Math.random() * 900)}`,
+    city: city || 'Málaga',
+    address: address || 'Main Center Street',
+    phone: phone || '+34 900 000 000',
+    is_active: true,
+    initial_cash_float: Number(initial_cash_float || 150)
+  };
+
+  memoryData.stores.push(newStore);
+  return res.status(201).json(newStore);
+});
+
+router.put('/stores/:id', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const store = memoryData.stores.find(s => s.id === id);
+  if (!store) return res.status(404).json({ error: 'Store not found' });
+
+  if (req.body.name) store.name = req.body.name;
+  if (req.body.city) store.city = req.body.city;
+  if (req.body.address) store.address = req.body.address;
+  if (req.body.phone) store.phone = req.body.phone;
+  if (req.body.initial_cash_float !== undefined) store.initial_cash_float = Number(req.body.initial_cash_float);
+
+  return res.json({ message: 'Store updated successfully', store });
+});
+
+router.delete('/stores/:id', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const store = memoryData.stores.find(s => s.id === id);
+  if (!store) return res.status(404).json({ error: 'Store not found' });
+
+  store.is_active = false;
+  return res.json({ message: 'Store deactivated/deleted successfully' });
 });
 
 // --- 3. VEHICLES & INVENTORY ---
@@ -214,20 +278,142 @@ router.get('/shifts/current', authenticateToken, (req: AuthRequest, res: Respons
   return res.json(currentShift || null);
 });
 
+router.put('/repairs/work-orders/:id/status', authenticateToken, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const { status } = req.body;
+
+  const order = activeWorkOrders.find(w => w.id === id);
+  if (!order) return res.status(404).json({ error: 'Work order not found' });
+
+  if (order.status === 'DELIVERED_PAID') {
+    return res.status(400).json({ error: 'Work order is already paid and locked. Status cannot be modified after payment confirmation.' });
+  }
+
+  order.status = status || 'DELIVERED_PAID';
+  if (order.status === 'DELIVERED_PAID') {
+    order.paid_at = new Date().toISOString();
+
+    // Register payment directly into active open shift for the store
+    const currentShift = memoryData.shifts.find(s => s.store_id === order.store_id && s.status === 'OPEN');
+    if (currentShift) {
+      (currentShift as any).payments = (currentShift as any).payments || [];
+      (currentShift as any).payments.push({
+        id: Date.now(),
+        type: 'REPAIR',
+        order_id: order.id,
+        customer_name: order.customer_name,
+        amount: order.total_cost || 35,
+        paid_at: order.paid_at
+      });
+    }
+  }
+
+  return res.json({ message: 'Work order status updated', order });
+});
+
+router.get('/shifts/employee-stats', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+
+  const currentShift = memoryData.shifts.find(s => s.store_id === storeId && s.status === 'OPEN');
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const storeContracts = memoryData.contracts.filter(c => c.store_id === storeId);
+  const shiftContracts = currentShift ? storeContracts.filter(c => new Date(c.created_at) >= new Date(currentShift.start_time)) : [];
+  const todayContracts = storeContracts.filter(c => c.created_at.startsWith(todayStr));
+
+  const shiftRentalInflow = shiftContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+  const todayRentalInflow = todayContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+
+  // Calculate confirmed repair work order payments
+  const storeRepairs = activeWorkOrders.filter(w => w.store_id === storeId && w.status === 'DELIVERED_PAID');
+  const shiftRepairInflow = currentShift ? storeRepairs.filter(w => new Date(w.paid_at || w.created_at) >= new Date(currentShift.start_time)).reduce((sum, w) => sum + (w.total_cost || 0), 0) : 0;
+  const todayRepairInflow = storeRepairs.filter(w => (w.paid_at || '').startsWith(todayStr)).reduce((sum, w) => sum + (w.total_cost || 0), 0);
+
+  const shiftInflow = shiftRentalInflow + shiftRepairInflow;
+  const todayInflow = todayRentalInflow + todayRepairInflow;
+
+  const shiftOutflow = currentShift ? ((currentShift as any).withdrawals || []).reduce((sum: number, w: any) => sum + w.amount, 0) : 0;
+  const todayOutflow = shiftOutflow;
+
+  const openingFloat = currentShift ? currentShift.opening_cash : 150;
+  const netShiftBalance = openingFloat + shiftInflow - shiftOutflow;
+
+  return res.json({
+    active_shift_open: !!currentShift,
+    shift_opening_float: openingFloat,
+    shift_contracts_count: shiftContracts.length,
+    today_contracts_count: todayContracts.length,
+    shift_inflow: shiftInflow,
+    today_inflow: todayInflow,
+    shift_outflow: shiftOutflow,
+    today_outflow: todayOutflow,
+    net_shift_balance: netShiftBalance
+  });
+});
+
+router.get('/shifts/paid-transactions', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+
+  const contracts = memoryData.contracts.filter(c => c.store_id === storeId).map(c => ({
+    id: c.id,
+    type: 'RENTAL_CONTRACT',
+    code: c.contract_number,
+    customer_name: c.customer_name,
+    vehicle_name: c.vehicle_name,
+    amount: c.rental_fee,
+    payment_method: c.payment_method || 'CARD',
+    paid_at: c.created_at,
+    status: 'ACTIVE'
+  }));
+
+  const repairs = activeWorkOrders.filter(w => w.store_id === storeId && w.status === 'DELIVERED_PAID').map(w => ({
+    id: w.id,
+    type: 'REPAIR_WORK_ORDER',
+    code: `REP-#${w.id}`,
+    customer_name: w.customer_name,
+    vehicle_name: w.vehicle_description,
+    amount: w.total_cost || 35,
+    payment_method: 'CASH/CARD',
+    paid_at: w.paid_at || new Date().toISOString(),
+    status: 'Paid & Delivered (Locked)'
+  }));
+
+  const allTransactions = [...contracts, ...repairs].sort((a, b) => new Date(b.paid_at).getTime() - new Date(a.paid_at).getTime());
+  return res.json(allTransactions);
+});
+
 router.post('/shifts/open', authenticateToken, (req: AuthRequest, res: Response) => {
-  const { opening_cash } = req.body;
+  const { opening_cash, pin_code } = req.body;
   const storeId = req.user?.store_id || 1;
 
+  let employeeName = req.user?.username || 'Employee';
+  let employeeId = req.user?.id || 1;
+
+  if (pin_code) {
+    const matchedUser = memoryData.users.find(u => u.pin_hash === String(pin_code) && u.is_active);
+    if (!matchedUser) {
+      return res.status(401).json({ error: 'Invalid PIN code. Cannot open shift.' });
+    }
+    employeeName = `${matchedUser.first_name} ${matchedUser.last_name}`;
+    employeeId = matchedUser.id;
+  }
+
   const existing = memoryData.shifts.find(s => s.store_id === storeId && s.status === 'OPEN');
-  if (existing) return res.status(400).json({ error: 'A shift is already open for this store', shift: existing });
+  if (existing) {
+    return res.status(400).json({ error: 'A shift is already active for this store location. Overlapping duplicate shifts are prohibited.', shift: existing });
+  }
+
+  const targetStore = memoryData.stores.find(st => st.id === storeId);
+  const configuredFloat = targetStore?.initial_cash_float !== undefined ? targetStore.initial_cash_float : 150;
+  const floatAmount = Number(opening_cash ? opening_cash : configuredFloat);
 
   const newShift: Shift = {
     id: Date.now(),
     store_id: storeId,
-    employee_id: req.user?.id || 1,
-    employee_name: req.user?.username || 'Sofia Employee',
+    employee_id: employeeId,
+    employee_name: employeeName,
     start_time: new Date().toISOString(),
-    opening_cash: Number(opening_cash || 100),
+    opening_cash: floatAmount,
     status: 'OPEN'
   };
 
@@ -260,6 +446,57 @@ router.post('/shifts/close', authenticateToken, (req: AuthRequest, res: Response
   return res.json({ message: 'Shift closed successfully', shift });
 });
 
+router.get('/shifts/schedules', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+  const items = memoryData.schedules.filter(s => s.store_id === storeId);
+  return res.json(items);
+});
+
+router.post('/shifts/schedules', authenticateToken, (req: AuthRequest, res: Response) => {
+  const { day_code, employee_name, role, type, title, start_time, end_time } = req.body;
+  const store_id = req.body.store_id ? Number(req.body.store_id) : (req.user?.store_id || 1);
+
+  const newSlot = {
+    id: Date.now(),
+    store_id,
+    day_code: day_code || 'L',
+    employee_name: employee_name || 'Staff',
+    role: role || 'EMPLOYEE',
+    type: type || 'STORE_COUNTER',
+    title: title || 'Turno Trabajo',
+    start_time: start_time || '10:00',
+    end_time: end_time || '17:30',
+    status: 'CONFIRMED' as const
+  };
+
+  memoryData.schedules.push(newSlot);
+  return res.status(201).json(newSlot);
+});
+
+router.put('/shifts/schedules/:id', authenticateToken, (req: AuthRequest, res: Response) => {
+  const slotId = Number(req.params.id);
+  const slot = memoryData.schedules.find(s => s.id === slotId);
+  if (!slot) return res.status(404).json({ error: 'Schedule slot not found' });
+
+  if (req.body.employee_name) slot.employee_name = req.body.employee_name;
+  if (req.body.day_code) slot.day_code = req.body.day_code;
+  if (req.body.start_time) slot.start_time = req.body.start_time;
+  if (req.body.end_time) slot.end_time = req.body.end_time;
+  if (req.body.title) slot.title = req.body.title;
+  if (req.body.type) slot.type = req.body.type;
+
+  return res.json({ message: 'Schedule slot updated successfully', slot });
+});
+
+router.delete('/shifts/schedules/:id', authenticateToken, (req: AuthRequest, res: Response) => {
+  const slotId = Number(req.params.id);
+  const idx = memoryData.schedules.findIndex(s => s.id === slotId);
+  if (idx === -1) return res.status(404).json({ error: 'Schedule slot not found' });
+
+  memoryData.schedules.splice(idx, 1);
+  return res.json({ message: 'Schedule slot deleted successfully' });
+});
+
 // --- 6. DASHBOARD & REPORTS ---
 
 router.get('/reports/dashboard', authenticateToken, (req: AuthRequest, res: Response) => {
@@ -290,6 +527,337 @@ router.get('/reports/dashboard', authenticateToken, (req: AuthRequest, res: Resp
     fleetStats,
     recentContracts: storeContracts.slice(0, 5)
   });
+});
+
+// --- 7. PUBLIC CUSTOMER BOOKING ENGINE ---
+
+router.get('/public/tours', (req, res) => {
+  return res.json(memoryData.tours || []);
+});
+
+router.get('/public/fleet', (req, res) => {
+  const categoryMap = new Map<string, { category: string; display_name: string; daily_rate: number; hourly_rate: number; deposit_amount: number; available_count: number; icon: string }>();
+
+  const icons: Record<string, string> = {
+    'Scooters': 'fa-bolt-lightning',
+    'City Bike': 'fa-bicycle',
+    'E-Bike': 'fa-bolt',
+    'Cargo Bike': 'fa-truck-ramp-box'
+  };
+
+  memoryData.vehicles.forEach(v => {
+    const cat = v.category || 'City Bike';
+    if (!categoryMap.has(cat)) {
+      categoryMap.set(cat, {
+        category: cat,
+        display_name: cat === 'Scooters' ? 'Electric Scooters' : cat === 'City Bike' ? 'Comfort City Bikes' : cat === 'E-Bike' ? 'Premium Electric Bikes' : 'Cargo & Family Bikes',
+        daily_rate: v.daily_rate || v.rate_1d || 20,
+        hourly_rate: v.hourly_rate || v.rate_1h || 5,
+        deposit_amount: v.deposit_amount || 50,
+        available_count: 0,
+        icon: icons[cat] || 'fa-bicycle'
+      });
+    }
+    if (v.status === 'AVAILABLE') {
+      const current = categoryMap.get(cat)!;
+      current.available_count++;
+    }
+  });
+
+  return res.json(Array.from(categoryMap.values()));
+});
+
+router.get('/public/availability', (req, res) => {
+  const { date } = req.query;
+  const timeSlots = [
+    { time: '09:30', spots: 8, available: true },
+    { time: '11:00', spots: 12, available: true },
+    { time: '14:00', spots: 6, available: true },
+    { time: '16:30', spots: 4, available: true },
+    { time: '18:30', spots: 9, available: true }
+  ];
+  return res.json({ date: date || new Date().toISOString().split('T')[0], time_slots: timeSlots });
+});
+
+router.post('/public/bookings', (req, res) => {
+  const {
+    type,
+    item_id,
+    item_name,
+    customer_first_name,
+    customer_last_name,
+    customer_email,
+    customer_phone,
+    booking_date,
+    booking_time,
+    duration_days,
+    duration_hours,
+    quantity_or_participants,
+    total_price,
+    payment_method,
+    notes
+  } = req.body;
+
+  const bookingCode = `BK-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  const booking = {
+    id: Date.now(),
+    booking_code: bookingCode,
+    type: type || 'TOUR',
+    item_id: Number(item_id || 1),
+    item_name: item_name || 'QQBikes Experience',
+    customer_first_name: customer_first_name || 'Guest',
+    customer_last_name: customer_last_name || 'Customer',
+    customer_email: customer_email || 'guest@example.com',
+    customer_phone: customer_phone || '+34 600 000 000',
+    booking_date: booking_date || new Date().toISOString().split('T')[0],
+    booking_time: booking_time || '10:00',
+    duration_days: duration_days ? Number(duration_days) : undefined,
+    duration_hours: duration_hours ? Number(duration_hours) : undefined,
+    quantity_or_participants: Number(quantity_or_participants || 1),
+    total_price: Number(total_price || 35),
+    payment_status: 'PAY_AT_STORE',
+    payment_method: payment_method || 'CARD',
+    status: 'CONFIRMED',
+    notes: notes || '',
+    qr_code_payload: `QQBIKES-BOOKING:${bookingCode}`,
+    created_at: new Date().toISOString()
+  };
+
+  memoryData.public_bookings = memoryData.public_bookings || [];
+  memoryData.public_bookings.unshift(booking as any);
+
+  if (type === 'FLEET') {
+    const availableVehicle = memoryData.vehicles.find(v => v.status === 'AVAILABLE');
+    if (availableVehicle) {
+      memoryData.contracts.unshift({
+        id: Date.now() + 1,
+        contract_number: `CTR-${bookingCode}`,
+        store_id: availableVehicle.store_id,
+        employee_id: 1,
+        employee_name: 'Online Public Booking',
+        customer_name: `${customer_first_name} ${customer_last_name}`,
+        customer_passport: 'PUBLIC_ONLINE',
+        customer_phone,
+        vehicle_id: availableVehicle.id,
+        vehicle_name: availableVehicle.name,
+        start_time: `${booking_date}T${booking_time}:00.000Z`,
+        end_time: `${booking_date}T${booking_time}:00.000Z`,
+        status: 'ACTIVE',
+        rental_fee: Number(total_price || 20),
+        deposit_collected: availableVehicle.deposit_amount,
+        deposit_refunded: 0,
+        extra_charges: 0,
+        payment_method: payment_method || 'CARD',
+        created_at: new Date().toISOString()
+      });
+      availableVehicle.status = 'RENTED';
+    }
+  }
+
+  return res.status(201).json(booking);
+});
+
+// --- 8. GLOBAL SETTINGS ---
+
+router.get('/settings', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+  const settingsObj: Record<string, any> = {};
+  
+  (memoryData.settings || []).forEach(s => {
+    if (!storeId || s.store_id === storeId) {
+      settingsObj[s.key] = s.value;
+    }
+  });
+
+  return res.json({
+    company_name: settingsObj['COMPANY_NAME'] || 'QQBikes Málaga S.L.',
+    company_cif: settingsObj['COMPANY_CIF'] || 'B29182736',
+    vat_rate: Number(settingsObj['VAT_RATE'] || 21),
+    default_deposit: Number(settingsObj['DEFAULT_DEPOSIT'] || 100),
+    grace_period_minutes: Number(settingsObj['GRACE_PERIOD_MINUTES'] || 15)
+  });
+});
+
+router.patch('/settings/:key', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const key = req.params.key.toUpperCase();
+  const { value } = req.body;
+  const storeId = req.user?.store_id || 1;
+
+  let setting = (memoryData.settings || []).find(s => s.store_id === storeId && s.key === key);
+  if (setting) {
+    setting.value = String(value);
+    setting.updated_at = new Date().toISOString();
+  } else {
+    setting = {
+      id: Date.now(),
+      store_id: storeId,
+      key,
+      value: String(value),
+      value_type: 'STRING',
+      updated_by: req.user?.id || 1,
+      updated_at: new Date().toISOString()
+    };
+    memoryData.settings = memoryData.settings || [];
+    memoryData.settings.push(setting);
+  }
+
+  return res.json({ message: 'Setting updated successfully', setting });
+});
+
+// --- 9. TARIFF MATRIX ---
+
+router.get('/tariffs', (req, res) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : 1;
+
+  const malagaMatrix = [
+    { vehicle: 'Bikes', icon: 'fa-solid fa-bicycle text-primary', deposit: '30 €', min20: '—', min30: '—', h1: '5 €', h2: '—', h5: '15 €', d1: '20 €', d3_plus: '15 €/día', w1_plus: '10 €/día', w2_plus: '8 €/día' },
+    { vehicle: 'E-Bikes (VISA)', icon: 'fa-solid fa-bolt text-warning', deposit: '100 €', min20: '—', min30: '—', h1: '15 €', h2: '20 €', h5: '25 €', d1: '40 €', d3_plus: '30 €/día', w1_plus: '25 €/día', w2_plus: '20 €/día' },
+    { vehicle: 'Scooters', icon: 'fa-solid fa-bolt-lightning text-success', deposit: '50 €', min20: '—', min30: '10 €', h1: '15 €', h2: '20 €', h5: '—', d1: '40 €', d3_plus: '30 €/día', w1_plus: '25 €/día', w2_plus: '20 €/día' },
+    { vehicle: 'XL Cars', icon: 'fa-solid fa-truck text-danger', deposit: '20 €', min20: '15 €', min30: '20 €', h1: '30 €', h2: '—', h5: '—', d1: '—', d3_plus: '—', w1_plus: '—', w2_plus: '—' },
+    { vehicle: 'S cars/Quads', icon: 'fa-solid fa-car text-info', deposit: '20 €', min20: '10 €', min30: '15 €', h1: '25 €', h2: '—', h5: '—', d1: '—', d3_plus: '—', w1_plus: '—', w2_plus: '—' },
+    { vehicle: 'Buggy\'s', icon: 'fa-solid fa-motorcycle text-warning', deposit: '20 €', min20: '—', min30: '5 €', h1: '—', h2: '—', h5: '—', d1: '—', d3_plus: '—', w1_plus: '—', w2_plus: '—' }
+  ];
+
+  const mijasMatrix = [
+    { vehicle: 'E-Bike Trekking', icon: 'fa-solid fa-bolt text-warning', deposit: '100 €', min20: '—', min30: '—', h1: '15 €', h2: '25 €', h5: '30 €', d1: '40 €', d3_plus: '30 €/día', w1_plus: '25 €/día', w2_plus: '20 €/día' },
+    { vehicle: 'MTB Mountain Bikes', icon: 'fa-solid fa-bicycle text-primary', deposit: '50 €', min20: '—', min30: '—', h1: '7 €', h2: '—', h5: '15 €', d1: '25 €', d3_plus: '20 €/día', w1_plus: '15 €/día', w2_plus: '12 €/día' },
+    { vehicle: 'Offroad E-Scooters', icon: 'fa-solid fa-bolt-lightning text-success', deposit: '50 €', min20: '—', min30: '12 €', h1: '18 €', h2: '25 €', h5: '—', d1: '45 €', d3_plus: '35 €/día', w1_plus: '28 €/día', w2_plus: '22 €/día' }
+  ];
+
+  return res.json({
+    store_id: storeId,
+    matrix: storeId === 2 ? mijasMatrix : malagaMatrix
+  });
+});
+
+// --- 10. REPAIRS & WORKSHOP ---
+
+router.get('/repairs/parts', (req, res) => {
+  const parts = [
+    { id: 1, name: 'Cubierta maciza agujereada 8,5"', part_price: 18.00, labor_price: 35.00, total_price: 53.00 },
+    { id: 2, name: 'Cubierta normal Xiaomi 8,5" (cámara no incluida)', part_price: 15.00, labor_price: 30.00, total_price: 45.00 },
+    { id: 3, name: 'Cubierta normal Xiaomi 8,5" (cámara incluida)', part_price: 20.00, labor_price: 35.00, total_price: 55.00 },
+    { id: 4, name: 'Cámara 8,5 Xiaomi Reforzada', part_price: 10.00, labor_price: 25.00, total_price: 35.00 },
+    { id: 5, name: 'Kit 10" para Xiaomi', part_price: 50.00, labor_price: 70.00, total_price: 120.00 },
+    { id: 6, name: 'Llanta reforzada para Xiaomi', part_price: 10.00, labor_price: 30.00, total_price: 40.00 },
+    { id: 7, name: 'Caballete para Xiaomi', part_price: 7.00, labor_price: 15.00, total_price: 22.00 },
+    { id: 8, name: 'Disco freno para Xiaomi 110mm', part_price: 10.00, labor_price: 25.00, total_price: 35.00 },
+    { id: 9, name: 'Disco freno para Xiaomi 120mm', part_price: 7.00, labor_price: 20.00, total_price: 27.00 },
+    { id: 10, name: 'Disco freno para Xiaomi 135mm', part_price: 20.00, labor_price: 35.00, total_price: 55.00 }
+  ];
+  return res.json(parts);
+});
+
+router.get('/repairs/services', (req, res) => {
+  const services = [
+    { id: 1, name: 'Pinchazo bicicleta normal', price: 10.00 },
+    { id: 2, name: 'Revisión básica', price: 10.00 },
+    { id: 3, name: 'Revisión completa', price: 15.00 },
+    { id: 4, name: 'Arreglo/ajuste express', price: 5.00 },
+    { id: 5, name: 'Pinchazo e-bike', price: 12.00 }
+  ];
+  return res.json(services);
+});
+
+const activeWorkOrders: any[] = [
+  { id: 101, store_id: 1, customer_name: 'Carlos Fernandez', customer_phone: '+34 611 222 333', vehicle_description: 'Xiaomi m365 Pro #02', issue_description: 'Pinchazo cubierta maciza 8,5" y cambio de disco 120mm', total_cost: 80.00, status: 'IN_REPAIR' }
+];
+
+router.get('/repairs/work-orders', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+  return res.json(activeWorkOrders.filter(w => w.store_id === storeId));
+});
+
+router.post('/repairs/work-orders', authenticateToken, (req: AuthRequest, res: Response) => {
+  const { customer_name, customer_phone, vehicle_description, issue_description } = req.body;
+  const storeId = req.user?.store_id || 1;
+
+  const newOrder = {
+    id: Date.now(),
+    store_id: storeId,
+    customer_name,
+    customer_phone,
+    vehicle_description,
+    issue_description,
+    total_cost: 35.00,
+    status: 'IN_REPAIR'
+  };
+
+  activeWorkOrders.unshift(newOrder);
+  return res.status(201).json(newOrder);
+});
+
+router.put('/repairs/work-orders/:id/status', authenticateToken, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const { status } = req.body;
+
+  const order = activeWorkOrders.find(w => w.id === id);
+  if (!order) return res.status(404).json({ error: 'Work order not found' });
+
+  if (order.status === 'DELIVERED_PAID') {
+    return res.status(400).json({ error: 'Work order is already paid and locked. Status cannot be modified after payment confirmation.' });
+  }
+
+  order.status = status || 'DELIVERED_PAID';
+  if (order.status === 'DELIVERED_PAID') {
+    order.paid_at = new Date().toISOString();
+  }
+
+  return res.json({ message: 'Work order status updated', order });
+});
+
+router.get('/shifts/employee-stats', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+
+  const currentShift = memoryData.shifts.find(s => s.store_id === storeId && s.status === 'OPEN');
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const storeContracts = memoryData.contracts.filter(c => c.store_id === storeId);
+  const shiftContracts = currentShift ? storeContracts.filter(c => new Date(c.created_at) >= new Date(currentShift.start_time)) : [];
+  const todayContracts = storeContracts.filter(c => c.created_at.startsWith(todayStr));
+
+  const shiftInflow = shiftContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+  const todayInflow = todayContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+
+  const shiftOutflow = currentShift ? ((currentShift as any).withdrawals || []).reduce((sum: number, w: any) => sum + w.amount, 0) : 0;
+  const todayOutflow = shiftOutflow;
+
+  const openingFloat = currentShift ? currentShift.opening_cash : 100;
+  const netShiftBalance = openingFloat + shiftInflow - shiftOutflow;
+
+  return res.json({
+    active_shift_open: !!currentShift,
+    shift_opening_float: openingFloat,
+    shift_contracts_count: shiftContracts.length,
+    today_contracts_count: todayContracts.length,
+    shift_inflow: shiftInflow,
+    today_inflow: todayInflow,
+    shift_outflow: shiftOutflow,
+    today_outflow: todayOutflow,
+    net_shift_balance: netShiftBalance
+  });
+});
+
+// --- 11. SETTLEMENTS LEDGER ---
+
+const settlementsLedger: any[] = [
+  { id: 101, store_id: 1, period: 'Aug 01 - Aug 07, 2026', rental_amount: 1450, repair_amount: 220, total_amount: 1670, status: 'PAID' },
+  { id: 102, store_id: 1, period: 'Aug 08 - Aug 14, 2026', rental_amount: 1820, repair_amount: 310, total_amount: 2130, status: 'PAID' }
+];
+
+router.get('/settlements', authenticateToken, (req: AuthRequest, res: Response) => {
+  const storeId = req.query.store_id ? Number(req.query.store_id) : (req.user?.store_id || 1);
+  return res.json(settlementsLedger.filter(s => s.store_id === storeId));
+});
+
+router.post('/settlements/:id/pay', authenticateToken, requireAdmin, (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const sett = settlementsLedger.find(s => s.id === id);
+  if (!sett) return res.status(404).json({ error: 'Settlement record not found' });
+
+  sett.status = 'PAID';
+  return res.json({ message: 'Settlement paid successfully', settlement: sett });
 });
 
 export default router;

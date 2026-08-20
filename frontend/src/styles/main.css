@@ -6,7 +6,71 @@
   --qq-dark-bg: #0f172a;
   --qq-card-bg: rgba(30, 41, 59, 0.75);
   --qq-border: rgba(255, 255, 255, 0.12);
-  --qq-radius: 12px;
+  --qq-radius: 5px;
+}
+
+/* MANDATORY MAXIMUM 5PX BORDER-RADIUS RULE ACROSS ENTIRE APP */
+*,
+*:before,
+*:after,
+.card,
+.card-glass,
+.modal-content,
+.modal-content-glass,
+.btn,
+.badge,
+.form-control,
+.form-select,
+.input-group-text,
+.dropdown-menu,
+.offcanvas,
+.rounded-pill,
+.rounded-4,
+.rounded-3,
+.rounded-2,
+.rounded-1,
+.rounded,
+.rounded-start-pill,
+.rounded-end-pill,
+.btn-lg,
+.btn-sm,
+.nav-link,
+.admin-sidebar-tab {
+  border-radius: 5px !important;
+}
+
+/* MANDATORY WHITE BUTTON & BADGE TEXT RULE ACROSS ALL TYPES & STATES */
+.btn,
+.btn *,
+.badge,
+.badge *,
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger,
+.btn-dark,
+.btn-light,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-info,
+.btn-outline-warning,
+.btn-outline-danger,
+.btn-outline-light,
+.btn-outline-dark {
+  color: #ffffff !important;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active {
+  color: #ffffff !important;
 }
 
 body {

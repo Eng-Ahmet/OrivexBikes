@@ -1,0 +1,180 @@
+{
+  "name": "QQBikes Rental & Store Management System",
+  "short_name": "QQBikes",
+  "description": "Professional bike & scooter rental management system, contracts, shift cash drawer audits, and repair workshop POS for Málaga stores.",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "tabbed",
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "orientation": "any",
+  "lang": "es",
+  "dir": "ltr",
+  "iarc_rating_id": "00000000-0000-0000-0000-000000000000",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.qqbikes.app.twa",
+      "url": "https://play.google.com/store/apps/details?id=com.qqbikes.app.twa"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "focus-existing",
+      "auto"
+    ]
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "note_taking": {
+    "new_note": "./index.html#repairsTab"
+  },
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "accept": {
+        "text/plain": [".txt"],
+        "application/json": [".json"],
+        "application/pdf": [".pdf"]
+      },
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+qqbikes",
+      "url": "./index.html?contract=%s"
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "*.orivex.eu"
+    },
+    {
+      "origin": "https://qqbikes.orivex.eu"
+    }
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "QQBikes Shift Summary",
+      "short_name": "Shift",
+      "description": "Active counter shift summary widget",
+      "tag": "qqbikes-shift",
+      "template": "widget-template",
+      "ms_ac_template": "assets/widget.json"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshot-mobile.png",
+      "sizes": "640x1136",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "QQBikes Mobile Rental Dashboard"
+    },
+    {
+      "src": "assets/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "QQBikes Desktop Counter Management & Shift Audit"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuevo Contrato",
+      "short_name": "Contrato",
+      "description": "Crear nuevo contrato de alquiler",
+      "url": "./index.html#rentalsTab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Turnos de Caja",
+      "short_name": "Turnos",
+      "description": "Gestión y cierre de turno de caja",
+      "url": "./index.html#shiftsTab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Taller de Reparación",
+      "short_name": "Taller",
+      "description": "Ordenes de trabajo y reparación",
+      "url": "./index.html#repairsTab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

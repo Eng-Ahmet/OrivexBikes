@@ -237,6 +237,59 @@ export interface RepairPart {
   category: 'Scooter' | 'Bicycle' | 'General';
 }
 
+export interface Tour {
+  id: number;
+  title: string;
+  category: string;
+  duration_hours: number;
+  price_per_person: number;
+  rating: number;
+  review_count: number;
+  location: string;
+  description: string;
+  image_url: string;
+  highlights: string[];
+  available_times: string[];
+  max_capacity: number;
+}
+
+export interface ScheduleSlot {
+  id: number;
+  store_id: number;
+  day_code: string;
+  employee_name: string;
+  role: 'ADMIN' | 'EMPLOYEE' | 'TOUR_GUIDE';
+  type: 'STORE_COUNTER' | 'GUIDED_TOUR' | 'MAINTENANCE';
+  title: string;
+  start_time: string;
+  end_time: string;
+  status: 'CONFIRMED' | 'PENDING';
+}
+
+export interface PublicBooking {
+  id: number;
+  booking_code: string;
+  type: 'TOUR' | 'FLEET';
+  item_id: number;
+  item_name: string;
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_email: string;
+  customer_phone: string;
+  booking_date: string;
+  booking_time: string;
+  duration_days?: number;
+  duration_hours?: number;
+  quantity_or_participants: number;
+  total_price: number;
+  payment_status: 'PAY_AT_STORE' | 'PAID';
+  payment_method: 'CASH' | 'CARD';
+  status: 'CONFIRMED' | 'CANCELLED';
+  notes?: string;
+  qr_code_payload: string;
+  created_at: string;
+}
+
 export interface RepairTicketPart {
   id: number;
   repair_order_id: number;
@@ -548,31 +601,34 @@ export const memoryData = {
   ] as Store[],
 
   users: [
-    { id: 1, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'ADMIN', username: 'miguel', email: 'miguel@qqbikes.com', first_name: 'Miguel', last_name: 'Manager', phone: '+34 600 111 000', is_active: true },
-    { id: 2, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'ADMIN', username: 'quique', email: 'quique@qqbikes.com', first_name: 'Quique', last_name: 'Manager', phone: '+34 600 222 000', is_active: true },
-    { id: 3, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'ahmet', email: 'ahmet@qqbikes.com', first_name: 'Ahmet', last_name: 'Staff', phone: '+34 600 333 111', is_active: true },
-    { id: 4, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'fran', email: 'fran@qqbikes.com', first_name: 'Fran', last_name: 'Staff', phone: '+34 600 333 444', is_active: true },
-    { id: 5, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'gustavo', email: 'gustavo@qqbikes.com', first_name: 'Gustavo', last_name: 'Staff', phone: '+34 600 555 666', is_active: true },
-    { id: 6, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'abdallah', email: 'abdallah@qqbikes.com', first_name: 'Abdallah', last_name: 'Staff', phone: '+34 600 777 888', is_active: true }
+    { id: 1, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'ADMIN', username: 'miguel', email: 'miguel@qqbikes.com', first_name: 'Miguel', last_name: 'Manager', phone: '+34 600 111 000', is_active: true, pin_hash: '1111' },
+    { id: 2, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'ADMIN', username: 'quique', email: 'quique@qqbikes.com', first_name: 'Quique', last_name: 'Manager', phone: '+34 600 222 000', is_active: true, pin_hash: '1111' },
+    { id: 3, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'ahmet', email: 'ahmet@qqbikes.com', first_name: 'Ahmet', last_name: 'Staff', phone: '+34 600 333 111', is_active: true, pin_hash: '3333' },
+    { id: 4, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'fran', email: 'fran@qqbikes.com', first_name: 'Fran', last_name: 'Staff', phone: '+34 600 333 444', is_active: true, pin_hash: '2222' },
+    { id: 5, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'gustavo', email: 'gustavo@qqbikes.com', first_name: 'Gustavo', last_name: 'Staff', phone: '+34 600 555 666', is_active: true, pin_hash: '1234' },
+    { id: 6, company_id: 1, store_id: 1, store_name: 'Málaga Beach Campsite Store', user_type: 'EMPLOYEE', username: 'abdallah', email: 'abdallah@qqbikes.com', first_name: 'Abdallah', last_name: 'Staff', phone: '+34 600 777 888', is_active: true, pin_hash: '4444' }
   ] as User[],
 
   schedules: [
-    { id: 1, store_id: 1, day_code: 'L', day_name: 'Lunes', employee_name: 'Gustavo', start_time: '10:00', end_time: '17:30', task_note: 'Counter & Rentals' },
-    { id: 2, store_id: 1, day_code: 'L', day_name: 'Lunes', employee_name: 'Fran', start_time: '17:00', end_time: '22:00', task_note: 'Evening Shift' },
-    { id: 3, store_id: 1, day_code: 'M', day_name: 'Martes', employee_name: 'Gustavo', start_time: '10:00', end_time: '17:30', task_note: 'Morning Shift' },
-    { id: 4, store_id: 1, day_code: 'M', day_name: 'Martes', employee_name: 'Ahmet', start_time: '17:00', end_time: '22:00', task_note: 'Evening Shift' },
-    { id: 5, store_id: 1, day_code: 'X', day_name: 'Miércoles', employee_name: 'Fran', start_time: '10:00', end_time: '14:00', task_note: 'Morning Counter' },
-    { id: 6, store_id: 1, day_code: 'X', day_name: 'Miércoles', employee_name: 'Gustavo', start_time: '14:00', end_time: '22:00', task_note: 'Afternoon & Closing' },
-    { id: 7, store_id: 1, day_code: 'X', day_name: 'Miércoles', employee_name: 'Gustavo', start_time: '10:00', end_time: '14:00', task_note: 'Fleet Maintenance' },
-    { id: 8, store_id: 1, day_code: 'J', day_name: 'Jueves', employee_name: 'Gustavo', start_time: '10:00', end_time: '17:30', task_note: 'Morning Shift' },
-    { id: 9, store_id: 1, day_code: 'J', day_name: 'Jueves', employee_name: 'Abdallah / Ahmet', start_time: '17:00', end_time: '22:00', task_note: 'Evening Shift' },
-    { id: 10, store_id: 1, day_code: 'V', day_name: 'Viernes', employee_name: 'Gustavo', start_time: '10:00', end_time: '17:00', task_note: 'Morning Shift' },
-    { id: 11, store_id: 1, day_code: 'V', day_name: 'Viernes', employee_name: 'Abdallah', start_time: '17:00', end_time: '22:30', task_note: 'Weekend Launch Shift' },
-    { id: 12, store_id: 1, day_code: 'S', day_name: 'Sábado', employee_name: 'Fran', start_time: '10:00', end_time: '16:30', task_note: 'Weekend Morning' },
-    { id: 13, store_id: 1, day_code: 'S', day_name: 'Sábado', employee_name: 'Ahmet', start_time: '16:00', end_time: '22:00', task_note: 'Peak Evening Shift' },
-    { id: 14, store_id: 1, day_code: 'D', day_name: 'Domingo', employee_name: 'Fran', start_time: '10:00', end_time: '16:30', task_note: 'Sunday Shift' },
-    { id: 15, store_id: 1, day_code: 'D', day_name: 'Domingo', employee_name: 'Ahmet', start_time: '16:00', end_time: '22:00', task_note: 'Sunday Closing Shift' }
-  ] as WeeklySchedule[],
+    { id: 101, store_id: 1, day_code: 'L', employee_name: 'Gus', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Mañana', start_time: '10:00', end_time: '17:30', status: 'CONFIRMED' },
+    { id: 102, store_id: 1, day_code: 'L', employee_name: 'Fran', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Tarde', start_time: '17:00', end_time: '22:00', status: 'CONFIRMED' },
+    { id: 103, store_id: 1, day_code: 'M', employee_name: 'Gus', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Mañana', start_time: '10:00', end_time: '17:30', status: 'CONFIRMED' },
+    { id: 104, store_id: 1, day_code: 'M', employee_name: 'Ahmet', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Tarde', start_time: '17:00', end_time: '22:00', status: 'CONFIRMED' },
+    { id: 105, store_id: 1, day_code: 'X', employee_name: 'Fran', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Mostrador Mañana', start_time: '10:00', end_time: '14:00', status: 'CONFIRMED' },
+    { id: 106, store_id: 1, day_code: 'X', employee_name: 'Gus', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Mostrador Tarde', start_time: '14:00', end_time: '22:00', status: 'CONFIRMED' },
+    { id: 107, store_id: 1, day_code: 'X', employee_name: 'Gus (Mant.)', role: 'EMPLOYEE', type: 'MAINTENANCE', title: 'Mantenimiento Flota', start_time: '10:00', end_time: '14:00', status: 'CONFIRMED' },
+    { id: 108, store_id: 1, day_code: 'J', employee_name: 'Gus', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Mañana', start_time: '10:00', end_time: '17:30', status: 'CONFIRMED' },
+    { id: 109, store_id: 1, day_code: 'J', employee_name: 'Abdallah / Ahmet', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Tarde', start_time: '17:00', end_time: '22:00', status: 'CONFIRMED' },
+    { id: 110, store_id: 1, day_code: 'V', employee_name: 'Gus', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Mañana', start_time: '10:00', end_time: '17:00', status: 'CONFIRMED' },
+    { id: 111, store_id: 1, day_code: 'V', employee_name: 'Abdallah', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Tarde & Cierre', start_time: '17:00', end_time: '22:30', status: 'CONFIRMED' },
+    { id: 112, store_id: 1, day_code: 'S', employee_name: 'Fran', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Finde Mañana', start_time: '10:00', end_time: '16:30', status: 'CONFIRMED' },
+    { id: 113, store_id: 1, day_code: 'S', employee_name: 'Ahmet', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Finde Tarde', start_time: '16:00', end_time: '22:00', status: 'CONFIRMED' },
+    { id: 114, store_id: 1, day_code: 'D', employee_name: 'Fran', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Domingo Mañana', start_time: '10:00', end_time: '16:30', status: 'CONFIRMED' },
+    { id: 115, store_id: 1, day_code: 'D', employee_name: 'Ahmet', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Turno Domingo Cierre', start_time: '16:00', end_time: '22:00', status: 'CONFIRMED' },
+    
+    { id: 201, store_id: 2, day_code: 'L', employee_name: 'Carlos Mijas', role: 'EMPLOYEE', type: 'STORE_COUNTER', title: 'Resort Morning Shift', start_time: '09:00', end_time: '15:00', status: 'CONFIRMED' },
+    { id: 202, store_id: 2, day_code: 'M', employee_name: 'Elena Mijas', role: 'TOUR_GUIDE', type: 'GUIDED_TOUR', title: 'Mijas Trail Safari', start_time: '10:00', end_time: '13:00', status: 'CONFIRMED' }
+  ] as ScheduleSlot[],
 
   vehicles: generateMalagaInventory(),
 
@@ -662,6 +718,54 @@ export const memoryData = {
     { id: 1, store_id: 1, key: 'GRACE_PERIOD_MINUTES', value: '15', value_type: 'INTEGER', description: 'Grace period minutes before extra hour fee', updated_by: 1, updated_at: new Date().toISOString() },
     { id: 2, store_id: 1, key: 'CARD_GUARANTEE_MODE', value: 'REFERENCE_ONLY', value_type: 'STRING', description: 'Default credit card guarantee mode', updated_by: 1, updated_at: new Date().toISOString() }
   ] as Setting[],
+  tours: [
+    {
+      id: 1,
+      title: 'Sunset Coast Bike Tour',
+      category: 'Guided Tour',
+      duration_hours: 2,
+      price_per_person: 35,
+      rating: 4.9,
+      review_count: 128,
+      location: 'Málaga Beach Promenade',
+      description: 'Explore the stunning Mediterranean coastline during the golden hour with an expert local guide. Includes premium e-bike and helmet.',
+      image_url: '/assets/screenshot-desktop.png',
+      highlights: ['Scenic Coastal Promenade', 'Historic Port of Málaga', 'Sunset Viewpoint Stop', 'Complimentary Drink'],
+      available_times: ['10:00', '14:00', '18:00'],
+      max_capacity: 12
+    },
+    {
+      id: 2,
+      title: 'Historic Old Town & Alcazaba E-Safari',
+      category: 'E-Bike Safari',
+      duration_hours: 3,
+      price_per_person: 45,
+      rating: 4.8,
+      review_count: 94,
+      location: 'Málaga Historic Center',
+      description: 'Effortlessly climb up to Gibralfaro Castle and ride through Roman Theatre and Alcazaba fortress trails.',
+      image_url: '/assets/screenshot-mobile.png',
+      highlights: ['Gibralfaro Panoramic Overlook', 'Alcazaba Fortress Trails', 'Roman Amphitheatre', 'Local Tapas Tasting'],
+      available_times: ['10:30', '15:00', '17:30'],
+      max_capacity: 10
+    },
+    {
+      id: 3,
+      title: 'Costa del Sol Countryside Trail',
+      category: 'Adventure Tour',
+      duration_hours: 4,
+      price_per_person: 55,
+      rating: 5.0,
+      review_count: 67,
+      location: 'Mijas & Coastal Mountain Trail',
+      description: 'Ride through pine forests, avocado groves, and coastal hills with high-performance all-terrain e-mountain bikes.',
+      image_url: '/assets/screenshot-desktop.png',
+      highlights: ['Pine Forest Trails', 'Mijas Mountain Views', 'All-Terrain E-MTB', 'Organic Fruit Refreshments'],
+      available_times: ['09:30', '14:30'],
+      max_capacity: 8
+    }
+  ] as Tour[],
+  public_bookings: [] as PublicBooking[],
   audit_logs: [] as AuditLog[]
 };
 

@@ -50,6 +50,35 @@ export const loginUser = (req: Request, res: Response) => {
   });
 };
 
+export const verifyPin = (req: Request, res: Response) => {
+  const { pin } = req.body;
+  if (!pin) return res.status(400).json({ error: 'PIN code is required' });
+
+  const user = memoryData.users.find(u => u.pin_hash === String(pin) && u.is_active);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid PIN code. Access denied.' });
+  }
+
+  const token = jwt.sign(
+    { id: user.id, username: user.username, user_type: user.user_type, store_id: user.store_id, store_name: user.store_name },
+    JWT_SECRET,
+    { expiresIn: '24h' }
+  );
+
+  return res.json({
+    valid: true,
+    token,
+    user: {
+      id: user.id,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      user_type: user.user_type,
+      store_id: user.store_id
+    }
+  });
+};
+
 export const listUsers = (req: AuthRequest, res: Response) => {
   return res.json(memoryData.users);
 };

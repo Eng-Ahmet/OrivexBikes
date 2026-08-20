@@ -9,6 +9,8 @@ import repairRoutes from './repairRoutes.js';
 import settlementRoutes from './settlementRoutes.js';
 import settingRoutes from './settingRoutes.js';
 
+import publicRoutes from './publicRoutes.js';
+
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -20,5 +22,6 @@ router.use('/reports', reportRoutes);
 router.use('/repairs', repairRoutes);
 router.use('/settlements', settlementRoutes);
 router.use('/settings', settingRoutes);
+router.use('/public', publicRoutes);
 
 export default router;
