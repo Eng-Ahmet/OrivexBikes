@@ -41,15 +41,16 @@ import { RouterModule } from '@angular/router';
             </ul>
           </div>
 
-          <!-- Customer Service & Support -->
+          <!-- Customer Service & 3 Legal Policy Links -->
           <div class="col-6 col-md-3">
-            <h6 class="fw-bold text-white mb-3 font-heading">Customer Help</h6>
+            <h6 class="fw-bold text-white mb-3 font-heading">Customer Help & Legal</h6>
             <ul class="list-unstyled text-secondary small">
               <li class="mb-2"><a routerLink="/my-booking" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-angle-right me-1 text-info"></i> Manage My Booking</a></li>
               <li class="mb-2"><a routerLink="/faq" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-angle-right me-1 text-info"></i> FAQ & Assistance</a></li>
               <li class="mb-2"><a routerLink="/support" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-angle-right me-1 text-info"></i> Contact Support</a></li>
-              <li class="mb-2"><a routerLink="/about" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-angle-right me-1 text-info"></i> About QQBikes</a></li>
-              <li class="mb-2"><a routerLink="/privacy" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-angle-right me-1 text-info"></i> Privacy & Terms</a></li>
+              <li class="mb-2"><a routerLink="/privacy" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-user-shield me-1 text-primary"></i> Política de Privacidad (RGPD)</a></li>
+              <li class="mb-2"><a routerLink="/terms" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-file-contract me-1 text-warning"></i> Términos del Contrato</a></li>
+              <li class="mb-2"><a routerLink="/rental-terms" class="text-secondary text-decoration-none hover-text-light"><i class="fa-solid fa-lock me-1 text-success"></i> Seguridad Interna de Datos</a></li>
             </ul>
           </div>
 
@@ -68,11 +69,12 @@ import { RouterModule } from '@angular/router';
 
         <hr class="border-secondary my-4" />
 
-        <div class="d-flex flex-wrap align-items-center justify-content-between text-secondary small">
+        <div class="d-flex flex-wrap align-items-center justify-content-between text-secondary small gap-2">
           <div>© 2026 QQBikes Málaga S.L. All rights reserved.</div>
-          <div class="d-flex gap-3">
-            <a routerLink="/privacy" class="text-secondary text-decoration-none me-2">Privacy Policy</a>
-            <a routerLink="/terms" class="text-secondary text-decoration-none me-2">Terms of Service</a>
+          <div class="d-flex flex-wrap gap-3">
+            <a routerLink="/privacy" class="text-secondary text-decoration-none"><i class="fa-solid fa-user-shield me-1"></i> Privacy Policy</a>
+            <a routerLink="/terms" class="text-secondary text-decoration-none"><i class="fa-solid fa-file-contract me-1"></i> Terms & Conditions</a>
+            <a routerLink="/rental-terms" class="text-secondary text-decoration-none"><i class="fa-solid fa-lock me-1"></i> Data Security</a>
             <a routerLink="/login" class="text-secondary text-decoration-none"><i class="fa-solid fa-lock me-1"></i> Staff Portal</a>
           </div>
         </div>

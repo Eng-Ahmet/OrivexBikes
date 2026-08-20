@@ -64,6 +64,30 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
                 <i class="fa-solid fa-headset me-1 text-danger"></i> Support
               </a>
             </li>
+
+            <!-- Legal Policies Dropdown Nav Link -->
+            <li class="nav-item dropdown">
+              <a class="nav-link text-light px-3 py-2 rounded-3 dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-scale-balanced me-1 text-primary"></i> Legal Policies
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                <li>
+                  <a routerLink="/privacy" class="dropdown-item py-2">
+                    <i class="fa-solid fa-user-shield text-primary me-2"></i> Política de Privacidad (RGPD)
+                  </a>
+                </li>
+                <li>
+                  <a routerLink="/terms" class="dropdown-item py-2">
+                    <i class="fa-solid fa-file-contract text-warning me-2"></i> Términos del Contrato
+                  </a>
+                </li>
+                <li>
+                  <a routerLink="/rental-terms" class="dropdown-item py-2">
+                    <i class="fa-solid fa-lock text-success me-2"></i> Seguridad Interna de Datos
+                  </a>
+                </li>
+              </ul>
+            </li>
           </ul>
 
           <!-- Customer Header Right Actions -->

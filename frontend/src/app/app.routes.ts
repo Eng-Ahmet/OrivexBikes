@@ -35,7 +35,12 @@ import { PublicReviewsPageComponent } from './pages/public-reviews/public-review
 import { PublicSupportPageComponent } from './pages/public-support/public-support-page.component';
 import { PublicFaqPageComponent } from './pages/public-faq/public-faq-page.component';
 import { PublicAboutPageComponent } from './pages/public-about/public-about-page.component';
-import { PublicPoliciesPageComponent } from './pages/public-policies/public-policies-page.component';
+
+// 3 Separate Dedicated Policy Component Files
+import { PrivacyPolicyPageComponent } from './pages/privacy-policy/privacy-policy-page.component';
+import { TermsConditionsPageComponent } from './pages/terms-conditions/terms-conditions-page.component';
+import { SecurityPolicyPageComponent } from './pages/security-policy/security-policy-page.component';
+
 import { NotFoundPageComponent } from './pages/not-found/not-found-page.component';
 
 // Core Guards
@@ -58,9 +63,12 @@ export const routes: Routes = [
   { path: 'support', component: PublicSupportPageComponent },
   { path: 'faq', component: PublicFaqPageComponent },
   { path: 'about', component: PublicAboutPageComponent },
-  { path: 'privacy', component: PublicPoliciesPageComponent },
-  { path: 'terms', component: PublicPoliciesPageComponent },
-  { path: 'rental-terms', component: PublicPoliciesPageComponent },
+
+  // 3 Separate Dedicated Routes to 3 Distinct Component Files
+  { path: 'privacy', component: PrivacyPolicyPageComponent },
+  { path: 'terms', component: TermsConditionsPageComponent },
+  { path: 'rental-terms', component: SecurityPolicyPageComponent },
+
   { path: 'not-found', component: NotFoundPageComponent },
   { path: 'login', component: LoginPageComponent },
 

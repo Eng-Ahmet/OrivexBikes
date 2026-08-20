@@ -89,18 +89,18 @@ import { I18nService } from '../../core/services/i18n.service';
               </div>
             </div>
 
-            <!-- GDPR Consents & Terms -->
+            <!-- GDPR Consents & Legal Policies -->
             <div class="card bg-secondary bg-opacity-10 border-secondary rounded-3 p-3 mb-4">
               <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="termsCheck" [(ngModel)]="termsAccepted" name="termsAccepted" required>
                 <label class="form-check-label text-light small" for="termsCheck">
-                  I agree to the <a routerLink="/terms" target="_blank" class="text-primary text-decoration-underline">Terms & Conditions</a> and <a routerLink="/rental-terms" target="_blank" class="text-primary text-decoration-underline">Rental Policy</a> *
+                  I accept the <a routerLink="/terms" target="_blank" class="text-warning text-decoration-underline fw-bold">General Rental Terms & Conditions</a> and <a routerLink="/rental-terms" target="_blank" class="text-success text-decoration-underline fw-bold">Internal Data Security Policy</a> *
                 </label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="privacyCheck" [(ngModel)]="privacyAccepted" name="privacyAccepted" required>
                 <label class="form-check-label text-light small" for="privacyCheck">
-                  I accept the processing of my personal data according to the <a routerLink="/privacy" target="_blank" class="text-primary text-decoration-underline">Privacy Policy</a> (GDPR) *
+                  I consent to personal data processing under the <a routerLink="/privacy" target="_blank" class="text-primary text-decoration-underline fw-bold">Privacy Policy (RGPD / LOPDGDD)</a> *
                 </label>
               </div>
             </div>
