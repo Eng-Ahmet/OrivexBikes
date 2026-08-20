@@ -38,7 +38,18 @@ const publicPath = path.join(frontendPath, 'public');
 app.get('/.well-known/assetlinks.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-  res.sendFile(path.join(publicPath, '.well-known/assetlinks.json'));
+  res.sendFile(path.join(publicPath, '.well-known/assetlinks.json'), (err) => {
+    if (err && !res.headersSent) {
+      res.status(200).json([{
+        relation: ["delegate_permission/common.handle_all_urls"],
+        target: {
+          namespace: "android_app",
+          package_name: "com.orivexbike.app.twa",
+          sha256_cert_fingerprints: ["14:8A:26:7D:96:A7:D5:78:E8:4A:43:9C:A2:0A:79:33:9E:04:84:70:C6:FB:99:9B:F3:D5:29:4A:4C:E3:FA:30"]
+        }
+      }]);
+    }
+  });
 });
 
 // Serve public static assets (manifest.json, sw.js, assets, assetlinks.json) at root

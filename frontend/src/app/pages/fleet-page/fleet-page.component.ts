@@ -29,34 +29,30 @@ export interface AdminFleetCategoryGroup {
   template: `
     <div class="card bg-dark bg-gradient border-secondary-subtle rounded-4 p-4 shadow-sm" style="background: #0f172a !important;">
       <!-- Page Header & Action Bar -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
         <div class="d-flex align-items-center gap-3">
-          <div class="bg-info bg-opacity-10 text-info p-3 rounded-3 border border-info border-opacity-25">
-            <i class="fa-solid fa-layer-group fs-3 text-info"></i>
+          <div class="bg-info bg-opacity-10 text-info p-2.5 p-sm-3 rounded-3 border border-info border-opacity-25 flex-shrink-0">
+            <i class="fa-solid fa-layer-group fs-4 text-info"></i>
           </div>
           <div>
-            <h3 class="fw-extrabold mb-0 font-heading text-white tracking-tight">{{ i18n.t('fleet') }} Inventory Management</h3>
+            <h3 class="fw-extrabold mb-0 font-heading text-white tracking-tight fs-4 fs-sm-3">{{ i18n.t('fleet') }} Inventory</h3>
             <p class="text-secondary small mb-0">
-              Official physical inventory units for <strong class="text-info">{{ getStoreName(state.activeStoreId()) }}</strong> grouped by category cards
+              Units for <strong class="text-info">{{ getStoreName(state.activeStoreId()) }}</strong>
             </p>
           </div>
         </div>
 
         <!-- Top Right Filter Action Controls -->
-        <div class="d-flex align-items-center flex-wrap gap-2">
-          <div class="badge bg-dark border border-secondary text-white px-3 py-2 rounded-pill">
-            <i class="fa-solid fa-store me-1 text-warning"></i> Store: {{ getStoreName(state.activeStoreId()) }}
-          </div>
-
+        <div class="d-flex align-items-center flex-wrap gap-2 w-100 w-sm-auto justify-content-start justify-content-sm-end">
           <button class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm text-white" (click)="openTariffMatrix()">
-            <i class="fa-solid fa-tags me-1 text-white"></i> View Tariff Matrix
+            <i class="fa-solid fa-tags me-1 text-white"></i> Tariff Matrix
           </button>
 
           <select class="form-select form-select-sm bg-dark text-light border-secondary rounded-pill px-3" style="width: auto;" [(ngModel)]="selectedCategory" (change)="filterCategories()">
             <option value="ALL">All Categories</option>
             <option value="Scooters">Scooters</option>
             <option value="E-Bikes">E-Bikes</option>
-            <option value="Bikes">Bicycles</option>
+            <option value="Bicycles">Bicycles</option>
             <option value="Cars">XL Cars & Buggies</option>
           </select>
         </div>
@@ -138,8 +134,8 @@ export interface AdminFleetCategoryGroup {
               </div>
 
               <!-- Primary Rent Action Button -->
-              <button class="btn btn-primary btn-lg w-100 rounded-pill mt-auto shadow-sm fw-bold py-2 text-white" (click)="openNewContractModal(group)">
-                <i class="fa-solid fa-key me-2 text-white"></i> Rent Vehicle ({{ group.available_count }} Available)
+              <button class="btn btn-primary w-100 rounded-pill mt-auto shadow-sm fw-bold py-2 text-white text-nowrap" (click)="openNewContractModal(group)">
+                <i class="fa-solid fa-key me-1 text-white"></i> Rent ({{ group.available_count }} Avail.)
               </button>
             </div>
           </div>

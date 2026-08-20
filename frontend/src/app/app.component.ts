@@ -15,11 +15,14 @@ import { ApiService } from './core/services/api.service';
 import { StateService } from './core/services/state.service';
 import { I18nService } from './core/services/i18n.service';
 
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterOutlet,
     HeaderComponent,
     SidebarComponent,
@@ -43,8 +46,8 @@ import { I18nService } from './core/services/i18n.service';
       <app-public-footer></app-public-footer>
     } @else {
       <!-- Admin / Employee Dashboard Layout -->
-      <header class="navbar navbar-expand-lg sticky-top border-bottom border-secondary-subtle px-3 px-md-4 bg-dark bg-gradient">
-        <app-header></app-header>
+      <header class="navbar navbar-expand-lg sticky-top border-bottom border-secondary-subtle px-2 px-md-4 bg-dark bg-gradient w-100">
+        <app-header class="w-100"></app-header>
       </header>
 
       <div class="container-fluid py-3 px-3 px-md-4">
@@ -61,11 +64,38 @@ import { I18nService } from './core/services/i18n.service';
 
       <!-- Mobile Offcanvas Sidebar Drawer for Admin -->
       <div class="offcanvas offcanvas-start bg-dark text-light border-end border-secondary" tabindex="-1" id="mobileSidebarDrawer">
-        <div class="offcanvas-header border-bottom border-secondary">
-          <h5 class="offcanvas-title text-info fw-bold"><i class="fa-solid fa-bicycle me-2"></i> QQBikes Menu</h5>
+        <div class="offcanvas-header border-bottom border-secondary d-flex align-items-center justify-content-between">
+          <div>
+            <h5 class="offcanvas-title text-info fw-bold mb-0"><i class="fa-solid fa-bicycle me-2"></i> QQBikes Menu</h5>
+            <span class="text-secondary extra-small"><i class="fa-solid fa-store me-1"></i> {{ state.getStoreName(state.activeStoreId()) }}</span>
+          </div>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-2">
+          <!-- Store & Language Selectors inside Mobile Drawer -->
+          <div class="p-2.5 mb-3 bg-secondary bg-opacity-10 rounded-3 border border-secondary border-opacity-25">
+            @if (state.activeRole() === 'ADMIN') {
+              <div class="mb-2">
+                <label class="form-label text-secondary extra-small mb-1 fw-bold"><i class="fa-solid fa-store text-info me-1"></i> Active Store Context</label>
+                <select class="form-select form-select-sm bg-dark text-white border-secondary rounded-3" [ngModel]="state.activeStoreId()" (ngModelChange)="state.setActiveStore($event)">
+                  <option [ngValue]="null">🌐 All Stores Context (Company-Wide)</option>
+                  @for (st of state.stores(); track st.id) {
+                    <option [ngValue]="st.id">{{ st.name }} ({{ st.code }})</option>
+                  }
+                </select>
+              </div>
+            }
+
+            <div>
+              <label class="form-label text-secondary extra-small mb-1 fw-bold"><i class="fa-solid fa-globe text-primary me-1"></i> System Language</label>
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-sm btn-outline-secondary text-white" [class.active]="i18n.currentLang() === 'es'" (click)="i18n.setLanguage('es')">🇪🇸 ES</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary text-white" [class.active]="i18n.currentLang() === 'en'" (click)="i18n.setLanguage('en')">🇬🇧 EN</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary text-white" [class.active]="i18n.currentLang() === 'ar'" (click)="i18n.setLanguage('ar')">🇸🇦 AR</button>
+              </div>
+            </div>
+          </div>
+
           <app-sidebar></app-sidebar>
         </div>
       </div>

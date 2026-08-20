@@ -10,23 +10,23 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
   template: `
     <header class="sticky-top z-3 w-100">
       <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary border-opacity-25 py-2.5 shadow-lg w-100" style="backdrop-filter: blur(16px); background: rgba(11, 15, 25, 0.96) !important;">
-        <div class="container-fluid px-3 px-md-4">
+        <div class="container-fluid d-flex align-items-center justify-content-between px-3 px-md-4 w-100">
           <!-- Public Brand Logo & Title -->
-          <a class="navbar-brand d-flex align-items-center text-decoration-none me-3 text-nowrap" routerLink="/home">
-            <div class="brand-icon bg-primary bg-gradient text-white rounded-3 p-2 me-2.5 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-              <i class="fa-solid fa-bicycle fa-lg"></i>
+          <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto text-nowrap" routerLink="/home">
+            <div class="brand-icon bg-primary bg-gradient text-white rounded-3 p-1.5 me-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+              <i class="fa-solid fa-bicycle"></i>
             </div>
             <div>
-              <span class="fs-4 fw-extrabold tracking-tight text-white font-heading">Orivex<span class="text-primary">Bike</span></span>
-              <span class="d-block text-secondary text-uppercase fw-semibold" style="font-size: 0.625rem; letter-spacing: 0.6px; margin-top: -3px;">By Orivex Technology</span>
+              <span class="fs-5 fw-extrabold tracking-tight text-white font-heading">Orivex<span class="text-primary">Bike</span></span>
+              <span class="d-none d-sm-block text-secondary text-uppercase fw-semibold" style="font-size: 0.55rem; letter-spacing: 0.5px; margin-top: -3px;">By Orivex Technology</span>
             </div>
           </a>
 
-          <!-- Mobile Actions & Toggler -->
-          <div class="d-flex align-items-center gap-2 d-lg-none ms-auto me-2 text-nowrap">
+          <!-- Mobile Actions & Toggler: Clean Minimalist Top Bar -->
+          <div class="d-flex align-items-center gap-2 d-lg-none text-nowrap ms-auto">
             <!-- Mobile Language Selector -->
             <div class="dropdown text-nowrap">
-              <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-2.5 d-flex align-items-center text-white text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-2.5 py-1 d-flex align-items-center text-white text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-solid fa-globe text-primary me-1"></i>
                 <span class="text-uppercase fw-semibold small">{{ i18n.currentLang() }}</span>
               </button>
@@ -37,10 +37,8 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
               </ul>
             </div>
 
-            <a routerLink="/book" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm fw-bold text-nowrap">
-              <i class="fa-solid fa-calendar-check me-1"></i> Book
-            </a>
-            <button class="navbar-toggler border-secondary text-white p-2 rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbarNav" aria-controls="publicNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Mobile Navbar Menu Toggler -->
+            <button class="navbar-toggler border-secondary text-white p-1.5 rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbarNav" aria-controls="publicNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <i class="fa-solid fa-bars fa-lg"></i>
             </button>
           </div>
@@ -110,12 +108,24 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
                 </li>
               </ul>
 
-              <!-- Customer Header Right Actions -->
-              <div class="d-flex flex-wrap align-items-center gap-2 pt-3 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0 ms-lg-auto text-nowrap">
+              <!-- Customer Header Right Actions: Full Width Stacked on Mobile -->
+              <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 pt-3 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0 ms-lg-auto w-100 w-lg-auto">
+                <!-- Primary Book Now CTA Button -->
+                <a routerLink="/book" (click)="closeNav()" class="btn btn-primary btn-sm rounded-pill px-4 py-2 py-lg-1.5 shadow-sm fw-bold d-flex align-items-center justify-content-center text-nowrap w-100 w-lg-auto">
+                  <i class="fa-solid fa-calendar-check me-2"></i>
+                  <span>Book Now</span>
+                </a>
+
                 <!-- Booking Lookup Link -->
-                <a routerLink="/my-booking" (click)="closeNav()" class="btn btn-outline-info btn-sm rounded-pill px-3 d-flex align-items-center text-nowrap" title="Manage Booking">
+                <a routerLink="/my-booking" (click)="closeNav()" class="btn btn-outline-info btn-sm rounded-pill px-3 py-2 py-lg-1.5 d-flex align-items-center justify-content-center text-nowrap w-100 w-lg-auto" title="Manage Booking">
                   <i class="fa-solid fa-magnifying-glass me-2"></i>
                   <span>My Booking</span>
+                </a>
+
+                <!-- Staff / Admin Portal Link -->
+                <a routerLink="/login" (click)="closeNav()" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-2 py-lg-1.5 d-flex align-items-center justify-content-center text-secondary text-nowrap w-100 w-lg-auto" title="Staff Portal Login">
+                  <i class="fa-solid fa-user-gear me-2"></i>
+                  <span>Staff Login</span>
                 </a>
 
                 <!-- Language Selector Dropdown (Desktop) -->
@@ -130,18 +140,6 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
                     <li><button class="dropdown-item d-flex align-items-center text-nowrap" (click)="selectLang('ar')">🇸🇦 <span class="ms-2">العربية</span></button></li>
                   </ul>
                 </div>
-
-                <!-- Staff / Admin Portal Link -->
-                <a routerLink="/login" (click)="closeNav()" class="btn btn-outline-secondary btn-sm rounded-pill px-3 d-flex align-items-center text-secondary text-nowrap" title="Staff Portal Login">
-                  <i class="fa-solid fa-user-gear me-2"></i>
-                  <span>Staff Login</span>
-                </a>
-
-                <!-- Primary Book Now CTA Button (Desktop view) -->
-                <a routerLink="/book" (click)="closeNav()" class="btn btn-primary btn-sm rounded-pill px-3.5 shadow-sm fw-bold d-none d-lg-inline-flex align-items-center text-nowrap">
-                  <i class="fa-solid fa-calendar-check me-2"></i>
-                  <span>Book Now</span>
-                </a>
               </div>
             </div>
           </div>

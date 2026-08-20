@@ -28,8 +28,8 @@ export interface AggregatedHomeModel {
         <div class="position-relative bg-dark text-white py-5 px-4 px-md-5 rounded-4 shadow-lg border border-secondary border-opacity-20 overflow-hidden" style="background: linear-gradient(135deg, #0b0f19 0%, #151d30 100%) !important;">
           <div class="row align-items-center g-4 py-2 position-relative z-1">
             <div class="col-12 col-lg-7">
-              <span class="badge bg-secondary bg-opacity-30 text-info border border-info border-opacity-30 px-3.5 py-2 rounded-pill fs-6 mb-3 shadow-sm d-inline-flex align-items-center gap-2">
-                <i class="fa-solid fa-sun text-warning"></i> Málaga & Mijas #1 Bike & E-Scooter Experience
+              <span class="badge bg-secondary bg-opacity-30 text-info border border-info border-opacity-30 px-3 py-1.5 rounded-pill small mb-3 shadow-sm d-inline-flex align-items-center gap-1.5 mw-100">
+                <i class="fa-solid fa-sun text-warning flex-shrink-0"></i> <span class="text-truncate" style="max-width: 260px;">Málaga & Mijas #1 Mobility Experience</span>
               </span>
 
               <h1 class="display-4 fw-extrabold font-heading text-white tracking-tight mb-3 lh-sm">
@@ -50,26 +50,23 @@ export interface AggregatedHomeModel {
                 </a>
               </div>
 
-              <!-- Key Stats Bar -->
-              <div class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-sm-4 pt-3 border-top border-secondary border-opacity-30 text-secondary">
-                <div class="text-center text-sm-start">
-                  <h4 class="fw-bold text-success mb-0">4.9 ★</h4>
-                  <span class="extra-small text-secondary text-nowrap">Google & TripAdvisor</span>
+              <!-- Key Stats Bar: Single Horizontal Row Grid on Mobile -->
+              <div class="row g-2 pt-3 border-top border-secondary border-opacity-30 text-secondary align-items-center">
+                <div class="col-3 text-center">
+                  <h4 class="fw-bold text-success mb-0 fs-5">4.9 ★</h4>
+                  <span class="extra-small text-secondary text-truncate d-block" title="Google & TripAdvisor">Rating</span>
                 </div>
-                <div class="vr bg-secondary opacity-50 d-none d-sm-block" style="height: 30px;"></div>
-                <div class="text-center text-sm-start">
-                  <h4 class="fw-bold text-primary mb-0">53+</h4>
-                  <span class="extra-small text-secondary text-nowrap">Inspected Fleet</span>
+                <div class="col-3 text-center border-start border-secondary border-opacity-25">
+                  <h4 class="fw-bold text-primary mb-0 fs-5">53+</h4>
+                  <span class="extra-small text-secondary text-truncate d-block" title="Inspected Fleet">Fleet</span>
                 </div>
-                <div class="vr bg-secondary opacity-50 d-none d-sm-block" style="height: 30px;"></div>
-                <div class="text-center text-sm-start">
-                  <h4 class="fw-bold text-info mb-0">2 Hubs</h4>
-                  <span class="extra-small text-secondary text-nowrap">Málaga & Mijas</span>
+                <div class="col-3 text-center border-start border-secondary border-opacity-25">
+                  <h4 class="fw-bold text-info mb-0 fs-5">2 Hubs</h4>
+                  <span class="extra-small text-secondary text-truncate d-block" title="Málaga & Mijas">Hubs</span>
                 </div>
-                <div class="vr bg-secondary opacity-50 d-none d-sm-block" style="height: 30px;"></div>
-                <div class="text-center text-sm-start">
-                  <h4 class="fw-bold text-warning mb-0">€0</h4>
-                  <span class="extra-small text-secondary text-nowrap">Hidden Deposit Fees</span>
+                <div class="col-3 text-center border-start border-secondary border-opacity-25">
+                  <h4 class="fw-bold text-warning mb-0 fs-5">€0</h4>
+                  <span class="extra-small text-secondary text-truncate d-block" title="No Hidden Deposit Fees">Fees</span>
                 </div>
               </div>
             </div>
