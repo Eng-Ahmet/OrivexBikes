@@ -18,13 +18,13 @@ import { I18nService } from '../../core/services/i18n.service';
             <i class="fa-solid fa-briefcase fs-3 text-info"></i>
           </div>
           <div>
-            <h3 class="fw-extrabold mb-0 font-heading text-white tracking-tight">{{ i18n.t('shifts') }} & Till Operations</h3>
-            <p class="text-secondary small mb-0">Store till management, PIN authentication, signed contracts count, and cash reconciliation for <strong class="text-info">{{ getStoreName(state.activeStoreId()) }}</strong></p>
+            <h3 class="fw-extrabold mb-0 font-heading text-white tracking-tight">{{ i18n.t('shifts') }}</h3>
+            <p class="text-secondary small mb-0">{{ i18n.t('store') }}: <strong class="text-info">{{ state.getStoreName(state.activeStoreId()) }}</strong></p>
           </div>
         </div>
 
         <div class="badge bg-dark border border-secondary text-white px-3 py-2 rounded-pill">
-          <i class="fa-solid fa-store me-1 text-warning"></i> Store: {{ getStoreName(state.activeStoreId()) }}
+          <i class="fa-solid fa-store me-1 text-warning"></i> {{ state.getStoreName(state.activeStoreId()) }}
         </div>
       </div>
 
@@ -34,40 +34,40 @@ import { I18nService } from '../../core/services/i18n.service';
         <div class="col-12 col-sm-6 col-xl-3">
           <div class="card border rounded-4 p-3 shadow-sm h-100" style="background: #161e2e !important; border-color: rgba(56,189,248,0.2) !important;">
             <div class="d-flex align-items-center justify-content-between mb-1">
-              <span class="text-secondary small">Signed Contracts (عقود موقعة)</span>
+              <span class="text-secondary small">{{ i18n.t('signedContracts') }}</span>
               <i class="fa-solid fa-file-contract text-info"></i>
             </div>
             <h3 class="fw-extrabold text-white my-1 font-heading">{{ stats()?.shift_contracts_count || 0 }} <span class="fs-6 text-secondary font-sans">Shift</span></h3>
             <div class="text-secondary small" style="font-size: 0.75rem;">
-              <i class="fa-solid fa-calendar-day me-1 text-info"></i> Full Day Total: <strong class="text-white">{{ stats()?.today_contracts_count || 0 }} Contracts</strong>
+              <i class="fa-solid fa-calendar-day me-1 text-info"></i> {{ i18n.t('fullDayTotal') }}: <strong class="text-white">{{ stats()?.today_contracts_count || 0 }}</strong>
             </div>
           </div>
         </div>
 
-        <!-- Revenue Inflow (المدخول) -->
+        <!-- Revenue Inflow -->
         <div class="col-12 col-sm-6 col-xl-3">
           <div class="card border rounded-4 p-3 shadow-sm h-100" style="background: #161e2e !important; border-color: rgba(34,197,94,0.2) !important;">
             <div class="d-flex align-items-center justify-content-between mb-1">
-              <span class="text-secondary small">Revenue Inflow (المدخول)</span>
+              <span class="text-secondary small">{{ i18n.t('revenueInflow') }}</span>
               <i class="fa-solid fa-arrow-down-left-and-arrow-up-right text-success"></i>
             </div>
             <h3 class="fw-extrabold text-success my-1 font-heading">€{{ stats()?.shift_inflow || 0 }} <span class="fs-6 text-secondary font-sans">Shift</span></h3>
             <div class="text-secondary small" style="font-size: 0.75rem;">
-              <i class="fa-solid fa-calendar-day me-1 text-success"></i> Full Day Total: <strong class="text-success">€{{ stats()?.today_inflow || 0 }}</strong>
+              <i class="fa-solid fa-calendar-day me-1 text-success"></i> {{ i18n.t('fullDayTotal') }}: <strong class="text-success">€{{ stats()?.today_inflow || 0 }}</strong>
             </div>
           </div>
         </div>
 
-        <!-- Cash Outflow / Expenses (المخرج) -->
+        <!-- Cash Outflow / Expenses -->
         <div class="col-12 col-sm-6 col-xl-3">
           <div class="card border rounded-4 p-3 shadow-sm h-100" style="background: #161e2e !important; border-color: rgba(239,68,68,0.2) !important;">
             <div class="d-flex align-items-center justify-content-between mb-1">
-              <span class="text-secondary small">Outflow / Withdrawals (المخرج)</span>
+              <span class="text-secondary small">{{ i18n.t('cashOutflow') }}</span>
               <i class="fa-solid fa-hand-holding-dollar text-danger"></i>
             </div>
             <h3 class="fw-extrabold text-danger my-1 font-heading">€{{ stats()?.shift_outflow || 0 }} <span class="fs-6 text-secondary font-sans">Shift</span></h3>
             <div class="text-secondary small" style="font-size: 0.75rem;">
-              <i class="fa-solid fa-calendar-day me-1 text-danger"></i> Full Day Total: <strong class="text-danger">€{{ stats()?.today_outflow || 0 }}</strong>
+              <i class="fa-solid fa-calendar-day me-1 text-danger"></i> {{ i18n.t('fullDayTotal') }}: <strong class="text-danger">€{{ stats()?.today_outflow || 0 }}</strong>
             </div>
           </div>
         </div>
@@ -76,7 +76,7 @@ import { I18nService } from '../../core/services/i18n.service';
         <div class="col-12 col-sm-6 col-xl-3">
           <div class="card border rounded-4 p-3 shadow-sm h-100" style="background: #161e2e !important; border-color: rgba(234,179,8,0.2) !important;">
             <div class="d-flex align-items-center justify-content-between mb-1">
-              <span class="text-secondary small">Net Till Cash Balance</span>
+              <span class="text-secondary small">{{ i18n.t('netTillBalance') }}</span>
               <i class="fa-solid fa-cash-register text-warning"></i>
             </div>
             <h3 class="fw-extrabold text-warning my-1 font-heading">€{{ stats()?.net_shift_balance || configuredFloat() }}</h3>
@@ -87,16 +87,16 @@ import { I18nService } from '../../core/services/i18n.service';
         </div>
       </div>
 
-      <!-- End-of-Day Paid Transactions Review Sheet (جدول مدفوعات آخر النهار للمراجعة) -->
+      <!-- End-of-Day Paid Transactions Audit Sheet -->
       <div class="card border rounded-4 p-4 mb-4 shadow-sm" style="background: #161e2e !important; border-color: rgba(34,197,94,0.2) !important;">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 border-bottom border-secondary border-opacity-25 pb-2">
           <div>
-            <h5 class="fw-bold text-white mb-0 font-heading"><i class="fa-solid fa-receipt text-success me-2"></i> End-of-Day Paid Transactions Audit Sheet (مدفوعات اليوم للمراجعة)</h5>
-            <span class="text-secondary small">Staff end-of-day audit review for confirmed rental contract payments & workshop repair orders</span>
+            <h5 class="fw-bold text-white mb-0 font-heading"><i class="fa-solid fa-receipt text-success me-2"></i> {{ i18n.t('paidTransactionsAudit') }}</h5>
+            <span class="text-secondary small">{{ i18n.t('paidAuditDesc') }}</span>
           </div>
 
           <button class="btn btn-outline-success btn-sm rounded-pill px-3 text-white" (click)="loadPaidTransactions()">
-            <i class="fa-solid fa-rotate me-1 text-white"></i> Refresh Audit Sheet
+            <i class="fa-solid fa-rotate me-1 text-white"></i> {{ i18n.t('refreshAudit') }}
           </button>
         </div>
 
@@ -104,19 +104,20 @@ import { I18nService } from '../../core/services/i18n.service';
           <table class="table table-dark table-hover align-middle mb-0 small">
             <thead>
               <tr class="text-secondary text-uppercase" style="font-size: 0.75rem;">
-                <th>Ref Code / Order</th>
-                <th>Payment Type</th>
-                <th>Customer Name</th>
-                <th>Vehicle / Service</th>
-                <th class="text-end">Amount Paid (€)</th>
-                <th>Method</th>
-                <th class="text-center">Status</th>
+                <th>{{ i18n.t('refCode') }}</th>
+                <th>{{ i18n.t('paymentType') }}</th>
+                <th>{{ i18n.t('customerName') }}</th>
+                <th>{{ i18n.t('vehicleService') }}</th>
+                <th><i class="fa-solid fa-user-gear me-1 text-info"></i> {{ i18n.t('processedBy') }}</th>
+                <th class="text-end">{{ i18n.t('amountPaid') }} (€)</th>
+                <th>{{ i18n.t('paymentMethod') }}</th>
+                <th class="text-center">{{ i18n.t('status') }}</th>
               </tr>
             </thead>
             <tbody>
               @if (paidTransactions().length === 0) {
                 <tr>
-                  <td colspan="7" class="text-center py-4 text-secondary">No paid transactions recorded today for {{ getStoreName(state.activeStoreId()) }}.</td>
+                  <td colspan="8" class="text-center py-4 text-secondary">{{ i18n.t('noPaidTxRecorded') }}</td>
                 </tr>
               } @else {
                 @for (tx of paidTransactions(); track tx.id) {
@@ -129,6 +130,7 @@ import { I18nService } from '../../core/services/i18n.service';
                     </td>
                     <td class="fw-semibold text-white">{{ tx.customer_name }}</td>
                     <td class="text-light">{{ tx.vehicle_name || 'Vehicle Unit' }}</td>
+                    <td><span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 rounded-pill px-2 py-1 fw-bold"><i class="fa-solid fa-user-check me-1"></i> {{ tx.processed_by || 'Staff' }}</span></td>
                     <td class="text-end fw-extrabold text-success fs-6">€{{ tx.amount.toFixed(2) }}</td>
                     <td class="text-secondary small"><i class="fa-solid fa-credit-card me-1 text-info"></i> {{ tx.payment_method }}</td>
                     <td class="text-center">
@@ -150,7 +152,7 @@ import { I18nService } from '../../core/services/i18n.service';
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
             <div>
               <span class="badge bg-success bg-opacity-20 text-white border border-success border-opacity-50 px-3 py-2 rounded-pill mb-2 fw-bold">
-                <i class="fa-solid fa-circle-check me-1 text-white"></i> Active Cash Shift OPEN
+                <i class="fa-solid fa-circle-check me-1 text-white"></i> {{ i18n.t('activeShift') }}
               </span>
               <h4 class="fw-bold text-white mb-0 font-heading">Shift Employee: {{ state.activeShift()?.employee_name || 'Staff' }} (Till Float: €{{ state.activeShift()?.opening_cash || configuredFloat() }})</h4>
               <span class="text-secondary small">Opened at {{ formatDate(state.activeShift()?.start_time || state.activeShift()?.opened_at) }}</span>
@@ -158,10 +160,10 @@ import { I18nService } from '../../core/services/i18n.service';
 
             <div class="d-flex gap-2">
               <button class="btn btn-outline-warning rounded-pill px-3 shadow-sm text-white" (click)="showWithdrawalModal = true">
-                <i class="fa-solid fa-hand-holding-dollar me-1 text-white"></i> Cash Withdrawal
+                <i class="fa-solid fa-hand-holding-dollar me-1 text-white"></i> {{ i18n.t('withdrawal') }}
               </button>
               <button class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold text-white" (click)="showCloseShiftModal = true">
-                <i class="fa-solid fa-lock me-1 text-white"></i> Close Shift
+                <i class="fa-solid fa-lock me-1 text-white"></i> {{ i18n.t('closeShift') }}
               </button>
             </div>
           </div>
@@ -173,12 +175,12 @@ import { I18nService } from '../../core/services/i18n.service';
               <i class="fa-solid fa-sliders me-1 text-white"></i> Admin Configured Till Float: €{{ configuredFloat() }}.00
             </span>
           </div>
-          <h4 class="fw-bold text-white mb-2 font-heading">Open Store Cash Shift</h4>
+          <h4 class="fw-bold text-white mb-2 font-heading">{{ i18n.t('openShift') }}</h4>
           <p class="text-secondary small mb-4">Enter your 4-digit Employee PIN Code (1234 Gustavo, 2222 Fran, 3333 Ahmet, 4444 Abdallah, 1111 Admin) to open the till with the pre-configured float.</p>
 
           <div class="row justify-content-center g-3">
             <div class="col-12 col-md-6 col-lg-5">
-              <label class="form-label text-secondary small">Employee PIN Code (رمز الدخول)</label>
+              <label class="form-label text-secondary small">Employee PIN Code</label>
               <div class="input-group input-group-lg mb-2">
                 <span class="input-group-text bg-dark text-info border-secondary"><i class="fa-solid fa-key"></i></span>
                 <input type="password" maxlength="4" class="form-control bg-dark text-light border-secondary text-center fw-bold font-mono fs-4"
@@ -188,7 +190,7 @@ import { I18nService } from '../../core/services/i18n.service';
 
             <div class="col-12 col-md-6 col-lg-5 d-flex align-items-end">
               <button class="btn btn-success btn-lg w-100 rounded-pill shadow-sm fw-bold text-white py-3 mb-2" (click)="handleOpenShift()" [disabled]="!pinCode">
-                <i class="fa-solid fa-lock-open me-2 text-white"></i> Open Shift (€{{ configuredFloat() }} Float)
+                <i class="fa-solid fa-lock-open me-2 text-white"></i> {{ i18n.t('openShift') }} (€{{ configuredFloat() }} Float)
               </button>
             </div>
           </div>
@@ -210,8 +212,8 @@ import { I18nService } from '../../core/services/i18n.service';
             </div>
           </div>
           <div class="d-flex justify-content-end gap-2 mt-3">
-            <button class="btn btn-outline-secondary btn-sm rounded-pill text-white" (click)="showWithdrawalModal = false">Cancel</button>
-            <button class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-white" (click)="handleWithdrawal()">Save Withdrawal</button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill text-white" (click)="showWithdrawalModal = false">{{ i18n.t('cancel') }}</button>
+            <button class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-white" (click)="handleWithdrawal()">{{ i18n.t('save') }} Withdrawal</button>
           </div>
         </div>
       }
@@ -219,7 +221,7 @@ import { I18nService } from '../../core/services/i18n.service';
       <!-- Close Shift Form -->
       @if (showCloseShiftModal) {
         <div class="card bg-dark border border-danger rounded-4 p-4 mb-4 shadow-lg">
-          <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-lock me-2"></i> Close Shift & Till Audit</h5>
+          <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-lock me-2"></i> {{ i18n.t('closeShift') }}</h5>
           <div class="row g-3">
             <div class="col-12 col-md-4">
               <label class="form-label text-secondary small">Actual Cash Counted (€)</label>
@@ -231,8 +233,8 @@ import { I18nService } from '../../core/services/i18n.service';
             </div>
           </div>
           <div class="d-flex justify-content-end gap-2 mt-3">
-            <button class="btn btn-outline-secondary btn-sm rounded-pill text-white" (click)="showCloseShiftModal = false">Cancel</button>
-            <button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold text-white" (click)="handleCloseShift()">Confirm Close Shift</button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill text-white" (click)="showCloseShiftModal = false">{{ i18n.t('cancel') }}</button>
+            <button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold text-white" (click)="handleCloseShift()">{{ i18n.t('confirm') }} {{ i18n.t('closeShift') }}</button>
           </div>
         </div>
       }
@@ -244,7 +246,7 @@ import { I18nService } from '../../core/services/i18n.service';
           <div class="spinner-border text-info" role="status"></div>
         </div>
       } @else if (history().length === 0) {
-        <p class="text-secondary small">No shift logs recorded for {{ getStoreName(state.activeStoreId()) }}.</p>
+        <p class="text-secondary small">No shift logs recorded for {{ state.getStoreName(state.activeStoreId()) }}.</p>
       } @else {
         <div class="row g-3">
           @for (s of history(); track s.id) {
@@ -315,10 +317,6 @@ export class ShiftsPageComponent implements OnInit {
     await this.loadHistory();
     await this.loadEmployeeStats();
     await this.loadPaidTransactions();
-  }
-
-  getStoreName(id: number): string {
-    return id === 2 ? 'Camping Mijas Resort' : 'Málaga Central Beach';
   }
 
   async loadStoreConfiguredFloat() {

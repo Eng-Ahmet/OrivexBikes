@@ -3,6 +3,8 @@ import { Injectable, signal } from '@angular/core';
 export interface User {
   id?: number;
   username: string;
+  first_name?: string;
+  last_name?: string;
   user_type: 'ADMIN' | 'EMPLOYEE';
   store_id: number;
 }
@@ -23,6 +25,8 @@ export class StateService {
   token = signal<string | null>(localStorage.getItem('qqbikes_token'));
   currentUser = signal<User>({
     username: 'ahmet',
+    first_name: 'Ahmet',
+    last_name: 'Admin',
     user_type: 'ADMIN',
     store_id: 1
   });

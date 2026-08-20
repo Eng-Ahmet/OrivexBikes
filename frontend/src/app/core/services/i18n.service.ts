@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export type Language = 'es' | 'en' | 'ar';
 
@@ -65,7 +65,24 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     activeRentalsCount: 'Alquileres Activos',
     availableFleetCount: 'Vehículos Disponibles',
     todayRevenue: 'Ingresos de Hoy',
-    language: 'Idioma'
+    language: 'Idioma',
+
+    // New Shift Audit i18n Keys
+    signedContracts: 'Contratos Firmados',
+    revenueInflow: 'Entradas de Dinero',
+    cashOutflow: 'Salidas / Retiros',
+    netTillBalance: 'Balance Neto de Caja',
+    fullDayTotal: 'Total del Día',
+    paidTransactionsAudit: 'Hoja de Auditoría de Pagos del Día',
+    paidAuditDesc: 'Auditoría diaria para revisión de contratos y reparaciones cobradas',
+    processedBy: 'Atendido Por',
+    refCode: 'Código Ref / Pedido',
+    paymentType: 'Tipo de Pago',
+    vehicleService: 'Vehículo / Servicio',
+    amountPaid: 'Monto Pagado',
+    status: 'Estado',
+    refreshAudit: 'Actualizar Auditoría',
+    noPaidTxRecorded: 'No hay transacciones cobradas registradas hoy para este local.'
   },
   en: {
     appTitle: 'QQBikes - Management System',
@@ -129,13 +146,30 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     activeRentalsCount: 'Active Rentals',
     availableFleetCount: 'Available Vehicles',
     todayRevenue: "Today's Revenue",
-    language: 'Language'
+    language: 'Language',
+
+    // New Shift Audit i18n Keys
+    signedContracts: 'Signed Contracts',
+    revenueInflow: 'Revenue Inflow',
+    cashOutflow: 'Outflow / Withdrawals',
+    netTillBalance: 'Net Till Cash Balance',
+    fullDayTotal: 'Full Day Total',
+    paidTransactionsAudit: 'End-of-Day Paid Transactions Audit Sheet',
+    paidAuditDesc: 'Staff end-of-day audit review for confirmed rental contracts & workshop repairs',
+    processedBy: 'Processed By',
+    refCode: 'Ref Code / Order',
+    paymentType: 'Payment Type',
+    vehicleService: 'Vehicle / Service',
+    amountPaid: 'Amount Paid',
+    status: 'Status',
+    refreshAudit: 'Refresh Audit Sheet',
+    noPaidTxRecorded: 'No paid transactions recorded today for this store location.'
   },
   ar: {
     appTitle: 'QQBikes - نظام الإدارة والتأجير',
     fleet: 'أسطول الدراجات',
     rentals: 'عقود التأجير',
-    shifts: 'ورديات صندوق الصندوق',
+    shifts: 'ورديات صندوق النقد',
     tariffs: 'الأسعار والتعريفات',
     schedules: 'جدول الموظفين',
     repairs: 'ورشة الصيانة',
@@ -193,7 +227,24 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     activeRentalsCount: 'عقود نشطة حالياً',
     availableFleetCount: 'دراجات متاحة',
     todayRevenue: 'إيرادات اليوم',
-    language: 'اللغة'
+    language: 'اللغة',
+
+    // New Shift Audit i18n Keys
+    signedContracts: 'العقود الموقعة',
+    revenueInflow: 'إيرادات مدفوعة',
+    cashOutflow: 'مصروفات ومخرجات',
+    netTillBalance: 'صافي رصيد الصندوق',
+    fullDayTotal: 'إجمالي اليوم الكامل',
+    paidTransactionsAudit: 'كشف مراجعة المدفوعات اليومية',
+    paidAuditDesc: 'مراجعة وتدقيق عمليات الإيجار والصيانة المدفوعة بنهاية اليوم',
+    processedBy: 'تم بواسطة الموظف',
+    refCode: 'رقم العقد / الطلب',
+    paymentType: 'نوع العملية',
+    vehicleService: 'المركبة / الخدمة',
+    amountPaid: 'المبلغ المدفوع',
+    status: 'الحالة',
+    refreshAudit: 'تحديث كشف المراجعة',
+    noPaidTxRecorded: 'لا توجد مدفوعات مسجلة اليوم لهذا الفرع.'
   }
 };
 

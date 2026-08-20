@@ -31,11 +31,11 @@ import { RouterModule } from '@angular/router';
 
       <!-- Quick Action Controls -->
       <div class="d-flex align-items-center flex-wrap gap-2 ms-auto">
-        <!-- Shift Status Indicator Badge -->
+        <!-- Real-Time Shift Till Cash Indicator Badge -->
         @if (state.activeShift()) {
           <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill d-flex align-items-center gap-2">
             <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
-            <span><i class="fa-solid fa-cash-register me-1"></i> {{ i18n.t('activeShift') }}: <strong>€{{ state.activeShift()?.opening_cash || 0 }}</strong></span>
+            <span><i class="fa-solid fa-cash-register me-1 text-success"></i> {{ i18n.t('activeShift') }}: <strong class="text-white font-mono">€{{ (state.activeShift()?.expected_cash || state.activeShift()?.opening_cash || 0).toFixed(2) }}</strong></span>
           </div>
         } @else {
           <div class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill d-flex align-items-center gap-2">
@@ -44,23 +44,37 @@ import { RouterModule } from '@angular/router';
           </div>
         }
 
-        <!-- Store Location Dropdown -->
-        <div class="dropdown">
-          <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-            <i class="fa-solid fa-store text-info"></i>
-            <span>{{ getStoreName(state.activeStoreId()) }}</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li><button class="dropdown-item" (click)="selectStore(1)"><i class="fa-solid fa-shop me-2 text-primary"></i> Tienda Central Málaga</button></li>
-            <li><button class="dropdown-item" (click)="selectStore(2)"><i class="fa-solid fa-tent me-2 text-warning"></i> Camping Mijas</button></li>
-          </ul>
-        </div>
+        <!-- Store Location Selector (ADMIN vs EMPLOYEE) -->
+        @if (state.activeRole() === 'ADMIN') {
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+              <i class="fa-solid fa-store text-info"></i>
+              <span>{{ state.getStoreName(state.activeStoreId()) }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              @for (st of state.stores(); track st.id) {
+                <li><button class="dropdown-item" (click)="selectStore(st.id)"><i class="fa-solid fa-shop me-2 text-primary"></i> {{ st.name }}</button></li>
+              }
+            </ul>
+          </div>
+        } @else {
+          <div class="badge bg-dark border border-secondary text-white px-3 py-2 rounded-pill">
+            <i class="fa-solid fa-lock text-warning me-1"></i> Store: {{ state.getStoreName(state.activeStoreId()) }}
+          </div>
+        }
 
-        <!-- Role Badge -->
-        <span class="badge rounded-pill px-3 py-2" [class.bg-primary]="state.activeRole() === 'ADMIN'" [class.bg-info]="state.activeRole() === 'EMPLOYEE'">
-          <i class="fa-solid me-1" [class.fa-user-shield]="state.activeRole() === 'ADMIN'" [class.fa-user-gear]="state.activeRole() === 'EMPLOYEE'"></i>
-          {{ state.activeRole() }}
-        </span>
+        <!-- Rich Active Logged-in Staff Profile Card -->
+        <div class="d-flex align-items-center gap-2 bg-dark bg-opacity-80 border border-secondary rounded-pill px-3 py-1 text-white shadow-sm">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 0.75rem;">
+            {{ (state.currentUser().first_name || state.currentUser().username || 'S').charAt(0).toUpperCase() }}
+          </div>
+          <div class="d-flex flex-column text-start" style="line-height: 1.1;">
+            <span class="fw-bold text-white small">{{ state.currentUser().first_name || state.currentUser().username }} {{ state.currentUser().last_name || '' }}</span>
+            <span class="text-info" style="font-size: 0.7rem;">
+              <i class="fa-solid fa-id-badge me-1"></i>{{ state.activeRole() }} &bull; {{ state.getStoreName(state.activeStoreId()) }}
+            </span>
+          </div>
+        </div>
 
         <!-- Language Selector Dropdown -->
         <div class="dropdown">
@@ -88,13 +102,10 @@ export class HeaderComponent {
   state = inject(StateService);
   api = inject(ApiService);
 
-  getStoreName(id: number): string {
-    return id === 2 ? 'Camping Mijas' : 'Tienda Central Málaga';
-  }
-
   selectStore(id: number) {
+    if (this.state.activeRole() === 'EMPLOYEE') return;
     this.state.setActiveStore(id);
-    this.state.showToast('Tienda Cambiada', `Se ha cambiado al local: ${this.getStoreName(id)}`, 'info');
+    this.state.showToast('Store Selected', `Active store set to: ${this.state.getStoreName(id)}`, 'info');
   }
 
   selectLang(lang: Language) {

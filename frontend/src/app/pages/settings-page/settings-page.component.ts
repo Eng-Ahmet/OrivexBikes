@@ -34,7 +34,7 @@ import { I18nService } from '../../core/services/i18n.service';
         <div class="card border rounded-4 p-4 shadow-sm mb-4" style="background: #161e2e !important; border-color: rgba(56,189,248,0.2) !important;">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 border-bottom border-secondary border-opacity-25 pb-2">
             <div>
-              <h5 class="fw-bold text-white mb-0 font-heading"><i class="fa-solid fa-store me-2 text-warning"></i> Store Centers & Locations (إدارة المراكز والافتتاح)</h5>
+              <h5 class="fw-bold text-white mb-0 font-heading"><i class="fa-solid fa-store me-2 text-warning"></i> Store Centers & Locations</h5>
               <span class="text-secondary small">Each store maintains its own isolated calendar, settings, fleet, and contracts</span>
             </div>
 

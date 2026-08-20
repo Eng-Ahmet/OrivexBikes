@@ -34,9 +34,9 @@ export interface CalendarDaySlot {
             <i class="fa-solid fa-calendar-days fs-3 text-info"></i>
           </div>
           <div>
-            <h3 class="fw-extrabold mb-0 font-heading text-white tracking-tight">{{ i18n.t('schedules') }} - Horarios de Empleados</h3>
+            <h3 class="fw-extrabold mb-0 font-heading text-white tracking-tight">{{ i18n.t('schedules') }}</h3>
             <p class="text-secondary small mb-0">
-              Official weekly schedule for <strong class="text-info">{{ getStoreName(state.activeStoreId()) }}</strong>
+              Weekly staff schedule for <strong class="text-info">{{ state.getStoreName(state.activeStoreId()) }}</strong>
             </p>
           </div>
         </div>

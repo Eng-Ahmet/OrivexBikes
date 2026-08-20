@@ -9,37 +9,25 @@ export const getCurrentShift = (req: AuthRequest, res: Response) => {
   const currentShift = memoryData.shifts.find(s => s.store_id === storeId && s.status === 'OPEN');
   
   if (currentShift) {
+    const storeContracts = memoryData.contracts.filter(c => c.store_id === storeId);
+    const storeRepairs = (memoryData.repair_work_orders || []).filter((w: any) => w.store_id === storeId && w.status === 'DELIVERED_PAID');
+
+    const rentalInflow = storeContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
+    const repairInflow = storeRepairs.reduce((sum: number, w: any) => sum + (w.total_cost || w.total_price || 0), 0);
+
     const shiftMovements: CashMovement[] = memoryData.cash_movements.filter((m: CashMovement) => m.shift_id === currentShift.id);
-
-    const cashRentals = shiftMovements
-      .filter((m: CashMovement) => m.type === 'RENTAL_PAYMENT')
-      .reduce((sum: number, m: CashMovement) => sum + m.amount, 0);
-
-    const depositsCollected = shiftMovements
-      .filter((m: CashMovement) => m.type === 'DEPOSIT_COLLECTED')
-      .reduce((sum: number, m: CashMovement) => sum + m.amount, 0);
-
-    const depositsRefunded = shiftMovements
-      .filter((m: CashMovement) => m.type === 'DEPOSIT_REFUNDED')
-      .reduce((sum: number, m: CashMovement) => sum + Math.abs(m.amount), 0);
-
-    const workshopIncome = shiftMovements
-      .filter((m: CashMovement) => m.type === 'ADDITION' && m.reason.includes('Workshop'))
-      .reduce((sum: number, m: CashMovement) => sum + m.amount, 0);
-
     const withdrawals = shiftMovements
       .filter((m: CashMovement) => m.type === 'WITHDRAWAL')
       .reduce((sum: number, m: CashMovement) => sum + Math.abs(m.amount), 0);
 
-    const netCashMovement = shiftMovements.reduce((sum: number, m: CashMovement) => sum + m.amount, 0);
     const baseFloat = currentShift.opening_cash || store?.initial_cash_float || 150;
+    const totalInflow = rentalInflow + repairInflow;
 
-    currentShift.total_cash_rentals = cashRentals;
-    currentShift.total_workshop_income = workshopIncome;
+    currentShift.total_cash_rentals = rentalInflow;
+    currentShift.total_workshop_income = repairInflow;
     currentShift.total_withdrawals = withdrawals;
-    currentShift.expected_cash = baseFloat + netCashMovement;
-    (currentShift as any).deposits_collected = depositsCollected;
-    (currentShift as any).deposits_refunded = depositsRefunded;
+    currentShift.expected_cash = baseFloat + totalInflow - withdrawals;
+    (currentShift as any).net_cash = currentShift.expected_cash;
   }
 
   return res.json(currentShift || null);
@@ -52,16 +40,17 @@ export const getEmployeeStats = (req: AuthRequest, res: Response) => {
   const todayStr = new Date().toISOString().split('T')[0];
 
   const storeContracts = memoryData.contracts.filter(c => c.store_id === storeId);
-  const shiftContracts = currentShift ? storeContracts.filter(c => new Date(c.created_at) >= new Date(currentShift.start_time)) : [];
+  const shiftContracts = storeContracts;
   const todayContracts = storeContracts.filter(c => c.created_at.startsWith(todayStr));
 
   const shiftRentalInflow = shiftContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
   const todayRentalInflow = todayContracts.reduce((sum, c) => sum + (c.rental_fee || 0), 0);
 
-  const activeWorkOrders = (memoryData as any).repair_work_orders || [];
-  const storeRepairs = activeWorkOrders.filter((w: any) => w.store_id === storeId && w.status === 'DELIVERED_PAID');
-  const shiftRepairInflow = currentShift ? storeRepairs.filter((w: any) => new Date(w.paid_at || w.created_at) >= new Date(currentShift.start_time)).reduce((sum: number, w: any) => sum + (w.total_cost || 0), 0) : 0;
-  const todayRepairInflow = storeRepairs.filter((w: any) => (w.paid_at || '').startsWith(todayStr)).reduce((sum: number, w: any) => sum + (w.total_cost || 0), 0);
+  // Paid Repair work orders calculation
+  const storeRepairs = (memoryData.repair_work_orders || []).filter((w: any) => w.store_id === storeId && w.status === 'DELIVERED_PAID');
+
+  const shiftRepairInflow = storeRepairs.reduce((sum: number, w: any) => sum + (w.total_cost || w.total_price || 0), 0);
+  const todayRepairInflow = storeRepairs.filter((w: any) => (w.paid_at || w.created_at || '').startsWith(todayStr)).reduce((sum: number, w: any) => sum + (w.total_cost || w.total_price || 0), 0);
 
   const shiftInflow = shiftRentalInflow + shiftRepairInflow;
   const todayInflow = todayRentalInflow + todayRepairInflow;
@@ -94,22 +83,24 @@ export const getPaidTransactions = (req: AuthRequest, res: Response) => {
     code: c.contract_number,
     customer_name: c.customer_name,
     vehicle_name: c.vehicle_name,
+    processed_by: (c as any).employee_name || 'Gustavo',
     amount: c.rental_fee,
     payment_method: c.payment_method || 'CARD',
     paid_at: c.created_at,
     status: 'ACTIVE'
   }));
 
-  const activeWorkOrders = (memoryData as any).repair_work_orders || [];
+  const activeWorkOrders = memoryData.repair_work_orders || [];
   const repairs = activeWorkOrders.filter((w: any) => w.store_id === storeId && w.status === 'DELIVERED_PAID').map((w: any) => ({
     id: w.id,
     type: 'REPAIR_WORK_ORDER',
     code: `REP-#${w.id}`,
     customer_name: w.customer_name,
-    vehicle_name: w.vehicle_description,
-    amount: w.total_cost || 35,
+    vehicle_name: w.vehicle_description || w.device_model,
+    processed_by: w.technician_name || w.delivered_by || 'Ahmet',
+    amount: w.total_cost || w.total_price || 35,
     payment_method: 'CASH/CARD',
-    paid_at: w.paid_at || new Date().toISOString(),
+    paid_at: w.paid_at || w.created_at || new Date().toISOString(),
     status: 'Paid & Delivered (Locked)'
   }));
 
@@ -131,7 +122,7 @@ export const getShiftHistory = (req: AuthRequest, res: Response) => {
       return c.store_id === storeId && cTime >= startTime && cTime <= endTime;
     });
 
-    const shiftRepairs = ((memoryData as any).repair_work_orders || []).filter((r: any) => {
+    const shiftRepairs = (memoryData.repair_work_orders || []).filter((r: any) => {
       const rTime = new Date(r.created_at);
       return r.store_id === storeId && rTime >= startTime && rTime <= endTime;
     });

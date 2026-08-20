@@ -111,6 +111,7 @@ export class LoginPageComponent {
       const res = await this.api.verifyPin(this.pinCode);
       if (res && res.valid) {
         const user = res.user;
+        this.state.currentUser.set(user);
         this.state.setActiveRole(user.user_type);
         this.state.setActiveStore(user.store_id || 1);
         const realToken = res.token || `token-${Date.now()}`;
