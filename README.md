@@ -8,6 +8,7 @@
 
 [![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/Eng-Ahmet/QQBikes/ci.yml?branch=main&style=for-the-badge&logo=github-actions&color=238636)](https://github.com/Eng-Ahmet/QQBikes/actions)
 [![Integration Tests](https://img.shields.io/badge/Integration%20Tests-66%2F66%20PASSED-brightgreen?style=for-the-badge&logo=codecov&color=2ea44f)](https://github.com/Eng-Ahmet/QQBikes/tree/main/backend/src/tests)
+[![Dependabot Auto-Merge](https://img.shields.io/badge/Dependabot-Auto--Merge%20Active-025E8C?style=for-the-badge&logo=dependabot&logoColor=white)](https://github.com/Eng-Ahmet/QQBikes/blob/main/.github/dependabot.yml)
 [![Designed by Orivex](https://img.shields.io/badge/Designed%20%26%20Built%20by-Orivex%20Technology-7928CA?style=for-the-badge&logo=rocket&logoColor=white)](https://orivex.eu)
 [![Node.js](https://img.shields.io/badge/Node.js-v22.x%20LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Angular](https://img.shields.io/badge/Angular-v18%20Standalone-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev)
