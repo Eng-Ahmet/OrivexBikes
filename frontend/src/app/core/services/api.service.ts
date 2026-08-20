@@ -121,8 +121,9 @@ export class ApiService {
     );
   }
 
-  async getTariffs(): Promise<any> {
-    const params = new HttpParams().set('store_id', String(this.state.activeStoreId()));
+  async getTariffs(storeId?: number): Promise<any> {
+    const targetStoreId = storeId || this.state.activeStoreId();
+    const params = new HttpParams().set('store_id', String(targetStoreId));
     return firstValueFrom(this.http.get(`${this.apiBase}/tariffs`, { headers: this.getHeaders(), params }));
   }
 

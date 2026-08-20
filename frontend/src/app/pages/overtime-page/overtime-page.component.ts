@@ -20,7 +20,7 @@ import { I18nService } from '../../core/services/i18n.service';
           <p class="text-secondary small mb-0">Review, approve, reject, or modify overtime hours accumulated by staff</p>
         </div>
 
-        <div class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill font-mono">
+        <div class="badge bg-warning bg-opacity-20 text-white border border-warning px-3 py-2 rounded-pill font-mono nowrap">
           Pending Overtime Requests: {{ pendingCount() }}
         </div>
       </div>

@@ -24,8 +24,21 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
 
           <!-- Mobile Actions & Toggler -->
           <div class="d-flex align-items-center gap-2 d-lg-none ms-auto me-2 text-nowrap">
-            <a routerLink="/book" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm fw-bold">
-              <i class="fa-solid fa-calendar-check me-1.5"></i> Book
+            <!-- Mobile Language Selector -->
+            <div class="dropdown text-nowrap">
+              <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-2.5 d-flex align-items-center text-white text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-globe text-primary me-1"></i>
+                <span class="text-uppercase fw-semibold small">{{ i18n.currentLang() }}</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary">
+                <li><button class="dropdown-item d-flex align-items-center text-nowrap" (click)="selectLang('es')">🇪🇸 <span class="ms-2">Español</span></button></li>
+                <li><button class="dropdown-item d-flex align-items-center text-nowrap" (click)="selectLang('en')">🇬🇧 <span class="ms-2">English</span></button></li>
+                <li><button class="dropdown-item d-flex align-items-center text-nowrap" (click)="selectLang('ar')">🇸🇦 <span class="ms-2">العربية</span></button></li>
+              </ul>
+            </div>
+
+            <a routerLink="/book" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm fw-bold text-nowrap">
+              <i class="fa-solid fa-calendar-check me-1"></i> Book
             </a>
             <button class="navbar-toggler border-secondary text-white p-2 rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbarNav" aria-controls="publicNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <i class="fa-solid fa-bars fa-lg"></i>
@@ -37,37 +50,37 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
             <div class="p-3 p-lg-0 rounded-4 bg-dark bg-opacity-95 border border-secondary border-opacity-25 border-lg-0 bg-lg-transparent w-100 d-lg-flex align-items-center">
               <ul class="navbar-nav me-auto mb-3 mb-lg-0 gap-1 align-items-lg-center text-nowrap">
                 <li class="nav-item">
-                  <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-house text-primary me-2"></i> <span>Home</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a routerLink="/bikes" routerLinkActive="active" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/bikes" routerLinkActive="active" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-bolt text-warning me-2"></i> <span>Fleet Catalog</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a routerLink="/tours" routerLinkActive="active" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/tours" routerLinkActive="active" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-person-biking text-info me-2"></i> <span>Guided Tours</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a routerLink="/locations" routerLinkActive="active" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/locations" routerLinkActive="active" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-store text-success me-2"></i> <span>Locations</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a routerLink="/reviews" routerLinkActive="active" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/reviews" routerLinkActive="active" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-star text-warning me-2"></i> <span>Reviews</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a routerLink="/faq" routerLinkActive="active" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/faq" routerLinkActive="active" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-circle-question text-secondary me-2"></i> <span>FAQ</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a routerLink="/support" routerLinkActive="active" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
+                  <a routerLink="/support" routerLinkActive="active" (click)="closeNav()" class="nav-link text-white-50 text-hover-white px-2.5 py-2 rounded-3 d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-headset text-danger me-2"></i> <span>Support</span>
                   </a>
                 </li>
@@ -79,17 +92,17 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-secondary rounded-3">
                     <li>
-                      <a routerLink="/privacy" class="dropdown-item py-2.5 text-white d-flex align-items-center text-nowrap">
+                      <a routerLink="/privacy" (click)="closeNav()" class="dropdown-item py-2.5 text-white d-flex align-items-center text-nowrap">
                         <i class="fa-solid fa-user-shield text-primary me-2.5"></i> <span>Política de Privacidad (RGPD)</span>
                       </a>
                     </li>
                     <li>
-                      <a routerLink="/terms" class="dropdown-item py-2.5 text-white d-flex align-items-center text-nowrap">
+                      <a routerLink="/terms" (click)="closeNav()" class="dropdown-item py-2.5 text-white d-flex align-items-center text-nowrap">
                         <i class="fa-solid fa-file-contract text-warning me-2.5"></i> <span>Términos del Contrato</span>
                       </a>
                     </li>
                     <li>
-                      <a routerLink="/rental-terms" class="dropdown-item py-2.5 text-white d-flex align-items-center text-nowrap">
+                      <a routerLink="/rental-terms" (click)="closeNav()" class="dropdown-item py-2.5 text-white d-flex align-items-center text-nowrap">
                         <i class="fa-solid fa-lock text-success me-2.5"></i> <span>Seguridad Interna de Datos</span>
                       </a>
                     </li>
@@ -98,15 +111,15 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
               </ul>
 
               <!-- Customer Header Right Actions -->
-              <div class="d-flex align-items-center flex-nowrap gap-2 pt-3 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0 ms-lg-auto text-nowrap">
+              <div class="d-flex flex-wrap align-items-center gap-2 pt-3 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0 ms-lg-auto text-nowrap">
                 <!-- Booking Lookup Link -->
-                <a routerLink="/my-booking" class="btn btn-outline-info btn-sm rounded-pill px-3 d-flex align-items-center text-nowrap" title="Manage Booking">
+                <a routerLink="/my-booking" (click)="closeNav()" class="btn btn-outline-info btn-sm rounded-pill px-3 d-flex align-items-center text-nowrap" title="Manage Booking">
                   <i class="fa-solid fa-magnifying-glass me-2"></i>
                   <span>My Booking</span>
                 </a>
 
-                <!-- Language Selector Dropdown -->
-                <div class="dropdown text-nowrap">
+                <!-- Language Selector Dropdown (Desktop) -->
+                <div class="dropdown d-none d-lg-block text-nowrap">
                   <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3 d-flex align-items-center text-white text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-globe text-primary me-2"></i>
                     <span class="text-uppercase fw-semibold">{{ i18n.currentLang() }}</span>
@@ -119,13 +132,13 @@ import { I18nService, Language } from '../../../core/services/i18n.service';
                 </div>
 
                 <!-- Staff / Admin Portal Link -->
-                <a routerLink="/login" class="btn btn-outline-secondary btn-sm rounded-pill px-3 d-flex align-items-center text-secondary text-nowrap" title="Staff Portal Login">
+                <a routerLink="/login" (click)="closeNav()" class="btn btn-outline-secondary btn-sm rounded-pill px-3 d-flex align-items-center text-secondary text-nowrap" title="Staff Portal Login">
                   <i class="fa-solid fa-user-gear me-2"></i>
                   <span>Staff Login</span>
                 </a>
 
                 <!-- Primary Book Now CTA Button (Desktop view) -->
-                <a routerLink="/book" class="btn btn-primary btn-sm rounded-pill px-3.5 shadow-sm fw-bold d-none d-lg-inline-flex align-items-center text-nowrap">
+                <a routerLink="/book" (click)="closeNav()" class="btn btn-primary btn-sm rounded-pill px-3.5 shadow-sm fw-bold d-none d-lg-inline-flex align-items-center text-nowrap">
                   <i class="fa-solid fa-calendar-check me-2"></i>
                   <span>Book Now</span>
                 </a>
@@ -155,5 +168,13 @@ export class PublicHeaderComponent {
 
   selectLang(lang: Language) {
     this.i18n.setLanguage(lang);
+    this.closeNav();
+  }
+
+  closeNav() {
+    const navEl = document.getElementById('publicNavbarNav');
+    if (navEl && navEl.classList.contains('show')) {
+      navEl.classList.remove('show');
+    }
   }
 }

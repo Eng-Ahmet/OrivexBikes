@@ -166,7 +166,8 @@ export class TariffsPageComponent implements OnInit {
 
   async loadTariffs() {
     try {
-      const res: any = await this.api.getTariffs();
+      const storeId = this.selectedStoreId() || 1;
+      const res: any = await this.api.getTariffs(storeId);
       if (res && res.matrix && res.matrix.length) {
         this.activeMatrix.set(res.matrix);
       } else {

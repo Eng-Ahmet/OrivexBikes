@@ -384,4 +384,42 @@ html, body {
   max-width: 100vw;
 }
 
+/* Ensure text wrapping constraints across tables, badges, values, and buttons */
+table th,
+table td,
+.table th,
+.table td,
+.badge,
+.btn,
+.nowrap,
+.text-nowrap-custom,
+.price-tag,
+.currency-amount {
+  white-space: nowrap !important;
+}
+
+/* Mobile responsive padding, text sizing, and image wrapping consistency */
+@media (max-width: 767.98px) {
+  h1, .display-4, .display-5, .display-6 {
+    font-size: 1.85rem !important;
+    line-height: 1.3 !important;
+  }
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  h3 {
+    font-size: 1.25rem !important;
+  }
+  .lead {
+    font-size: 0.95rem !important;
+  }
+  .container, .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  .card-glass, .card {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
 

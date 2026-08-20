@@ -51,25 +51,25 @@ export interface AggregatedHomeModel {
               </div>
 
               <!-- Key Stats Bar -->
-              <div class="d-flex flex-wrap align-items-center gap-4 pt-3 border-top border-secondary border-opacity-30 text-secondary">
-                <div>
+              <div class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-sm-4 pt-3 border-top border-secondary border-opacity-30 text-secondary">
+                <div class="text-center text-sm-start">
                   <h4 class="fw-bold text-success mb-0">4.9 ★</h4>
-                  <span class="extra-small text-secondary">Google & TripAdvisor</span>
+                  <span class="extra-small text-secondary text-nowrap">Google & TripAdvisor</span>
                 </div>
                 <div class="vr bg-secondary opacity-50 d-none d-sm-block" style="height: 30px;"></div>
-                <div>
+                <div class="text-center text-sm-start">
                   <h4 class="fw-bold text-primary mb-0">53+</h4>
-                  <span class="extra-small text-secondary">Inspected Fleet</span>
+                  <span class="extra-small text-secondary text-nowrap">Inspected Fleet</span>
                 </div>
                 <div class="vr bg-secondary opacity-50 d-none d-sm-block" style="height: 30px;"></div>
-                <div>
+                <div class="text-center text-sm-start">
                   <h4 class="fw-bold text-info mb-0">2 Hubs</h4>
-                  <span class="extra-small text-secondary">Málaga & Mijas</span>
+                  <span class="extra-small text-secondary text-nowrap">Málaga & Mijas</span>
                 </div>
                 <div class="vr bg-secondary opacity-50 d-none d-sm-block" style="height: 30px;"></div>
-                <div>
+                <div class="text-center text-sm-start">
                   <h4 class="fw-bold text-warning mb-0">€0</h4>
-                  <span class="extra-small text-secondary">Hidden Deposit Fees</span>
+                  <span class="extra-small text-secondary text-nowrap">Hidden Deposit Fees</span>
                 </div>
               </div>
             </div>
