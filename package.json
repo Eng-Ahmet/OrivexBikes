@@ -29,7 +29,7 @@
     "@angular/core": "^18.2.0",
     "@angular/forms": "^18.2.0",
     "@angular/platform-browser": "^18.2.0",
-    "@angular/platform-browser-dynamic": "^18.2.0",
+    "@angular/platform-browser-dynamic": "^20.0.7",
     "@angular/router": "^18.2.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
