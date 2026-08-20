@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.0",
-    "@angular/cli": "^22.1.4",
+    "@angular/cli": "^18.2.0",
     "@angular/compiler-cli": "^18.2.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/cors": "^2.8.17",
