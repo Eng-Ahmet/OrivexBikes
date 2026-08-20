@@ -115,7 +115,15 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     torremolinosStoreOption: 'Torremolinos Central Hub',
     adminRoleOption: 'ADMIN (Control Total)',
     employeeRoleOption: 'EMPLEADO (Mostrador y Turno)',
-    quickPinClickHelp: 'Haz clic en cualquier perfil demo para cargar el PIN automáticamente:'
+    quickPinClickHelp: 'Haz clic en cualquier perfil demo para cargar el PIN automáticamente:',
+    welcomeHeroTitle: 'Suite Operativa de Personal QQBikes',
+    welcomeHeroSub: 'Plataforma unificada para la gestión de flota, alquileres POS, auditoría de caja de turnos y taller de reparaciones.',
+    fleetControlTitle: 'Control de Flota y Alquileres POS',
+    fleetControlSub: 'Gestión en tiempo real de bicicletas y patinetes disponibles, contratos y fianzas.',
+    shiftAuditTitle: 'Auditoría de Caja y Turnos',
+    shiftAuditSub: 'Apertura, cierre y cuadre de caja diario con auditoría de transacciones cobradas.',
+    securitySSOTTitle: 'Seguridad Multi-Tienda SSOT',
+    securitySSOTSub: 'Modelo de permisos simplificado de 2 roles (ADMIN y EMPLEADO) por tienda.'
   },
   en: {
     appTitle: 'QQBikes - Management System',
@@ -229,7 +237,15 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     torremolinosStoreOption: 'Torremolinos Central Hub',
     adminRoleOption: 'ADMIN (Full Control)',
     employeeRoleOption: 'EMPLOYEE (Counter & Shift)',
-    quickPinClickHelp: 'Click any demo profile to quickly insert PIN:'
+    quickPinClickHelp: 'Click any demo profile to quickly insert PIN:',
+    welcomeHeroTitle: 'QQBikes Staff Operational Suite',
+    welcomeHeroSub: 'Unified Single Project platform for vehicle fleet management, POS contract rentals, shift till cash auditing, and workshop repairs.',
+    fleetControlTitle: 'Fleet & POS Contract Management',
+    fleetControlSub: 'Real-time tracking of available bikes, scooters, active rental contracts, and deposits.',
+    shiftAuditTitle: 'Shift Cash Till Audits',
+    shiftAuditSub: 'Opening float, shift closing, cash withdrawals, and daily paid transaction audits.',
+    securitySSOTTitle: 'Multi-Store SSOT Security',
+    securitySSOTSub: 'Simplified 2-Role permission model (ADMIN & EMPLOYEE) bound per store location.'
   },
   ar: {
     appTitle: 'QQBikes - نظام الإدارة والتأجير',
@@ -343,7 +359,15 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     torremolinosStoreOption: 'الفرع المركزي توريمولينوس (Torremolinos)',
     adminRoleOption: 'مدير نظام ADMIN (صلاحيات كاملة)',
     employeeRoleOption: 'موظف استقبال EMPLOYEE (شباك ووردية)',
-    quickPinClickHelp: 'انقر على أي حساب تجريبي للتعبئة التلقائية لرمز PIN:'
+    quickPinClickHelp: 'انقر على أي حساب تجريبي للتعبئة التلقائية لرمز PIN:',
+    welcomeHeroTitle: 'بوابة QQBikes للإدارة والورديات',
+    welcomeHeroSub: 'منظومة شاملة وموحدة لإدارة أسطول الدراجات، عقود التأجير المباشرة، ورديات الصناديق النقدية، وورشة الصيانة.',
+    fleetControlTitle: 'إدارة الأسطول وعقود التأجير',
+    fleetControlSub: 'متابعة لحظية لدراجات وسكوترات الأسطول، العقود النشطة ومبالغ التأمين المستردة.',
+    shiftAuditTitle: 'ورديات الصناديق النقدية والتدقيق',
+    shiftAuditSub: 'فتح وإغلاق الورديات، سحب النقدية، والتدقيق المالي اليومي لكافة المبيعات.',
+    securitySSOTTitle: 'حماية نظام الفروع والمتطلبات الموحدة',
+    securitySSOTSub: 'صلاحيات مبسطة بنظام الدورين (مدير نظام ADMIN وموظف EMPLOYEE) مقيدة حسب الفرع.'
   }
 };
 
