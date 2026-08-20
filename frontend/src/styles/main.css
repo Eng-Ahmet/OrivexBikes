@@ -39,38 +39,20 @@
   border-radius: 5px !important;
 }
 
-/* MANDATORY WHITE BUTTON & BADGE TEXT RULE ACROSS ALL TYPES & STATES */
-.btn,
-.btn *,
-.badge,
-.badge *,
-.btn-primary,
-.btn-secondary,
-.btn-success,
-.btn-info,
+/* ACCESSIBLE BUTTON & BADGE CONTRAST RULES */
 .btn-warning,
-.btn-danger,
-.btn-dark,
 .btn-light,
-.btn-outline-primary,
-.btn-outline-secondary,
-.btn-outline-success,
-.btn-outline-info,
-.btn-outline-warning,
-.btn-outline-danger,
-.btn-outline-light,
-.btn-outline-dark {
-  color: #ffffff !important;
+.badge.bg-warning,
+.badge.bg-light,
+.badge.bg-warning *,
+.badge.bg-light * {
+  color: #0f172a !important;
 }
 
-.btn:hover,
-.btn:focus,
-.btn:active,
-.btn.active,
 .btn-warning:hover,
 .btn-warning:focus,
 .btn-warning:active {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 body {
@@ -367,6 +349,32 @@ button, select, input, .nav-link, a {
   .table-responsive {
     font-size: 0.85rem;
   }
+}
+
+/* Gradient Utilities & Mobile Overflow Safety */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-cyan {
+  color: #38bdf8 !important;
+}
+
+.border-cyan {
+  border-color: #38bdf8 !important;
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 

@@ -1,34 +1,16 @@
 /* ====== QQBikes SERVICE WORKER WITH PWA OFFLINE CACHING, PUSH NOTIFICATIONS, BACKGROUND SYNC & PERIODIC SYNC ====== */
 
-const CACHE_NAME = 'qqbikes-pwa-v1.0.0';
+const CACHE_NAME = 'orivexbike-pwa-v2.0.0';
 
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './.well-known/assetlinks.json',
-  './src/styles/main.css',
-  './src/js/api.js',
-  './src/js/app.js',
-  './src/js/i18n.js',
-  './src/js/router.js',
-  './src/js/components/Header.js',
-  './src/js/components/Sidebar.js',
-  './src/js/components/Toast.js',
-  './src/js/pages/FleetPage.js',
-  './src/js/pages/ContractsPage.js',
-  './src/js/pages/ShiftsPage.js',
-  './src/js/pages/SchedulesPage.js',
-  './src/js/pages/RepairsPage.js',
-  './src/js/pages/TariffsPage.js',
-  './src/js/pages/AnalyticsPage.js',
-  './src/js/pages/SettingsPage.js',
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/screenshot-mobile.png',
-  './assets/screenshot-desktop.png',
-  './assets/widget.json',
-  './assets/widget-data.json'
+  './assets/screenshot-desktop.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -55,9 +37,14 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-First Strategy with Dynamic Cache Fallback for instant fresh updates on refresh
+// Network-First Strategy for static assets; bypass API routes entirely
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
+
+  // Never cache API endpoints
+  if (requestUrl.pathname.startsWith('/api/')) {
+    return;
+  }
 
   if (requestUrl.origin === location.origin) {
     event.respondWith(

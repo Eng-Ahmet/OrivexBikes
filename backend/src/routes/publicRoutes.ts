@@ -29,7 +29,7 @@ router.get('/stores', (req: Request, res: Response) => {
 // 2. GET /api/v1/public/fleet - Filterable public vehicle catalog
 router.get('/fleet', (req: Request, res: Response) => {
   const storeId = req.query.store_id ? Number(req.query.store_id) : undefined;
-  const category = req.query.category ? String(req.query.category).toLowerCase() : undefined;
+  const category = req.query.category ? String(req.query.category).toLowerCase().trim() : undefined;
 
   let vehicles = memoryData.vehicles || [];
 
@@ -38,7 +38,11 @@ router.get('/fleet', (req: Request, res: Response) => {
   }
 
   if (category) {
-    vehicles = vehicles.filter(v => (v.category || '').toLowerCase().includes(category));
+    const cleanCat = category.replace(/[^a-z0-9]/g, '');
+    vehicles = vehicles.filter(v => {
+      const vCat = (v.category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      return vCat.includes(cleanCat) || cleanCat.includes(vCat);
+    });
   }
 
   const publicFleet = vehicles.map(v => {

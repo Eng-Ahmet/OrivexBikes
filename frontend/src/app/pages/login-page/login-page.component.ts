@@ -105,7 +105,7 @@ import { I18nService, Language } from '../../core/services/i18n.service';
 
         <!-- Bottom Left Footer -->
         <div class="pt-4 border-top border-white border-opacity-10 d-flex align-items-center justify-content-between text-white-50 extra-small">
-          <div>&copy; 2026 QQBikes Management System</div>
+          <div>&copy; 2026 OrivexBike Management System</div>
           <div>Powered by <strong class="text-white">Orivex Technology</strong></div>
         </div>
       </div>
@@ -124,15 +124,19 @@ import { I18nService, Language } from '../../core/services/i18n.service';
 
           <!-- Segmented Mode Selector Buttons (Clean 100% width) -->
           <div class="segmented-control w-100 mb-4 p-1.5 rounded-4 d-flex gap-1">
-            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-3 transition-all text-nowrap"
+            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-2.5 transition-all"
                     [class.active-tab]="loginMode === 'PIN'"
                     (click)="loginMode = 'PIN'">
-              <i class="fa-solid fa-key me-2 text-warning"></i> {{ i18n.t('quickPinAccess') }}
+              <i class="fa-solid fa-key me-1.5 text-warning"></i>
+              <span class="d-none d-sm-inline">{{ i18n.t('quickPinAccess') }}</span>
+              <span class="d-sm-none">Acceso PIN</span>
             </button>
-            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-3 transition-all text-nowrap"
+            <button type="button" class="btn flex-fill rounded-3 text-white fw-bold py-2.5 transition-all"
                     [class.active-tab]="loginMode === 'CREDENTIALS'"
                     (click)="loginMode = 'CREDENTIALS'">
-              <i class="fa-solid fa-id-card-clip me-2 text-cyan"></i> {{ i18n.t('credentialsAccess') }}
+              <i class="fa-solid fa-id-card-clip me-1.5 text-cyan"></i>
+              <span class="d-none d-sm-inline">{{ i18n.t('credentialsAccess') }}</span>
+              <span class="d-sm-none">Tienda & Rol</span>
             </button>
           </div>
 
