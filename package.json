@@ -54,7 +54,7 @@
     "@types/node": "^26.4.0",
     "@types/serve-static": "^2.2.0",
     "tsx": "^4.23.13",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "image-size": "^1.2.0",
